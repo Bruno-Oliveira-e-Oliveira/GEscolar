@@ -3,4 +3,4 @@
 Projeto de TCC para a Faculdate FATEC Franca de um sistema de Gestão Escolar do Ensino Fundamental/Médio que utiliza estatística para fazer análise de dados.
 
 
-Desenvolvido em Python 3.7 e Django 2.2 com o banco de dados Mysql.
+Desenvolvido em Python 3.6.8 e Django 2.2 com o banco de dados Mysql.
