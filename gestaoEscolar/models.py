@@ -36,9 +36,8 @@ class Escola(models.Model):
 class Telefone(models.Model):
     Numero = models.CharField(max_length=20)
     #FK
-    Pessoa = 'OPCIONAL CASO FOR DE UMA ESCOLA'
+    Pessoa = '' #OPCIONAL CASO FOR DE UMA ESCOLA
     Escola = models.ForeignKey('Escola', on_delete=models.PROTECT)
-
 
     def __str__(self):
         return self.Numero
@@ -64,3 +63,50 @@ class Endereco(models.Model):
     
     def __str__(self):
         return self.Rua+' N°'+ str(self.Numero)
+
+
+class Pessoa(models.Model):
+    Nome = models.CharField(max_length=50)
+    MASCULINO = 'M'
+    FEMININO = 'F'
+    TIPO_SEXO = (
+        (MASCULINO,'Masculino'),
+        (FEMININO,'Feminino')
+    )
+    Sexo = models.CharField(max_length=1, choices=TIPO_SEXO, default=MASCULINO)
+    Data_Nascimento = models.DateField()
+    Cpf = models.CharField(max_length=11,blank=True, null=True)
+    Rg = models.CharField(max_length=9, blank=True, null=True)
+    Nome_Usuario = 'models.CharField(max_length=40, unique=True)'
+    Email = 'models.EmailField(max_length=254)'
+
+    class Meta:
+        abstract = True
+    
+    def __str__(self):
+        return self.Nome
+    
+
+class Gestor(Pessoa):
+    pass
+
+
+class Secretaria(Pessoa):
+    pass
+
+
+class Professor(Pessoa):
+    ESPECIALISTA = 'E'
+    MESTRE = 'M'
+    DOUTOR = 'D'
+    TIPOS_TITULOS = (
+        (ESPECIALISTA, 'Especialista'),
+        (MESTRE, 'Mestre'),
+        (DOUTOR, 'Doutor')
+    )
+    Titulo = models.CharField(max_length=20, choices=TIPOS_TITULOS, default=ESPECIALISTA)
+
+
+
+class Aluno(Pessoa):
+    pass
