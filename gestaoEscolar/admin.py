@@ -6,7 +6,10 @@ from .models import (
     Gestor,
     Secretaria,
     Professor,
-    Aluno
+    Aluno,
+    Disciplina,
+    Leciona,
+    Turma
 )
 
 # Register your models here.
@@ -18,4 +21,7 @@ admin.site.register(Gestor)
 admin.site.register(Secretaria)
 admin.site.register(Professor)
 admin.site.register(Aluno)
+admin.site.register(Disciplina)
+admin.site.register(Leciona)
+admin.site.register(Turma)
 
