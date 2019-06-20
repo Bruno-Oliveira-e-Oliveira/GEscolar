@@ -232,7 +232,28 @@ class Aluno(Pessoa):
 
     def __str__(self):
         return self.Nome
-    
+
+
+class Matricula(models.Model):
+    Rm = models.PositiveIntegerField(primary_key=True, verbose_name='RM')
+    Data = models.DateField(verbose_name = 'Data da realização da matrícula',auto_now=True)
+    MATRICULADO = 'matriculado'
+    CONCLUIDO = 'concluido'
+    TRANSFERIDO = 'transferido'
+    TRANCADO = 'trancado'
+    TIPOS_SITUACAO = (
+        (MATRICULADO, 'Matriculado'),
+        (CONCLUIDO, 'Concluído'),
+        (TRANSFERIDO, 'Transferido'),
+        (TRANCADO, 'Trancado')
+    )
+    Situacao = models.CharField('Situação', max_length=20, choices=TIPOS_SITUACAO, default=MATRICULADO)
+    Aluno = models.OneToOneField('Aluno', on_delete=models.PROTECT, verbose_name='Aluno')
+    Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
+
+    def __str__(self):
+        return self.RM + ' - ' + self.Aluno.Nome + ' - ' + self.Situacao
+
 
 #Tirar a funcionalidade de log de transferência?
 # class Transferencia(models.Model):
@@ -277,7 +298,6 @@ class Leciona(models.Model):
             return self.Turma.Nome + ' - ' + self.Disciplina.Nome
             
          
-
 class Turma(models.Model):
     Nome = models.CharField('Nome',max_length=20)
     MANHA = 'M'
@@ -322,8 +342,65 @@ class Turma(models.Model):
         pass
 
 
-    
+class Aula(models.Model):
+    Data = models.DateField(verbose_name='Data da realização da matrícula')
+    Turma = models.ForeignKey('Turma', on_delete=models.PROTECT, verbose_name='Turma')
+    Leciona = models.ForeignKey('Leciona', on_delete=models.PROTECT, verbose_name='Leciona')
+    Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
 
+    def __str__(self):
+        return self.Turma.Nome + ' - ' + self.Leciona.Disciplina.Nome + ' - ' + str(self.Data)
+
+    def checarData(self):
+        pass
+
+
+class Avaliacao(models.Model):
+    Tema = models.CharField('Tema', max_length=30)
+    #Tirado o campo Nota máxima
+    Peso = models.PositiveSmallIntegerField(verbose_name='Peso')
+    Aula = models.ForeignKey('Aula', on_delete = models.PROTECT, verbose_name = 'Aula')
+    Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
+
+    def __str__(self):
+        return self.Aula.Turma.Nome + ' - '+ self.Tema + ' - ' + self.Aula.Data
+
+
+class Frequencia(models.Model):
+    #Campo Frequencia adicionado
+    Presenca = models.BooleanField(verbose_name='Presença', default=True)
+    Aula = models.ForeignKey('Aula', on_delete = models.PROTECT, verbose_name = 'Aula')
+    Aluno = models.ForeignKey('Aluno', on_delete = models.PROTECT, verbose_name = 'Aluno')
+    Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['Aula','Aluno'], 
+                name='unique_Aula_Aluno'
+            )
+        ]
+    
+    def __str__(self):
+        return self.Aula.Turma.Nome + ' - '+ self.Aluno.Nome + ' - ' + self.Aula.Data
+
+
+class Aplicacao(models.Model):
+    Nota = models.DecimalField(verbose_name='Nota', max_digits=4, decimal_places=2)
+    Avaliacao = models.ForeignKey('Avaliacao', on_delete = models.PROTECT, verbose_name = 'Avaliação')
+    Aluno = models.ForeignKey('Aluno', on_delete = models.PROTECT, verbose_name = 'Aluno')
+    Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['Avaliacao','Aluno'], 
+                name='unique_Avaliacao_Aluno'
+            )
+        ]
+
+    def __str__(self):
+        return self.Avaliacao.Tema + ' - ' + self.Avaliacao.Aula.Data
 
     
 
