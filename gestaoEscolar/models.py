@@ -35,6 +35,12 @@ class Escola(models.Model):
     )
     Endereco = models.OneToOneField('Endereco', on_delete=models.PROTECT,verbose_name = 'Endereço')
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['Email'], name='unique_email_escola'),
+            models.UniqueConstraint(fields=['Nome','Endereco'], name='unique_endereco_escola')
+        ]
+    
     def __str__(self):
         return self.Nome
 
@@ -98,8 +104,8 @@ class PessoaAbstract(models.Model):
     )
     Sexo = models.CharField('Sexo',max_length=1, choices=TIPO_SEXO, default=MASCULINO)
     Data_Nascimento = models.DateField(verbose_name = 'Data de Nascimento')
-    Cpf = models.CharField('CPF',max_length=11,blank=True, null=True)
-    Rg = models.CharField('RG',max_length=9, blank=True, null=True)
+    Cpf = models.CharField('CPF',max_length=11,blank=True, null=True, unique=True)
+    Rg = models.CharField('RG',max_length=9, blank=True, null=True, unique=True)
     Nome_Usuario = 'models.CharField(max_length=40, unique=True)'
     Email = 'models.EmailField(max_length=254)'
     #Controlar para quem é obrigatório 
@@ -140,7 +146,6 @@ class Professor(Pessoa):
         (DOUTOR, 'Doutor')
     )
     Titulo = models.CharField('Título',max_length=20, choices=TIPOS_TITULOS, default=ESPECIALISTA)
-
 
 
 class Aluno(Pessoa):
@@ -237,6 +242,11 @@ class Aluno(Pessoa):
 class Disciplina(models.Model):
     Nome = models.CharField('Nome',max_length=20)
     Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['Nome', 'Escola'], name='unique_Disciplina')
+        ]
     
     def __str__(self):
         return self.Nome
@@ -255,11 +265,17 @@ class Leciona(models.Model):
     )
     Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['Disciplina', 'Turma', 'Escola'], name='unique_Leciona')
+        ]
+
     def __str__(self):
-        if None:
-            return Turma.Nome + ' - ' +'' + Disciplina.Nome + ' - ' + Professor.Nome
-        else:
-            return Turma.Nome + ' - ' +'' + Disciplina.Nome
+        try:
+            return self.Turma.Nome + ' - '+ self.Disciplina.Nome + ' - ' + self.Professor.Nome
+        except:
+            return self.Turma.Nome + ' - ' + self.Disciplina.Nome
+            
          
 
 class Turma(models.Model):
@@ -282,17 +298,30 @@ class Turma(models.Model):
     AnoLetivo = ''
     Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
 
-    def carregarNivelEscolaridade(self,idEscola):
-        Escola = models.objects.filter(id=idEscola)
-        if not None:
-            if Escola[0].Nivel_Escolaridade == 'F':
-                return ('F','Ensino Fundamental')
-            elif Escola[0].Nivel_Escolaridade == 'M':
-                return ('M','Ensino Médio')
-            elif Escola[0].Nivel_Escolaridade == 'FM':
-                return ('FM','Ensino Fundamental e Médio')
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['Nome', 'Escola'], name='unique_Turma'),
+            models.UniqueConstraint(
+                fields=['Sala','Periodo','Escola'], 
+                name='unique_Sala_Turma_Periodo'
+            )
+        ]
+
+    def __str__(self):
+        return self.Nome
+
+    def checarMaxAlunos(self):
+        alunos = len(Aluno.objects.filter(Turma=self.id))
+
+        if alunos < self.Max_Alunos:
+            return True
         else:
-            return 'Erro'
+            return False
+
+    def matricularNaTurma(self,idAluno):
+        pass
+
+
     
 
 
