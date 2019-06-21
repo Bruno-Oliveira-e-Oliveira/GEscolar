@@ -9,7 +9,15 @@ from .models import (
     Aluno,
     Disciplina,
     Leciona,
-    Turma
+    Turma,
+    Aula,
+    Avaliacao,
+    Frequencia,
+    Aplicacao,
+    Matricula,
+    AnoLetivo,
+    Bimestre,
+    Nota
 )
 
 # Register your models here.
@@ -24,4 +32,14 @@ admin.site.register(Aluno)
 admin.site.register(Disciplina)
 admin.site.register(Leciona)
 admin.site.register(Turma)
+admin.site.register(Aula)
+admin.site.register(Avaliacao)
+admin.site.register(Frequencia)
+admin.site.register(Aplicacao)
+admin.site.register(Matricula)
+admin.site.register(AnoLetivo)
+admin.site.register(Bimestre)
+admin.site.register(Nota)
+
+
 

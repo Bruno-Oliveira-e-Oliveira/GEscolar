@@ -25,7 +25,8 @@ class Escola(models.Model):
         (PRIVADA,'Privada')
     )
     Tipo_Escola = models.CharField('Tipo da Escola',max_length=20, choices=TIPOS, default=PUBLICA)
-    #FKs
+    #NOVO CAMPO
+    Nota_de_Corte = models.PositiveSmallIntegerField(verbose_name = 'Nota de corte de aprovação')
     Diretor = models.OneToOneField(
         'Gestor', 
         on_delete = models.PROTECT,
@@ -235,7 +236,7 @@ class Aluno(Pessoa):
 
 
 class Matricula(models.Model):
-    Rm = models.PositiveIntegerField(primary_key=True, verbose_name='RM')
+    Rm = models.AutoField(primary_key=True, verbose_name='RM')
     Data = models.DateField(verbose_name = 'Data da realização da matrícula',auto_now=True)
     MATRICULADO = 'matriculado'
     CONCLUIDO = 'concluido'
@@ -252,7 +253,7 @@ class Matricula(models.Model):
     Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
 
     def __str__(self):
-        return self.RM + ' - ' + self.Aluno.Nome + ' - ' + self.Situacao
+        return str(self.Rm) + ' - ' + self.Aluno.Nome + ' - ' + self.Situacao
 
 
 #Tirar a funcionalidade de log de transferência?
@@ -343,7 +344,7 @@ class Turma(models.Model):
 
 
 class Aula(models.Model):
-    Data = models.DateField(verbose_name='Data da realização da matrícula')
+    Data = models.DateField(verbose_name='Data')
     Turma = models.ForeignKey('Turma', on_delete=models.PROTECT, verbose_name='Turma')
     Leciona = models.ForeignKey('Leciona', on_delete=models.PROTECT, verbose_name='Leciona')
     Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
@@ -363,7 +364,7 @@ class Avaliacao(models.Model):
     Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
 
     def __str__(self):
-        return self.Aula.Turma.Nome + ' - '+ self.Tema + ' - ' + self.Aula.Data
+        return self.Aula.Turma.Nome + ' - '+ self.Tema + ' - ' + str(self.Aula.Data)
 
 
 class Frequencia(models.Model):
@@ -382,7 +383,7 @@ class Frequencia(models.Model):
         ]
     
     def __str__(self):
-        return self.Aula.Turma.Nome + ' - '+ self.Aluno.Nome + ' - ' + self.Aula.Data
+        return self.Aula.Turma.Nome + ' - '+ self.Aluno.Nome + ' - ' + str(self.Aula.Data)
 
 
 class Aplicacao(models.Model):
@@ -400,8 +401,81 @@ class Aplicacao(models.Model):
         ]
 
     def __str__(self):
-        return self.Avaliacao.Tema + ' - ' + self.Avaliacao.Aula.Data
+        return self.Avaliacao.Tema + ' - ' + str(self.Avaliacao.Aula.Data)
 
     
+class AnoLetivo(models.Model):
+    Ano = models.PositiveSmallIntegerField(verbose_name='Ano')
+    Data_Inicio = models.DateField(verbose_name='Abertura do ano letivo')
+    Data_Fim = models.DateField(verbose_name='Fechamento do ano letivo')
+    Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
 
-    
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['Ano','Escola'], 
+                name='unique_Ano'
+            )
+        ]
+
+    def __str__(self):
+        return str(self.Ano)
+
+
+class Bimestre(models.Model):
+    AnoLetivo = models.ForeignKey('AnoLetivo', on_delete=models.PROTECT, verbose_name='Ano')
+    Bimestre = models.PositiveSmallIntegerField(verbose_name='Bimestre')
+    Data_Inicio = models.DateField(verbose_name='Abertura do bimestre')
+    Data_Limite_Notas = models.DateField(verbose_name='Limite do lançamento das Notas')
+    Data_Fim = models.DateField(verbose_name='Fechamento do bimestre')
+    Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['AnoLetivo','Bimestre','Escola'], 
+                name='unique_Ano_Bimestre'
+            )
+        ]
+
+    def __str__(self):
+        return str(self.AnoLetivo) + ' - ' + str(self.Bimestre)
+
+
+class Nota(models.Model):
+    BIMESTRAL = 'B'
+    FINAL = 'F'
+    TIPOS_NOTA = (
+        (BIMESTRAL, 'Bimestral'),
+        (FINAL, 'Final')
+    ) 
+    Tipo = models.CharField('Tipo', max_length=20, choices=TIPOS_NOTA, default=BIMESTRAL)
+    Valor = models.DecimalField(verbose_name='Nota', max_digits=4, decimal_places=2)
+    Aluno = models.ForeignKey('Aluno', on_delete = models.PROTECT, verbose_name = 'Aluno')
+    Leciona = models.ForeignKey('Leciona', on_delete=models.PROTECT, verbose_name='Leciona')
+    AnoLetivo = models.ForeignKey('AnoLetivo',on_delete=models.PROTECT,verbose_name='Ano')
+    Bimestre = models.ForeignKey(
+        'Bimestre', 
+        on_delete = models.PROTECT,
+        verbose_name = 'Bimestre',
+        blank = True, 
+        null = True
+    )
+    Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
+
+    class Meta:
+        constraints = [
+        models.UniqueConstraint(
+            fields=['AnoLetivo','Bimestre','Aluno','Leciona','Escola'], 
+            name='unique_Ano_Bimestre_Aluno_Leciona'
+        ),
+        models.UniqueConstraint(
+            fields=['AnoLetivo','Aluno','Leciona','Escola'], 
+            name='unique_Ano_Aluno_Leciona'
+        )
+    ]
+
+    def __str__(self):
+        return self.Leciona.Disciplina.Nome + ' - ' + self.Tipo + ' - ' + self.Aluno.Nome
+        
+
