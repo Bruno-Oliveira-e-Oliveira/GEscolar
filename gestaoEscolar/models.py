@@ -3,7 +3,7 @@ from django.db import models
 
 class Escola(models.Model):
     Nome = models.CharField('Nome',max_length=50)
-    Email = models.EmailField('Email',max_length=254)
+    Email = models.EmailField('Email',max_length=254,unique=True)
     FUNDAMENTAL = 'F'
     MEDIO = 'M'
     FUNDAMENTAL_MEDIO = 'FM'
@@ -26,7 +26,11 @@ class Escola(models.Model):
     )
     Tipo_Escola = models.CharField('Tipo da Escola',max_length=20, choices=TIPOS, default=PUBLICA)
     #NOVO CAMPO
-    Nota_de_Corte = models.PositiveSmallIntegerField(verbose_name = 'Nota de corte de aprovação')
+    Nota_de_Corte = models.DecimalField(
+        max_digits=1,
+        decimal_places=0, 
+        verbose_name = 'Nota de corte de aprovação'
+    )
     Diretor = models.OneToOneField(
         'Gestor', 
         on_delete = models.PROTECT,
@@ -34,13 +38,12 @@ class Escola(models.Model):
         null = True,
         verbose_name = 'Diretor'
     )
-    Endereco = models.OneToOneField('Endereco', on_delete=models.PROTECT,verbose_name = 'Endereço')
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['Email'], name='unique_email_escola'),
-            models.UniqueConstraint(fields=['Nome','Endereco'], name='unique_endereco_escola')
-        ]
+    Endereco = models.OneToOneField(
+        'Endereco', 
+        on_delete = models.PROTECT,
+        verbose_name = 'Endereço',
+        unique = True
+    )
     
     def __str__(self):
         return self.Nome
@@ -424,7 +427,7 @@ class AnoLetivo(models.Model):
 
 class Bimestre(models.Model):
     AnoLetivo = models.ForeignKey('AnoLetivo', on_delete=models.PROTECT, verbose_name='Ano')
-    Bimestre = models.PositiveSmallIntegerField(verbose_name='Bimestre')
+    Bimestre = models.DecimalField(max_digits=1, decimal_places=0, verbose_name='Bimestre')
     Data_Inicio = models.DateField(verbose_name='Abertura do bimestre')
     Data_Limite_Notas = models.DateField(verbose_name='Limite do lançamento das Notas')
     Data_Fim = models.DateField(verbose_name='Fechamento do bimestre')
