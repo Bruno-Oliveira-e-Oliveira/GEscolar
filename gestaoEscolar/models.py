@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Escola(models.Model):
@@ -110,8 +111,7 @@ class PessoaAbstract(models.Model):
     Data_Nascimento = models.DateField(verbose_name = 'Data de Nascimento')
     Cpf = models.CharField('CPF',max_length=11,blank=True, null=True, unique=True)
     Rg = models.CharField('RG',max_length=9, blank=True, null=True, unique=True)
-    Nome_Usuario = 'models.CharField(max_length=40, unique=True)'
-    Email = 'models.EmailField(max_length=254)'
+    Usuario = models.OneToOneField(User, on_delete=models.PROTECT)
     #Controlar para quem é obrigatório 
     Escola = models.ForeignKey(
         'Escola', 
@@ -133,7 +133,13 @@ class Pessoa(PessoaAbstract):
     
 
 class Gestor(Pessoa):
-    pass
+    GESTOR = 'G'
+    DIRETOR = 'D'
+    TIPO_CONTA = (
+        (GESTOR, 'Gestor'),
+        (DIRETOR, 'Diretor')
+    )
+    Tipo_Gestor = models.CharField('Tipo de Gestor', max_length=20, choices=TIPO_CONTA, default=GESTOR)
 
 
 class Secretaria(Pessoa):

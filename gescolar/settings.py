@@ -43,7 +43,7 @@ ROOT_URLCONF = 'gescolar.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -117,3 +117,12 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     'static',
 ]
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = 'media'
+
+LOGIN_URL = '/gestaoEscolar/login/'
+
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')

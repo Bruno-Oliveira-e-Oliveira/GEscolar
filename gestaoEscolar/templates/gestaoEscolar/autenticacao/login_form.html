@@ -1,0 +1,28 @@
+{% extends 'projeto/base/base.html' %}
+
+{% block title %}Login de Usuário{% endblock  %}
+
+
+{% block main %}
+    <h3>{{ erro }}</h3>
+    
+    <form action="{% url 'login' %}" method='POST'>
+        {% csrf_token %}
+        <fieldset>
+            <div>
+                <label for="id_username">Usuário:</label> 
+                <input type="text" name="username" maxlength="20" required id="id_username"> 
+            </div>
+            <div>
+                <label for="id_password">Senha:</label> 
+                <input type="password" name="password" maxlength="16" required id="id_password">
+            </div>
+        </fieldset>
+
+        <button type="submit">Entrar</button>
+        <a href="#"> Cadastrar-se</a>
+        <a href="#"> Esqueceu a senha</a>
+        <a href="#"> Voltar</a>
+    </form>
+    
+{% endblock  %}

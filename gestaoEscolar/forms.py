@@ -19,12 +19,19 @@ from .models import (
     Bimestre,
     Nota
 )
+from django.contrib.auth.models import User
+
+class UsuarioLoginForm(ModelForm):
+    class Meta:
+        model = User
+        fields = ('username', 'password')
 
 
 class EscolaForm(ModelForm):
     class Meta:
         model = Escola
         fields = '__all__'
+
 
 
     
