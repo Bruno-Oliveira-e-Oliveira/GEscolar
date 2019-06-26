@@ -4,7 +4,7 @@
 
 
 {% block main %}
-    <h3>{{ erro }}</h3>
+    <span>{{ erro }}<span>
     
     <form action="{% url 'login' %}" method='POST'>
         {% csrf_token %}
@@ -20,7 +20,7 @@
         </fieldset>
 
         <button type="submit">Entrar</button>
-        <a href="#"> Cadastrar-se</a>
+        <a href="{% url 'diretor_novo' %}"> Cadastrar-se</a>
         <a href="#"> Esqueceu a senha</a>
         <a href="#"> Voltar</a>
     </form>

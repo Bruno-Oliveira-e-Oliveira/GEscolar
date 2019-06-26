@@ -111,7 +111,7 @@ class PessoaAbstract(models.Model):
     Data_Nascimento = models.DateField(verbose_name = 'Data de Nascimento')
     Cpf = models.CharField('CPF',max_length=11,blank=True, null=True, unique=True)
     Rg = models.CharField('RG',max_length=9, blank=True, null=True, unique=True)
-    Usuario = models.OneToOneField(User, on_delete=models.PROTECT)
+    Usuario = models.OneToOneField(User, on_delete=models.PROTECT, blank=True, null=True)
     #Controlar para quem é obrigatório 
     Escola = models.ForeignKey(
         'Escola', 

@@ -1,0 +1,71 @@
+{% extends 'projeto/base/base.html' %}
+
+{% block title %}Cadastrar novo Usuário | GEscolar{% endblock  %}
+
+
+{% block main %}
+
+    {% for erro in erros %}
+        {{ erro }}
+    {% endfor %}
+
+
+    <form action="{% url 'diretor_novo' %}" method="POST">
+        {% csrf_token %}
+        <fieldset>
+            <div>
+                <label for="id_Nome">Nome:</label> 
+                <input type="text" name="Nome" maxlength="50" required id="id_Nome" value='{{ gestor_dados.Nome }}'>
+            </div>
+
+            <div>
+                <label for="id_Sexo">Sexo:</label> 
+                <select name="Sexo" id="id_Sexo">
+                    <option value="M" selected>Masculino</option>
+                    <option value="F">Feminino</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="id_Data_Nascimento">Data de Nascimento:</label> 
+                <input type="date" name="Data_Nascimento" required id="id_Data_Nascimento" value='{{ gestor_dados.Data_Nascimento }}'>
+            </div>
+
+            <div>
+                <label for="id_Cpf">CPF:</label> 
+                <input type="text" name="Cpf" maxlength="11" id="id_Cpf" value='{{ gestor_dados.Cpf }}'>               
+            </div>
+
+            <div>
+                <label for="id_Rg">RG:</label> 
+                <input type="text" name="Rg" maxlength="9" id="id_Rg" value='{{ gestor_dados.Rg }}'>                
+            </div>
+    
+        </fieldset>
+
+        <fieldset>
+            <div>
+                <label for="id_email">Email:</label> 
+                <input type="email" name="email" maxlength="254" required id="id_email" value='{{ usuario_dados.email }}'>     
+            </div>
+
+            <div>
+                <label for="id_username">Nome de Usuário:</label> 
+                <input type="text" name="username" maxlength="20" required id="id_username" value='{{ usuario_dados.username }}'> 
+            </div>
+
+            <div>
+                <label for="id_password">Senha:</label> 
+                <input type="password" name="password" maxlength="16" required id="id_password" value='{{ usuario_dados.password }}'>              
+            </div>
+
+            <div>
+                <label for="id_password2">Confirme sua Senha:</label> 
+                <input type="password" name="password2" maxlength="16" required id="id_password2" value='{{ usuario_dados.password2 }}'>              
+            </div>
+        </fieldset>
+
+        <button type="submit">Salvar</button>
+    </form>
+
+{% endblock  %}
