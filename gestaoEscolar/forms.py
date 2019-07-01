@@ -22,9 +22,31 @@ from .models import (
 )
 from django.contrib.auth.models import User
 
+
 class GestorForm(ModelForm):
     class Meta:
         model = Gestor
+        fields = '__all__'
+
+
+class EnderecoForm(ModelForm):
+    class Meta:
+        model = Endereco
+        fields = '__all__'
+
+    def clean_Numero(self):
+        numero_dados = self.cleaned_data['Numero']
+
+        if numero_dados <= 0:
+            raise forms.ValidationError(
+                'Valor inválido para o campo Número.'
+            )       
+        return numero_dados 
+
+
+class TelefoneForm(ModelForm):
+    class Meta:
+        model = Telefone
         fields = '__all__'
 
 
@@ -51,6 +73,14 @@ class EscolaForm(ModelForm):
         model = Escola
         fields = '__all__'
 
+    def clean_Nota_de_Corte(self):
+        nota_dados = self.cleaned_data['Nota_de_Corte']
+
+        if nota_dados > 10 or nota_dados <= 0:
+            raise forms.ValidationError(
+                'Valor inválido para o campo Nota.'
+            )       
+        return nota_dados     
 
 
     

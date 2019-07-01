@@ -1,16 +1,111 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-<body>
-    <form action="{% url 'escola_novo' %}">
+{% extends 'projeto/base/base.html' %}
 
-        {{ form.as_p}}
+{% block title %}Cadastrar nova Escola | GEscolar{% endblock  %}
+
+
+{% block main %}
+
+    {% for erro in erros %}
+        {{ erro }}
+    {% endfor %}
+
+
+    <form action="{% url 'escola_novo' %}" method="POST">
+        {% csrf_token %}
+        <fieldset>
+            <div>
+                <label for="id_Nome">Nome:</label>
+                <input type="text" name="Nome" maxlength="50" required id="id_Nome" value='{{ escola_dados.Nome }}'>
+            </div>
+
+            <div>
+                <label for="id_Email">Email:</label>
+                <input type="email" name="Email" maxlength="254" required id="id_Email" value='{{ escola_dados.Email }}'>            
+            </div>
+
+            <div>
+                <label for="id_Nivel_Escolaridade">Nível Escolaridade:</label>
+                <select name="Nivel_Escolaridade" id="id_Nivel_Escolaridade">    
+                    {% for nivel in Niveis %}
+                        <option value="{{ nivel.0 }}" >{{ nivel.1 }}</option>
+                    {% endfor %}                
+                </select>
+            </div>
+            
+            <div>
+                <label for="id_Tipo_Escola">Tipo da Escola:</label>
+                <select name="Tipo_Escola" id="id_Tipo_Escola"> 
+                    {% for tipo in Tipos %}
+                        <option value="{{ tipo.0 }}" >{{ tipo.1 }}</option>
+                    {% endfor %}
+                </select>           
+            </div>
+
+            <div>
+                <label for="id_Nota_de_Corte">Nota de corte de aprovação:</label>
+                <input type="number" name="Nota_de_Corte" step="1" required id="id_Nota_de_Corte" maxlength="2" value='{{ escola_dados.Nota_de_Corte }}'>            
+            </div>
+
+            <div>
+                <label for="id_Numero1">Telefone 1:</label>
+                <input type="text" name="Numero1" maxlength="20" required id="id_Numero1" value='{{ telefone1_dados.Numero }}'>
+            </div>
+
+            <div>
+                <label for="id_Numero2">Telefone 2:</label>
+                <input type="text" name="Numero2" maxlength="20" required id="id_Numero2" value='{{ telefone2_dados.Numero }}'>
+            </div>
+        
+            <div>
+                <label for="id_Numero3">Telefone 3:</label>
+                <input type="text" name="Numero3" maxlength="20" required id="id_Numero3" value='{{ telefone3_dados.Numero }}'>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <div>
+                <label for="id_Rua">Rua:</label>
+                <input type="text" name="Rua" maxlength="40" required id="id_Rua" value='{{ endereco_dados.Rua }}'>
+            </div>
+
+            <div>
+                <label for="id_Numero">Número:</label>
+                <input type="number" name="Numero" min="0" required id="id_Numero" value='{{ endereco_dados.Numero }}'>
+            </div>
+
+            <div>
+                <label for="id_Bairro">Bairro:</label>
+                <input type="text" name="Bairro" maxlength="40" required id="id_Bairro" value='{{ endereco_dados.Bairro }}'>
+            </div>
+            
+            <div>
+                <label for="id_Cidade">Cidade:</label>
+                <input type="text" name="Cidade" maxlength="40" required id="id_Cidade" value='{{ endereco_dados.Cidade }}'>
+            </div>
+            
+            <div>
+                <label for="id_Estado">Estado:</label>
+                <input type="text" name="Estado" maxlength="2" required id="id_Estado" value='{{ endereco_dados.Estado }}'>
+            </div>
+
+            <div>
+                <label for="id_Complemento">Complemento:</label>
+                <input type="text" name="Complemento" maxlength="100"  id="id_Complemento" value='{{ endereco_dados.Complemento }}'>
+            </div>
+            
+            <div>
+                <label for="id_Zona">Zona:</label>
+                <select name="Zona" id="id_Zona">
+                    {% for zona in zonas %}
+                        <option value="{{ zona.0 }}" >{{ zona.1 }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </fieldset>
+
+
         <button type="submit">Salvar</button>
+        <a href="{% url 'gestao_escolar_inicio' %}"> Voltar</a>
     </form>
-</body>
-</html
+
+{% endblock  %}

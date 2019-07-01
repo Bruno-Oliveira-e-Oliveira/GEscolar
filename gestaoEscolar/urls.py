@@ -6,10 +6,8 @@ urlpatterns = [
     path('login/', login , name='login'),
     path('logout/', logout , name='logout'),
     path('diretor/novo/', diretor_novo, name='diretor_novo'),
+    path('escola/novo/', escola_novo, name='escola_novo')
 
 
 
-
-
-    path('escola/novo', escola_novo, name='escola_novo')
 ]

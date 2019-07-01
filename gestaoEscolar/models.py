@@ -27,10 +27,12 @@ class Escola(models.Model):
     )
     Tipo_Escola = models.CharField('Tipo da Escola',max_length=20, choices=TIPOS, default=PUBLICA)
     #NOVO CAMPO
-    Nota_de_Corte = models.DecimalField(
-        max_digits=1,
-        decimal_places=0, 
-        verbose_name = 'Nota de corte de aprovação'
+    Nota_de_Corte = models.IntegerField(
+        verbose_name = 'Nota de corte de aprovação',
+        error_messages = {
+            'max_value': 
+            'Certifique-se que o valor do campo "Número" seja menor ou igual a 4294967295.'
+        }
     )
     Diretor = models.OneToOneField(
         'Gestor', 
@@ -43,7 +45,8 @@ class Escola(models.Model):
         'Endereco', 
         on_delete = models.PROTECT,
         verbose_name = 'Endereço',
-        unique = True
+        blank=True, 
+        null=True
     )
     
     def __str__(self):
@@ -74,11 +77,17 @@ class Telefone(models.Model):
 
 class Endereco(models.Model):
     Rua = models.CharField('Rua',max_length=40)
-    Numero = models.PositiveSmallIntegerField(verbose_name = 'Número')
+    Numero = models.IntegerField(
+        verbose_name = 'Número', 
+        error_messages = {
+            'max_value': 
+            'Certifique-se que o valor do campo "Número" seja menor ou igual a 4294967295.'
+        }
+    )
     Bairro = models.CharField('Bairro',max_length=40)
     Cidade = models.CharField('Cidade',max_length=40)
     Estado = models.CharField('Estado',max_length=2)
-    Complemento = models.CharField('Complemento',max_length=100)
+    Complemento = models.CharField('Complemento',max_length=100, blank=True, null=True)
     URBANA = 'URB'
     RURAL = 'RUR'
     TIPOS_ZONAS = (
@@ -86,14 +95,6 @@ class Endereco(models.Model):
         (RURAL,'Rural')
     )
     Zona = models.CharField('Zona',max_length=15, choices=TIPOS_ZONAS, default=URBANA)
-    #Controlar para quem é obrigatório 
-    Pessoa = models.ForeignKey(
-        'Pessoa',
-        on_delete = models.PROTECT,
-        blank = True, 
-        null=True,
-        verbose_name = 'Pessoa'
-    )
     
     def __str__(self):
         return self.Rua+' N°'+ str(self.Numero)
@@ -112,6 +113,13 @@ class PessoaAbstract(models.Model):
     Cpf = models.CharField('CPF',max_length=11,blank=True, null=True, unique=True)
     Rg = models.CharField('RG',max_length=9, blank=True, null=True, unique=True)
     Usuario = models.OneToOneField(User, on_delete=models.PROTECT, blank=True, null=True)
+    Endereco = models.OneToOneField(
+        'Endereco', 
+        on_delete = models.PROTECT,
+        verbose_name = 'Endereço',
+        blank=True, 
+        null=True
+    )
     #Controlar para quem é obrigatório 
     Escola = models.ForeignKey(
         'Escola', 
@@ -128,6 +136,7 @@ class PessoaAbstract(models.Model):
         return self.Nome
 
 
+
 class Pessoa(PessoaAbstract):
     pass
     
@@ -140,6 +149,33 @@ class Gestor(Pessoa):
         (DIRETOR, 'Diretor')
     )
     Tipo_Gestor = models.CharField('Tipo de Gestor', max_length=20, choices=TIPO_CONTA, default=GESTOR)
+
+    def tornar_diretor(self, escola, diretor_anterior):
+        # if diretor_anterior:
+        #     achou = Gestor.objects.filter(id=diretor_anterior.id, Escola=escola.id).exists()
+        #     if achou:
+        #         diretor_anterior.tirar_cargo_diretor()
+        #         self.Escola = escola
+        #         return True
+        #     else:
+        #         return False
+        # else:
+        #     achou = Gestor.objects.filter(Escola=escola.id).exists()
+        #     if not achou:
+        #         self.Escola = escola
+        #         return True
+        #     else:
+        #         return False
+        self.Escola = escola
+        self.save() 
+
+    def tirar_cargo_diretor(self):
+        self.Escola = None
+            
+
+
+
+
 
 
 class Secretaria(Pessoa):
