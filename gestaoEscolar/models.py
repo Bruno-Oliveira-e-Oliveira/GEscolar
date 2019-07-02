@@ -48,31 +48,24 @@ class Escola(models.Model):
         blank=True, 
         null=True
     )
+    Telefone = models.OneToOneField(
+        'Telefone', 
+        on_delete = models.PROTECT,
+        verbose_name = 'Telefone',
+        blank=True, 
+        null=True
+    )
     
     def __str__(self):
         return self.Nome
 
 
 class Telefone(models.Model):
-    Numero = models.CharField('Número',max_length=20)
-    #FK
-    Pessoa = models.ForeignKey(
-        'Pessoa',
-        on_delete = models.PROTECT,
-        blank = True, 
-        null=True,
-        verbose_name = 'Pessoa'
-    )
-    Escola = models.ForeignKey(
-        'Escola', 
-        on_delete = models.PROTECT, 
-        blank = True, 
-        null = True,
-        verbose_name = 'Escola'
-    )
+    Numero1 = models.CharField('Número 1',max_length=20)
+    Numero2 = models.CharField('Número 2',max_length=20)
 
     def __str__(self):
-        return self.Numero
+        return self.Numero1 
 
 
 class Endereco(models.Model):
@@ -120,6 +113,13 @@ class PessoaAbstract(models.Model):
         blank=True, 
         null=True
     )
+    Telefone = models.OneToOneField(
+        'Telefone', 
+        on_delete = models.PROTECT,
+        verbose_name = 'Telefone',
+        blank=True, 
+        null=True
+    )
     #Controlar para quem é obrigatório 
     Escola = models.ForeignKey(
         'Escola', 
@@ -134,6 +134,21 @@ class PessoaAbstract(models.Model):
     
     def __str__(self):
         return self.Nome
+    
+    def obter_pessoa(nome_usuario, tipo):
+        usuario = User.objects.get(username=nome_usuario)
+        if tipo == 'Gestor':
+            pessoa = Gestor.objects.filter(Usuario=usuario.id)
+        elif tipo == 'Secretaria':
+            pessoa = Secretaria.objects.filter(Usuario=usuario.id)
+        elif tipo == 'Professor':
+            pessoa = Professor.objects.filter(Usuario=usuario.id)
+        elif tipo == 'Aluno':
+            pessoa = Aluno.objects.filter(Usuario=usuario.id)
+        else:
+            pessoa = Pessoa.objects.filter(Usuario=usuario.id)
+        
+        return pessoa[0]
 
 
 
