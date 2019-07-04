@@ -106,6 +106,9 @@ class PessoaAbstract(models.Model):
     Cpf = models.CharField('CPF',max_length=11,blank=True, null=True, unique=True)
     Rg = models.CharField('RG',max_length=9, blank=True, null=True, unique=True)
     Usuario = models.OneToOneField(User, on_delete=models.PROTECT, blank=True, null=True)
+
+    #Adicionar o campo Tipo Pessoa
+
     Endereco = models.OneToOneField(
         'Endereco', 
         on_delete = models.PROTECT,
@@ -157,6 +160,7 @@ class Pessoa(PessoaAbstract):
     
 
 class Gestor(Pessoa):
+    #Remover esse campo
     GESTOR = 'G'
     DIRETOR = 'D'
     TIPO_CONTA = (
