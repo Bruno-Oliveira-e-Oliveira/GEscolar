@@ -12,7 +12,10 @@
 <body>
     {% block cabecalho %}
         {% if user.is_authenticated%}
+            <a href="{% url 'escola_novo' %}">Escola Novo</a>
+            <a href="{% url 'secretario_listagem' %}">Secretário</a>
             <a href="{% url 'logout' %}">Encessar Sessão</a>
+            {{ user.username }}
         {% endif %}
     {% endblock  %}
 

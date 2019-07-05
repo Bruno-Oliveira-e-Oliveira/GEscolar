@@ -83,6 +83,12 @@ class EscolaForm(ModelForm):
         return nota_dados     
 
 
+class SecretarioForm(ModelForm):
+    class Meta:
+        model = Secretaria
+        fields = '__all__'
+
+
     
 
     # Telefone

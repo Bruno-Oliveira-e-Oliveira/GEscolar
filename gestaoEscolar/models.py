@@ -108,6 +108,20 @@ class PessoaAbstract(models.Model):
     Usuario = models.OneToOneField(User, on_delete=models.PROTECT, blank=True, null=True)
 
     #Adicionar o campo Tipo Pessoa
+    GESTOR = 'G'
+    DIRETOR = 'D'
+    SECRETARIO = 'S'
+    PROFESSOR = 'P'
+    ALUNO = 'A'
+
+    TIPO_CONTA = (
+        (GESTOR, 'Gestor'),
+        (DIRETOR, 'Diretor'),
+        (SECRETARIO, 'Secretário'),
+        (PROFESSOR, 'Professor'),
+        (ALUNO, 'Aluno')
+    )
+    Tipo_Pessoa = models.CharField('Tipo de Pessoa', max_length=20, choices=TIPO_CONTA)
 
     Endereco = models.OneToOneField(
         'Endereco', 
@@ -139,19 +153,22 @@ class PessoaAbstract(models.Model):
         return self.Nome
     
     def obter_pessoa(nome_usuario, tipo):
-        usuario = User.objects.get(username=nome_usuario)
-        if tipo == 'Gestor':
-            pessoa = Gestor.objects.filter(Usuario=usuario.id)
-        elif tipo == 'Secretaria':
-            pessoa = Secretaria.objects.filter(Usuario=usuario.id)
-        elif tipo == 'Professor':
-            pessoa = Professor.objects.filter(Usuario=usuario.id)
-        elif tipo == 'Aluno':
-            pessoa = Aluno.objects.filter(Usuario=usuario.id)
+        if nome_usuario:
+            usuario = User.objects.get(username=nome_usuario)
+            if tipo == 'Gestor':
+                pessoa = Gestor.objects.filter(Usuario=usuario.id)
+            elif tipo == 'Secretaria':
+                pessoa = Secretaria.objects.filter(Usuario=usuario.id)
+            elif tipo == 'Professor':
+                pessoa = Professor.objects.filter(Usuario=usuario.id)
+            elif tipo == 'Aluno':
+                pessoa = Aluno.objects.filter(Usuario=usuario.id)
+            else:
+                pessoa = Pessoa.objects.filter(Usuario=usuario.id)
+            
+            return pessoa[0]
         else:
-            pessoa = Pessoa.objects.filter(Usuario=usuario.id)
-        
-        return pessoa[0]
+            return None
 
 
 
@@ -160,15 +177,6 @@ class Pessoa(PessoaAbstract):
     
 
 class Gestor(Pessoa):
-    #Remover esse campo
-    GESTOR = 'G'
-    DIRETOR = 'D'
-    TIPO_CONTA = (
-        (GESTOR, 'Gestor'),
-        (DIRETOR, 'Diretor')
-    )
-    Tipo_Gestor = models.CharField('Tipo de Gestor', max_length=20, choices=TIPO_CONTA, default=GESTOR)
-
     def tornar_diretor(self, escola, diretor_anterior):
         # if diretor_anterior:
         #     achou = Gestor.objects.filter(id=diretor_anterior.id, Escola=escola.id).exists()
@@ -192,11 +200,7 @@ class Gestor(Pessoa):
         self.Escola = None
             
 
-
-
-
-
-
+#Mudar para secretario
 class Secretaria(Pessoa):
     pass
 
