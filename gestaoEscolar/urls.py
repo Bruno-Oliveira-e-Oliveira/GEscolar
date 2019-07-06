@@ -12,6 +12,8 @@ urlpatterns = [
     path('escola/alterar/<int:id>', escola_alterar, name='escola_alterar'),
 
     path('secretarios/', secretario_listagem, name='secretario_listagem'),
+    path('secretario/novo/', secretario_novo, name='secretario_novo'),
+    path('secretario/alterar/<int:id>', secretario_alterar, name='secretario_alterar'),
 
 
 

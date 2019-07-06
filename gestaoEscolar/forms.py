@@ -68,6 +68,13 @@ class UsuarioForm(ModelForm):
             )
 
 
+class UsuarioEmailForm(ModelForm):
+
+    class Meta:
+        model = User
+        fields = ('email',)
+
+
 class EscolaForm(ModelForm):
     class Meta:
         model = Escola

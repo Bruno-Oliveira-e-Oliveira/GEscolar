@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, Http404
+from django.shortcuts import render, redirect, Http404, HttpResponse
 from django.contrib.auth import authenticate, login as login_auth, logout as logout_auth
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, permission_required
@@ -17,6 +17,11 @@ def login(request):
         usuario = authenticate(request, username=username, password=password)
         if usuario is not None:
             login_auth(request, usuario)
+            pessoa = Pessoa.obter_pessoa(usuario.username,'Pessoa')
+            if pessoa.Escola is not None:
+                request.session['Escola'] = pessoa.Escola.id
+            else:
+                request.session['Escola'] = ''
             return redirect('gestao_escolar_inicio')
         else:
             erro = 'Usuário ou senha inválidos'
@@ -31,10 +36,10 @@ def logout(request):
 
 @login_required
 def gestao_escolar_inicio(request):
+    print(request.session['Escola'])
     return render(request,'gestaoEscolar/inicio/gestaoescolar.html')
 
 #gestor e diretor
-#Adicionar tipo pessoa
 def diretor_novo(request):
     TIPO_SEXO = Gestor.TIPO_SEXO
     ZONAS = Endereco.TIPOS_ZONAS
@@ -130,9 +135,10 @@ def diretor_novo(request):
                     gestor_form = GestorForm(gestor_dados)
                     gestor = gestor_form.save()
                     return redirect('gestao_escolar_inicio')
-            except Error:
+            except Exception as Error:
                 #Erros de servidor (500)
-                Error = 'Erro no servidor: '+Error
+                print('Erro no servidor: ' + str(Error))
+                Error = 'Erro no servidor'
                 erros = [Error]
                 context = {
                     'Tipo_Sexo': TIPO_SEXO,
@@ -229,7 +235,8 @@ def escola_novo(request):
                     return redirect('gestao_escolar_inicio')
             except Exception as Error:
                 #Erros de servidor (500)
-                Error = 'Erro no servidor: '+str(Error)
+                print('Erro no servidor: ' + str(Error))
+                Error = 'Erro no servidor'
                 erros = [Error]
                 context = {
                     'Niveis': NIVEIS, 
@@ -334,7 +341,8 @@ def escola_alterar(request,id):
                     return redirect('gestao_escolar_inicio')
             except Exception as Error:
                 #Erros de servidor (500)
-                Error = 'Erro no servidor: '+str(Error)
+                print('Erro no servidor: ' + str(Error))
+                Error = 'Erro no servidor'
                 erros = [Error]
                 context = {
                     'Niveis': NIVEIS, 
@@ -360,7 +368,7 @@ def secretario_listagem(request):
     else:
         #Pessoa sem escola ou nome de usuario vazio 
         #Tratar depois
-        return Http404('Não foi encontrada nenhuma associação com uma escola')
+        return HttpResponse('Não foi encontrada nenhuma associação com uma escola')
 
 
 @login_required
@@ -368,10 +376,13 @@ def secretario_novo(request):
     TIPO_SEXO = Secretaria.TIPO_SEXO
     ZONAS = Endereco.TIPOS_ZONAS
     if request.method == 'GET':
-        context = {'Tipo_Sexo': TIPO_SEXO, 'zonas': ZONAS}
+        context = {'Tipo_Sexo': TIPO_SEXO, 'zonas': ZONAS, 'Tipo_Transacao': 'INS'}
         return render(request,'gestaoEscolar/secretario/secretario_form.html', context)
     else:
         dados = request.POST
+        usuario_dados = {
+            'email': dados['email']
+        }
         secretario_dados = {
             'Nome': dados['Nome'], 
             'Sexo': dados['Sexo'], 
@@ -379,8 +390,10 @@ def secretario_novo(request):
             'Cpf': dados['Cpf'], 
             'Rg': dados['Rg'], 
             'Usuario': '', 
+            'Endereco': '',
             'Tipo_Pessoa': 'S',
-            'Telefone': ''
+            'Telefone': '',
+            'Escola': ''
         }
         endereco_dados = {
             'Rua': dados['Rua'], 
@@ -396,14 +409,19 @@ def secretario_novo(request):
             'Numero2': dados['Numero2']
         }
         secretario_form = SecretarioForm(secretario_dados)
+        usuario_form = UsuarioEmailForm(usuario_dados)
         endereco_form = EnderecoForm(endereco_dados)
         telefone_form = TelefoneForm(telefone_dados)
         erros_secretario = {}
+        erros_usuario = {}
         erros_endereco = {}
         erros_telefone = {}
 
         if not secretario_form.is_valid():
             erros_secretario = secretario_form.errors
+
+        if not usuario_form.is_valid():
+            erros_usuario = usuario_form.errors
 
         if not endereco_form.is_valid():
             erros_endereco = endereco_form.errors
@@ -411,10 +429,12 @@ def secretario_novo(request):
         if not telefone_form.is_valid():
             erros_telefone = telefone1_form.errors
 
-        if erros_secretario or erros_endereco or erros_telefone:
+        if erros_secretario or erros_endereco or erros_telefone or erros_usuario:
             erros = []
             for erro in erros_secretario.values():
                 erros.append(erro)
+            for erro in erros_usuario.values():
+                erros.append(erro)               
             for erro in erros_endereco.values():
                 erros.append(erro)
             for erro in erros_telefone.values():
@@ -424,8 +444,10 @@ def secretario_novo(request):
                 'zonas': ZONAS,
                 'erros':erros, 
                 'secretario_dados':secretario_dados, 
+                'usuario_dados': usuario_dados,
                 'endereco_dados': endereco_dados,
-                'telefone_dados': telefone_dados
+                'telefone_dados': telefone_dados,
+                'Tipo_Transacao': 'INS'
             }
             return render(request,'gestaoEscolar/secretario/secretario_form.html', context)
         else:
@@ -433,10 +455,12 @@ def secretario_novo(request):
                 with transaction.atomic():
                     #Criar o nome de usuario a partir do RG e CPF 
                     # (fazê-los obrigatórios nos cadastros exceto Diretores)
+                    nome_usuario = dados['Rg'] + dados['Estado']
+                    senha = dados['Cpf']
                     usuario = User.objects.create_user(
-                        dados['username'], 
+                        nome_usuario, 
                         dados['email'], 
-                        dados['password']
+                        senha
                     )
                     usuario.save()
                     endereco = endereco_form.save()
@@ -444,19 +468,144 @@ def secretario_novo(request):
                     secretario_dados['Usuario'] = usuario.id
                     secretario_dados['Telefone'] = telefone.id
                     secretario_dados['Endereco'] = endereco.id
-                    secretario_form = secretarioForm(secretario_dados)
+                    escola = Escola.objects.get(id=request.session['Escola'])
+                    secretario_dados['Escola'] = escola.id
+                    secretario_form = SecretarioForm(secretario_dados)
                     secretario = secretario_form.save()
-                    return redirect('gestao_escolar_inicio')
-            except Error:
+                    return redirect('secretario_listagem')
+            except Exception as Error:
                 #Erros de servidor (500)
-                Error = 'Erro no servidor: '+Error
+                print('Erro no servidor: ' + str(Error))
+                Error = 'Erro no servidor'
                 erros = [Error]
                 context = {
                     'Tipo_Sexo': TIPO_SEXO,
                     'zonas': ZONAS,
                     'erros':erros, 
                     'secretario_dados':secretario_dados, 
+                    'usuario_dados': usuario_dados,
                     'endereco_dados': endereco_dados,
-                    'telefone_dados': telefone_dados
+                    'telefone_dados': telefone_dados,
+                    'Tipo_Transacao': 'INS'
+                }
+                return render(request,'gestaoEscolar/secretario/secretario_form.html', context)
+
+
+@login_required
+def secretario_alterar(request,id):
+    secretario_obj = Secretaria.objects.get(id=id)
+    endereco_obj = Endereco.objects.get(id=secretario_obj.Endereco.id)
+    telefone_obj = Telefone.objects.get(id=secretario_obj.Telefone.id)
+    usuario_obj = User.objects.get(id=secretario_obj.Usuario.id)
+    TIPO_SEXO = Secretaria.TIPO_SEXO
+    ZONAS = Endereco.TIPOS_ZONAS
+    if request.method == 'GET':
+        context = {
+            'Tipo_Sexo': TIPO_SEXO,
+            'zonas': ZONAS,
+            'secretario_dados': secretario_obj,
+            'endereco_dados': endereco_obj,       
+            'telefone_dados': telefone_obj,
+            'usuario_dados': usuario_obj,
+            'Tipo_Transacao': 'UPD',
+            'idSecretario': id
+        }
+        return render(request,'gestaoEscolar/secretario/secretario_form.html', context)
+    else:
+        dados = request.POST
+        usuario_dados = {
+            'email': dados['email']
+        }
+        secretario_dados = {
+            'Nome': dados['Nome'], 
+            'Sexo': dados['Sexo'], 
+            'Data_Nascimento': dados['Data_Nascimento'], 
+            'Cpf': dados['Cpf'], 
+            'Rg': dados['Rg'], 
+            'Usuario': secretario_obj.Usuario.id, 
+            'Endereco': secretario_obj.Endereco.id,
+            'Tipo_Pessoa': secretario_obj.Tipo_Pessoa,
+            'Telefone': secretario_obj.Telefone.id,
+            'Escola': secretario_obj.Escola.id
+        }
+        endereco_dados = {
+            'Rua': dados['Rua'], 
+            'Numero': dados['Numero'], 
+            'Bairro': dados['Bairro'], 
+            'Cidade': dados['Cidade'], 
+            'Estado': dados['Estado'], 
+            'Complemento': dados['Complemento'],
+            'Zona': dados['Zona']
+        }
+        telefone_dados = {
+            'Numero1': dados['Numero1'], 
+            'Numero2': dados['Numero2']
+        }
+        secretario_form = SecretarioForm(secretario_dados , instance=secretario_obj)
+        usuario_form = UsuarioEmailForm(usuario_dados, instance=usuario_obj)
+        endereco_form = EnderecoForm(endereco_dados, instance=endereco_obj)
+        telefone_form = TelefoneForm(telefone_dados, instance=telefone_obj)
+        erros_secretario = {}
+        erros_usuario = {}
+        erros_endereco = {}
+        erros_telefone = {}
+
+        if not secretario_form.is_valid():
+            erros_secretario = secretario_form.errors
+
+        if not usuario_form.is_valid():
+            erros_usuario = usuario_form.errors
+
+        if not endereco_form.is_valid():
+            erros_endereco = endereco_form.errors
+
+        if not telefone_form.is_valid():
+            erros_telefone = telefone_form.errors
+
+        if erros_secretario or erros_endereco or erros_telefone or erros_usuario:
+            erros = []
+            for erro in erros_secretario.values():
+                erros.append(erro)
+            for erro in erros_usuario.values():
+                erros.append(erro)               
+            for erro in erros_endereco.values():
+                erros.append(erro)
+            for erro in erros_telefone.values():
+                erros.append(erro)
+            context = {
+                'Tipo_Sexo': TIPO_SEXO,
+                'zonas': ZONAS,
+                'erros':erros, 
+                'secretario_dados':secretario_dados, 
+                'usuario_dados': usuario_dados,
+                'endereco_dados': endereco_dados,
+                'telefone_dados': telefone_dados,
+                'Tipo_Transacao': 'UPD',
+                'idSecretario': id
+            }
+            return render(request,'gestaoEscolar/secretario/secretario_form.html', context)
+        else:
+            try:
+                with transaction.atomic():
+                    usuario = usuario_form.save()
+                    endereco = endereco_form.save()
+                    telefone = telefone_form.save()
+                    secretario = secretario_form.save()
+                    return redirect('secretario_listagem')
+            except Exception as Error:
+                #Erros de servidor (500)
+                print('Erro no servidor: ' + str(Error))
+                Error = 'Erro no servidor'
+                erros = [Error]
+                context = {
+                    'Tipo_Sexo': TIPO_SEXO,
+                    'zonas': ZONAS,
+                    'erros':erros, 
+                    'secretario_dados':secretario_dados, 
+                    'usuario_dados': usuario_dados,
+                    'endereco_dados': endereco_dados,
+                    'telefone_dados': telefone_dados,
+                    'Tipo_Transacao': 'UPD',
+                    'idSecretario': id
                 }
                 return render(request,'gestaoEscolar/secretario/secretario_form.html', context)
