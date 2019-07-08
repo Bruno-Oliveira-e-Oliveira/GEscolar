@@ -106,14 +106,12 @@ class PessoaAbstract(models.Model):
     Cpf = models.CharField('CPF',max_length=11,blank=True, null=True, unique=True)
     Rg = models.CharField('RG',max_length=9, blank=True, null=True, unique=True)
     Usuario = models.OneToOneField(User, on_delete=models.PROTECT, blank=True, null=True)
-
     #Adicionar o campo Tipo Pessoa
     GESTOR = 'G'
     DIRETOR = 'D'
     SECRETARIO = 'S'
     PROFESSOR = 'P'
     ALUNO = 'A'
-
     TIPO_CONTA = (
         (GESTOR, 'Gestor'),
         (DIRETOR, 'Diretor'),
@@ -122,7 +120,12 @@ class PessoaAbstract(models.Model):
         (ALUNO, 'Aluno')
     )
     Tipo_Pessoa = models.CharField('Tipo de Pessoa', max_length=20, choices=TIPO_CONTA)
-
+    ATIVO = True
+    INATIVO = False
+    STATUS = (
+        (ATIVO, 'Ativo'),
+        (INATIVO, 'Inativo')
+    )
     Endereco = models.OneToOneField(
         'Endereco', 
         on_delete = models.PROTECT,

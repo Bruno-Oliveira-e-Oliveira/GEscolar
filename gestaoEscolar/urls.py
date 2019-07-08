@@ -14,6 +14,8 @@ urlpatterns = [
     path('secretarios/', secretario_listagem, name='secretario_listagem'),
     path('secretario/novo/', secretario_novo, name='secretario_novo'),
     path('secretario/alterar/<int:id>', secretario_alterar, name='secretario_alterar'),
+    path('secretario/<int:id>', secretario_consultar, name='secretario_consultar'),
+    path('secretario/deletar/<int:id>', secretario_deletar, name='secretario_deletar'),
 
 
 

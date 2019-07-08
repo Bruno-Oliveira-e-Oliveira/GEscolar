@@ -72,7 +72,7 @@ class UsuarioEmailForm(ModelForm):
 
     class Meta:
         model = User
-        fields = ('email',)
+        fields = ('email','is_active')
 
 
 class EscolaForm(ModelForm):
