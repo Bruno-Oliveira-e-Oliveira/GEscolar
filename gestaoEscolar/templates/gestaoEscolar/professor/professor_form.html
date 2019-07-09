@@ -1,0 +1,296 @@
+{% extends 'projeto/base/base.html' %}
+
+{% block title %}
+    {% if Tipo_Transacao == 'INS' %}
+        Cadastrar novo Professor | GEscolar 
+    {% elif Tipo_Transacao == 'UPD' %}
+        Alterar Professor | GEscolar 
+    {% elif Tipo_Transacao == 'CON' %}
+        Consultar Professor | GEscolar
+    {% elif Tipo_Transacao == 'DEL' %}
+        Apagar Professor | GEscolar
+    {% endif %}
+{% endblock  %}
+
+
+{% block main %}
+
+    {% if Tipo_Transacao == 'INS' %}
+        <h2>Cadastrar Professor</h2> 
+    {% elif Tipo_Transacao == 'UPD' %}
+        <h2>Atualizar dados do Professor</h2> 
+    {% elif Tipo_Transacao == 'CON' %}
+        <h2>Consultar Professor</h2> 
+    {% elif Tipo_Transacao == 'DEL' %}
+        <h2>Apagar Professor</h2>
+    {% endif %}
+
+    {% for erro in erros %}
+        {{ erro }}
+    {% endfor %}
+
+    <form action="
+            {% if Tipo_Transacao == 'INS' %}
+                {% url 'professor_novo' %}
+            {% elif Tipo_Transacao == 'UPD' %}
+                {% url 'professor_alterar' idProfessor %}
+            {% elif Tipo_Transacao == 'CON' %}
+                {% url 'professor_consultar' idProfessor %}
+            {% elif Tipo_Transacao == 'DEL' %}
+                {% url 'professor_deletar' idProfessor %}
+            {% endif %}
+        " method="POST">
+        {% csrf_token %}
+
+        {% if Tipo_Transacao == 'INS' or Tipo_Transacao == 'UPD' %}
+            <fieldset>
+                <div>
+                    <label for="id_Nome">Nome:</label> 
+                    <input type="text" name="Nome" maxlength="50" required id="id_Nome" value='{{ professor_dados.Nome }}'>
+                </div>
+
+                <div>
+                    <label for="id_Sexo">Sexo:</label> 
+                    <select name="Sexo" id="id_Sexo">
+                        {% for sexo in Tipo_Sexo %}
+                            {% if professor_dados.Sexo == sexo.0 %}
+                                <option value="{{ sexo.0 }}" selected>{{ sexo.1 }}</option>
+                            {% else %}
+                                <option value="{{ sexo.0 }}" >{{ sexo.1 }}</option>
+                            {% endif %}
+                        {% endfor %}       
+                    </select>
+                </div>
+
+                <div>
+                    <label for="id_Data_Nascimento">Data de Nascimento:</label> 
+                    <input type="date" name="Data_Nascimento" required id="id_Data_Nascimento" value='{{ professor_dados.Data_Nascimento|date:"Y-m-d" }}'>
+                </div>
+
+                <div>
+                    <label for="id_Cpf">CPF:</label> 
+                    <input type="text" name="Cpf" required maxlength="11" id="id_Cpf" value='{{ professor_dados.Cpf }}'>               
+                </div>
+
+                <div>
+                    <label for="id_Rg">RG:</label> 
+                    <input type="text" name="Rg" maxlength="9" required id="id_Rg" value='{{ professor_dados.Rg }}'>                
+                </div>
+
+                <div>
+                    <label for="id_Titulo">Título:</label>     
+                    <select name="Titulo" id="id_Titulo">
+                        {% for titulo in Tipo_Titulos %}
+                            {% if professor_dados.Titulo == titulo.0 %}
+                                <option value="{{ titulo.0 }}" selected>{{ titulo.1 }}</option>
+                            {% else %}
+                                <option value="{{ titulo.0 }}" >{{ titulo.1 }}</option>
+                            {% endif %}
+                        {% endfor %}       
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="id_Numero1">Telefone 1:</label>
+                    <input type="text" name="Numero1" maxlength="20" required id="id_Numero1" value='{{ telefone_dados.Numero1 }}'>
+                </div>
+
+                <div>
+                    <label for="id_Numero2">Telefone 2:</label>
+                    <input type="text" name="Numero2" maxlength="20" required id="id_Numero2" value='{{ telefone_dados.Numero2 }}'>
+                </div>
+
+                <div>
+                    <label for="id_email">Email:</label> 
+                    <input type="email" name="email" maxlength="254" required id="id_email" value='{{ usuario_dados.email }}'>     
+                </div>
+
+                <div>
+                    <label for="id_ativo">Ativo:</label>
+                    <select name="is_active" id="id_ativo">
+                        {% for status in Tipo_Status %}
+                            {% if usuario_dados.is_active == status.0 %}
+                                <option value="{{ status.0 }}" selected>{{ status.1 }}</option>
+                            {% else %}
+                                <option value="{{ status.0 }}" >{{ status.1 }}</option>
+                            {% endif %}
+                        {% endfor %}       
+                    </select>
+                </div>
+
+            </fieldset>
+
+            <fieldset>
+                <div>
+                    <label for="id_Rua">Rua:</label>
+                    <input type="text" name="Rua" maxlength="40" required id="id_Rua" value='{{ endereco_dados.Rua }}'>
+                </div>
+
+                <div>
+                    <label for="id_Numero">Número:</label>
+                    <input type="number" name="Numero" min="0" required id="id_Numero" value='{{ endereco_dados.Numero }}'>
+                </div>
+
+                <div>
+                    <label for="id_Bairro">Bairro:</label>
+                    <input type="text" name="Bairro" maxlength="40" required id="id_Bairro" value='{{ endereco_dados.Bairro }}'>
+                </div>
+                
+                <div>
+                    <label for="id_Cidade">Cidade:</label>
+                    <input type="text" name="Cidade" maxlength="40" required id="id_Cidade" value='{{ endereco_dados.Cidade }}'>
+                </div>
+                
+                <div>
+                    <label for="id_Estado">Estado:</label>
+                    <input type="text" name="Estado" maxlength="2" required id="id_Estado" value='{{ endereco_dados.Estado }}'>
+                </div>
+
+                <div>
+                    <label for="id_Complemento">Complemento:</label>
+                    <input type="text" name="Complemento" maxlength="100"  id="id_Complemento" value='{{ endereco_dados.Complemento }}'>
+                </div>
+                
+                <div>
+                    <label for="id_Zona">Zona:</label>
+                    <select name="Zona" id="id_Zona">
+                        {% for zona in zonas %}
+                            {% if endereco_dados.Zona == zona.0 %}
+                                <option value="{{ zona.0 }}" selected>{{ zona.1 }}</option>
+                            {% else %}
+                                <option value="{{ zona.0 }}" >{{ zona.1 }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+            </fieldset>
+
+        {% else %}
+
+            <fieldset>
+                <div>
+                    <label for="id_Nome">Nome:</label> 
+                    <input type="text" name="Nome" maxlength="50" disabled required id="id_Nome" value='{{ professor_dados.Nome }}'>
+                </div>
+
+                <div>
+                    <label for="id_Sexo">Sexo:</label> 
+                    <select name="Sexo" id="id_Sexo" disabled >
+                        {% for sexo in Tipo_Sexo %}
+                            {% if professor_dados.Sexo == sexo.0 %}
+                                <option value="{{ sexo.0 }}" selected disabled>{{ sexo.1 }}</option>
+                            {% endif %}
+                        {% endfor %}       
+                    </select>
+                </div>
+
+                <div>
+                    <label for="id_Data_Nascimento">Data de Nascimento:</label> 
+                    <input type="date" name="Data_Nascimento" disabled required id="id_Data_Nascimento" value='{{ professor_dados.Data_Nascimento|date:"Y-m-d" }}'>
+                </div>
+
+                <div>
+                    <label for="id_Cpf">CPF:</label> 
+                    <input type="text" name="Cpf" disabled required maxlength="11" id="id_Cpf" value='{{ professor_dados.Cpf }}'>               
+                </div>
+
+                <div>
+                    <label for="id_Rg">RG:</label> 
+                    <input type="text" name="Rg" maxlength="9" disabled required id="id_Rg" value='{{ professor_dados.Rg }}'>                
+                </div>
+
+                <div>
+                    <label for="id_Titulo">Título:</label>     
+                    <select name="Titulo" id="id_Titulo" disabled>
+                        {% for titulo in Tipo_Titulos %}
+                            {% if professor_dados.Titulo == titulo.0 %}
+                                <option value="{{ titulo.0 }}" selected>{{ titulo.1 }}</option>
+                            {% else %}
+                                <option value="{{ titulo.0 }}" >{{ titulo.1 }}</option>
+                            {% endif %}
+                        {% endfor %}       
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="id_Numero1">Telefone 1:</label>
+                    <input type="text" name="Numero1" maxlength="20" disabled required id="id_Numero1" value='{{ telefone_dados.Numero1 }}'>
+                </div>
+
+                <div>
+                    <label for="id_Numero2">Telefone 2:</label>
+                    <input type="text" name="Numero2" maxlength="20" disabled required id="id_Numero2" value='{{ telefone_dados.Numero2 }}'>
+                </div>
+
+                <div>
+                    <label for="id_email">Email:</label> 
+                    <input type="email" name="email" maxlength="254" disabled required id="id_email" value='{{ usuario_dados.email }}'>     
+                </div>
+
+                <div>
+                    <label for="id_ativo">Ativo:</label>
+                    <select name="is_active" id="id_ativo" disabled>
+                        {% for status in Tipo_Status %}
+                            {% if usuario_dados.is_active == status.0 %}
+                                <option value="{{ status.0 }}" selected>{{ status.1 }}</option>
+                            {% endif %}
+                        {% endfor %}       
+                    </select>
+                </div>
+
+            </fieldset>
+
+            <fieldset>
+                <div>
+                    <label for="id_Rua">Rua:</label>
+                    <input type="text" name="Rua" maxlength="40" disabled required id="id_Rua" value='{{ endereco_dados.Rua }}'>
+                </div>
+
+                <div>
+                    <label for="id_Numero">Número:</label>
+                    <input type="number" name="Numero" min="0" disabled required id="id_Numero" value='{{ endereco_dados.Numero }}'>
+                </div>
+
+                <div>
+                    <label for="id_Bairro">Bairro:</label>
+                    <input type="text" name="Bairro" maxlength="40" disabled required id="id_Bairro" value='{{ endereco_dados.Bairro }}'>
+                </div>
+                
+                <div>
+                    <label for="id_Cidade">Cidade:</label>
+                    <input type="text" name="Cidade" maxlength="40" disabled required id="id_Cidade" value='{{ endereco_dados.Cidade }}'>
+                </div>
+                
+                <div>
+                    <label for="id_Estado">Estado:</label>
+                    <input type="text" name="Estado" maxlength="2" disabled required id="id_Estado" value='{{ endereco_dados.Estado }}'>
+                </div>
+
+                <div>
+                    <label for="id_Complemento">Complemento:</label>
+                    <input type="text" name="Complemento" maxlength="100" disabled  id="id_Complemento" value='{{ endereco_dados.Complemento }}'>
+                </div>
+                
+                <div>
+                    <label for="id_Zona">Zona:</label>
+                    <select name="Zona" id="id_Zona" disabled>
+                        {% for zona in zonas %}
+                            {% if endereco_dados.Zona == zona.0 %}
+                                <option value="{{ zona.0 }}" selected>{{ zona.1 }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+            </fieldset>
+        {% endif %}
+
+        {% if Tipo_Transacao == 'INS' or Tipo_Transacao == 'UPD' %}
+            <button type="submit">Salvar</button>
+        {% elif Tipo_Transacao == 'DEL' %}
+            <button type="submit">Deletar</button>
+        {% endif %}
+
+        <a href="{% url 'professor_listagem' %}"> Voltar</a>
+    </form>
+
+{% endblock  %}

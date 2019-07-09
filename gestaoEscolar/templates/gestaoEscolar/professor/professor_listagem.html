@@ -1,0 +1,76 @@
+{% extends 'projeto/base/base.html' %}
+
+{% block title %}Listagem de Professores | GEscolar{% endblock  %}
+
+
+{% block main %}
+
+    <h2>Listagem de Professores</h2> 
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Alt</th>
+                <th>Exc</Th>
+                <th>Nome</th>
+                <th>Sexo</th>
+                <th>CPF</th>
+                <th>RG</th>
+                <th>Email</th>
+                <th>Título</th>
+                <th>Status</th>
+            </tr>
+            <a href="{% url 'professor_novo' %}">Novo</a>
+        </thead>
+        <tbody>
+            {% for professor in professores %}
+                {% if professores is not None %}
+                    <tr>
+                        <th><a href="{% url 'professor_alterar' professor.id %}">X</a></th>
+                        <th><a href="{% url 'professor_deletar' professor.id %}">X</a></th>
+                        <th><a href="{% url 'professor_consultar' professor.id %}">{{ professor.Nome }}</a></th>
+                        <th>{{ professor.Sexo }}</th>
+                        <th>
+                            {% if professor.Cpf is not None %}
+                                {{ professor.Cpf }}                            
+                            {% endif %} 
+                        </th>
+                        <th>
+                            {% if professor.Rg is not None %}
+                                {{ professor.Rg }}                            
+                            {% endif %} 
+                        </th>
+                        <th>{{ professor.Usuario.email }}</th>
+                        
+                        {% if professor.Titulo == 'E' %}
+                            <th>Especialista</th>
+                        {% elif professor.Titulo == 'M' %}
+                            <th>Mestre</th>
+                        {% elif professor.Titulo == 'D' %}
+                            <th>Doutor</th>
+                        {% endif %}
+
+                        {% if professor.Usuario.is_active %}
+                            <th>Ativo</th>
+                        {% else %}
+                            <th>Inativo</th>
+                        {% endif %}
+                        
+                    </tr>
+                {% else %}
+                    <tr>
+                        <th>X</th>
+                        <th>X</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock  %}

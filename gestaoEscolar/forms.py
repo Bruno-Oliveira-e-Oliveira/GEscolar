@@ -96,6 +96,12 @@ class SecretarioForm(ModelForm):
         fields = '__all__'
 
 
+class ProfessorForm(ModelForm):
+    class Meta:
+        model = Professor
+        fields = '__all__'
+
+
     
 
     # Telefone
