@@ -30,16 +30,8 @@
                         <th><a href="{% url 'professor_deletar' professor.id %}">X</a></th>
                         <th><a href="{% url 'professor_consultar' professor.id %}">{{ professor.Nome }}</a></th>
                         <th>{{ professor.Sexo }}</th>
-                        <th>
-                            {% if professor.Cpf is not None %}
-                                {{ professor.Cpf }}                            
-                            {% endif %} 
-                        </th>
-                        <th>
-                            {% if professor.Rg is not None %}
-                                {{ professor.Rg }}                            
-                            {% endif %} 
-                        </th>
+                        <th>{{ professor.Cpf }}</th>
+                        <th>{{ professor.Rg }}</th>
                         <th>{{ professor.Usuario.email }}</th>
                         
                         {% if professor.Titulo == 'E' %}

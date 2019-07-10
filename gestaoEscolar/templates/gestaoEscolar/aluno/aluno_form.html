@@ -1,0 +1,265 @@
+{% extends 'projeto/base/base.html' %}
+
+{% block title %}
+    {% if Tipo_Transacao == 'INS' %}
+        Cadastrar novo Aluno | GEscolar 
+    {% elif Tipo_Transacao == 'UPD' %}
+        Alterar Aluno | GEscolar 
+    {% elif Tipo_Transacao == 'CON' %}
+        Consultar Aluno | GEscolar
+    {% elif Tipo_Transacao == 'DEL' %}
+        Apagar Aluno | GEscolar
+    {% endif %}
+{% endblock  %}
+
+
+{% block main %}
+
+    {% if Tipo_Transacao == 'INS' %}
+        <h2>Cadastrar Aluno</h2> 
+    {% elif Tipo_Transacao == 'UPD' %}
+        <h2>Atualizar dados do Aluno</h2> 
+    {% elif Tipo_Transacao == 'CON' %}
+        <h2>Consultar Aluno</h2> 
+    {% elif Tipo_Transacao == 'DEL' %}
+        <h2>Apagar Aluno</h2>
+    {% endif %}
+
+    {% for erro in erros %}
+        {{ erro }}
+    {% endfor %}
+
+    <form action="
+            {% if Tipo_Transacao == 'INS' %}
+                {% url 'aluno_novo' %}
+            {% elif Tipo_Transacao == 'UPD' %}
+                {% url 'aluno_alterar' idAluno %}
+            {% elif Tipo_Transacao == 'CON' %}
+                {% url 'aluno_consultar' idAluno %}
+            {% elif Tipo_Transacao == 'DEL' %}
+                {% url 'aluno_deletar' idAluno %}
+            {% endif %}
+        " method="POST">
+        {% csrf_token %}
+
+        {% if Tipo_Transacao == 'INS' or Tipo_Transacao == 'UPD' %}
+            <fieldset>
+                <div>
+                    <label for="id_Nome">Nome:</label> 
+                    <input type="text" name="Nome" maxlength="50" required id="id_Nome" value='{{ aluno_dados.Nome }}'>
+                </div>
+
+                <div>
+                    <label for="id_Sexo">Sexo:</label> 
+                    <select name="Sexo" id="id_Sexo">
+                        {% for sexo in Tipo_Sexo %}
+                            {% if aluno_dados.Sexo == sexo.0 %}
+                                <option value="{{ sexo.0 }}" selected>{{ sexo.1 }}</option>
+                            {% else %}
+                                <option value="{{ sexo.0 }}" >{{ sexo.1 }}</option>
+                            {% endif %}
+                        {% endfor %}       
+                    </select>
+                </div>
+
+                <div>
+                    <label for="id_Data_Nascimento">Data de Nascimento:</label> 
+                    <input type="date" name="Data_Nascimento" required id="id_Data_Nascimento" value='{{ aluno_dados.Data_Nascimento|date:"Y-m-d" }}'>
+                </div>
+
+                <div>
+                    <label for="id_Cidade_Nascimento">Cidade de Nascimento:</label> 
+                    <input type="text" name="Cidade_Nascimento" maxlength="40" required id="id_Cidade_Nascimento" value='{{ aluno_dados.Cidade_Nascimento }}'>                
+                </div>
+
+                <div>
+                    <label for="id_Estado_Nascimento">Estado de Nascimento:</label> 
+                    <input type="text" name="Estado_Nascimento" maxlength="40" required id="id_Estado_Nascimento" value='{{ aluno_dados.Estado_Nascimento }}'>                
+                </div>
+
+                <div>
+                    <label for="id_Nacionalidade">Nacionalidade:</label> 
+                    <input type="text" name="Nacionalidade" maxlength="20" required id="id_Nacionalidade" value='{{ aluno_dados.Nacionalidade }}'>                
+                </div>
+
+                <div>
+                    <label for="id_Cpf">CPF:</label> 
+                    <input type="text" name="Cpf" required maxlength="11" id="id_Cpf" value='{{ aluno_dados.Cpf }}'>               
+                </div>
+
+                <div>
+                    <label for="id_Rg">RG:</label> 
+                    <input type="text" name="Rg" maxlength="9" required id="id_Rg" value='{{ aluno_dados.Rg }}'>                
+                </div>
+
+                <div>
+                    <label for="id_Ra">RA:</label> 
+                    <input type="text" name="Ra" maxlength="20" required id="id_Ra" value='{{ aluno_dados.Ra }}'>                
+                </div>
+
+                <div>
+                    <label for="id_Nome_Pai">Nome do Pai:</label> 
+                    <input type="text" name="Nome_Pai" maxlength="40" required id="id_Nome_Pai" value='{{ aluno_dados.Nome_Pai }}'>                
+                </div>
+
+                <div>
+                    <label for="id_Nome_Mae">Nome da Mae:</label> 
+                    <input type="text" name="Nome_Mae" maxlength="40" required id="id_Nome_Mae" value='{{ aluno_dados.Nome_Mae }}'>                
+                </div>
+                
+                <div>
+                    <label for="id_Numero1">Telefone 1:</label>
+                    <input type="text" name="Numero1" maxlength="20" required id="id_Numero1" value='{{ telefone_dados.Numero1 }}'>
+                </div>
+
+                <div>
+                    <label for="id_Numero2">Telefone 2:</label>
+                    <input type="text" name="Numero2" maxlength="20" required id="id_Numero2" value='{{ telefone_dados.Numero2 }}'>
+                </div>
+
+                <div>
+                    <label for="id_email">Email:</label> 
+                    <input type="email" name="email" maxlength="254" required id="id_email" value='{{ usuario_dados.email }}'>     
+                </div>
+
+                <div>
+                    <label for="id_Turma">Turma:</label> 
+                    <input type="text" name="Turma" maxlength="254" disabled id="id_Turma" value='{{ aluno_dados.Turma }}'>     
+                </div>
+
+                <div>
+                    <label for="id_ativo">Ativo:</label>
+                    <select name="is_active" id="id_ativo">
+                        {% for status in Tipo_Status %}
+                            {% if usuario_dados.is_active == status.0 %}
+                                <option value="{{ status.0 }}" selected>{{ status.1 }}</option>
+                            {% else %}
+                                <option value="{{ status.0 }}" >{{ status.1 }}</option>
+                            {% endif %}
+                        {% endfor %}       
+                    </select>
+                </div>
+
+            </fieldset>
+
+            <fieldset>
+                <div>
+                    <label for="id_Rm">RM:</label> 
+                    <input type="text" name="Rm" disabled  id="id_Rm" value='{{ matricula_dados.Rm }}'>                
+                </div>
+
+                <div>
+                    <label for="id_Data">Data da Matrícula:</label> 
+                    <input type="date" name="Data" disabled id="id_Data" value='{{ matricula_dados.Data|date:"Y-m-d" }}'>
+                </div>
+
+                <div>
+                    <label for="id_Situacao">Status da Matrícula:</label>     
+                    <select name="Situacao" id="id_Situacao">
+                        {% for situacao in Tipo_Situacao %}
+                            {% if matricula_dados.Situacao == situacao.0 %}
+                                <option value="{{ situacao.0 }}" selected>{{ situacao.1 }}</option>
+                            {% else %}
+                                <option value="{{ situacao.0 }}" >{{ situacao.1 }}</option>
+                            {% endif %}
+                        {% endfor %}       
+                    </select>
+                </div>
+            </fieldset>
+
+            <!-- Perfil social -->
+            <fieldset>
+                <div>
+                    <label for="id_Irmao_Gemeo">Irmão Gêmeo:</label>
+                    <input type="text" name="Irmao_Gemeo" maxlength="20" required id="id_Irmao_Gemeo" value='{{ aluno_dados.Irmao_Gemeo }}'>
+                </div>
+
+                <div>
+                    <label for="id_Necessidade_Educacional_Especial">Necessidade Educacional Especial:</label>
+                    <input type="text" name="Necessidade_Educacional_Especial" maxlength="20" required id="id_Necessidade_Educacional_Especial" value='{{ aluno_dados.Necessidade_Educacional_Especial }}'>
+                </div>
+
+                <div>
+                    <label for="id_Superdotacao">Superdotacao:</label>
+                    <input type="text" name="Superdotacao" maxlength="20" required id="id_Superdotacao" value='{{ aluno_dados.Superdotacao }}'>
+                </div>
+
+                <div>
+                    <label for="id_Deficiencia">Deficiencia:</label>
+                    <input type="text" name="Deficiencia" maxlength="20" required id="id_Deficiencia" value='{{ aluno_dados.Deficiencia }}'>
+                </div>
+
+                <div>
+                    <label for="id_Transtorno_Global_do_Desenvolvimento">Transtorno Global do Desenvolvimento:</label>
+                    <input type="text" name="Transtorno_Global_do_Desenvolvimento" maxlength="20" required id="id_Transtorno_Global_do_Desenvolvimento" value='{{ aluno_dados.Transtorno_Global_do_Desenvolvimento }}'>
+                </div>
+
+                <div>
+                    <label for="id_Bolsa_Familia">Bolsa Familia:</label>
+                    <input type="text" name="Bolsa_Familia" maxlength="20" required id="id_Bolsa_Familia" value='{{ aluno_dados.Bolsa_Familia }}'>
+                </div>
+
+            </fieldset>
+
+            <fieldset>
+                <div>
+                    <label for="id_Rua">Rua:</label>
+                    <input type="text" name="Rua" maxlength="40" required id="id_Rua" value='{{ endereco_dados.Rua }}'>
+                </div>
+
+                <div>
+                    <label for="id_Numero">Número:</label>
+                    <input type="number" name="Numero" min="0" required id="id_Numero" value='{{ endereco_dados.Numero }}'>
+                </div>
+
+                <div>
+                    <label for="id_Bairro">Bairro:</label>
+                    <input type="text" name="Bairro" maxlength="40" required id="id_Bairro" value='{{ endereco_dados.Bairro }}'>
+                </div>
+                
+                <div>
+                    <label for="id_Cidade">Cidade:</label>
+                    <input type="text" name="Cidade" maxlength="40" required id="id_Cidade" value='{{ endereco_dados.Cidade }}'>
+                </div>
+                
+                <div>
+                    <label for="id_Estado">Estado:</label>
+                    <input type="text" name="Estado" maxlength="2" required id="id_Estado" value='{{ endereco_dados.Estado }}'>
+                </div>
+
+                <div>
+                    <label for="id_Complemento">Complemento:</label>
+                    <input type="text" name="Complemento" maxlength="100"  id="id_Complemento" value='{{ endereco_dados.Complemento }}'>
+                </div>
+                
+                <div>
+                    <label for="id_Zona">Zona:</label>
+                    <select name="Zona" id="id_Zona">
+                        {% for zona in zonas %}
+                            {% if endereco_dados.Zona == zona.0 %}
+                                <option value="{{ zona.0 }}" selected>{{ zona.1 }}</option>
+                            {% else %}
+                                <option value="{{ zona.0 }}" >{{ zona.1 }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+            </fieldset>
+
+        {% else %}
+
+
+
+
+        {% endif %}
+
+        {% if Tipo_Transacao == 'INS' or Tipo_Transacao == 'UPD' %}
+            <button type="submit">Salvar</button>
+        {% elif Tipo_Transacao == 'DEL' %}
+            <button type="submit">Deletar</button>
+        {% endif %}
+
+        <a href="{% url 'aluno_listagem' %}"> Voltar</a>
+    </form>
+
+{% endblock  %}

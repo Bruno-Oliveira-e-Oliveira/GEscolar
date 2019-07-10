@@ -1047,3 +1047,7 @@ def professor_deletar(request,id):
                 'idProfessor': id
             }
             return render(request,'gestaoEscolar/professor/professor_form.html', context)
+
+
+
+#Criar a matrícula durante o cadastro do aluno

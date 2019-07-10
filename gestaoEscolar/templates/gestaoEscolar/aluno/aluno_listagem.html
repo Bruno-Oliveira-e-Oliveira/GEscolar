@@ -1,0 +1,67 @@
+{% extends 'projeto/base/base.html' %}
+
+{% block title %}Listagem de Alunos | GEscolar{% endblock  %}
+
+
+{% block main %}
+
+    <h2>Listagem de Alunos</h2> 
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Alt</th>
+                <th>Exc</Th>
+                <th>Nome</th>
+                <th>Sexo</th>
+                <th>CPF</th>
+                <th>RG</th>
+                <th>RA</th>
+                <th>RM</th>
+                <th>Email</th>
+                <th>Status da Matrícula</th>
+                <th>Status da Conta</th>
+            </tr>
+            <a href="{% url 'aluno_novo' %}">Novo</a>
+        </thead>
+        <tbody>
+            {% for aluno in alunos %}
+                {% if alunos is not None %}
+                    <tr>
+                        <th><a href="{% url 'aluno_alterar' aluno.id %}">X</a></th>
+                        <th><a href="{% url 'aluno_deletar' aluno.id %}">X</a></th>
+                        <th><a href="{% url 'aluno_consultar' aluno.id %}">{{ aluno.Nome }}</a></th>
+                        <th>{{ aluno.Sexo }}</th>
+                        <th>{{ aluno.Cpf }}</th>
+                        <th>{{ aluno.Rg }}</th>
+                        <th>{{ aluno.Ra }}</th>
+                        <th>{{ aluno.Matricula.Rm }}</th>
+                        <th>{{ aluno.Usuario.email }}</th>
+                        <th>{{ aluno.Matricula.Situacao }}</th>
+                        {% if aluno.Usuario.is_active %}
+                            <th>Ativo</th>
+                        {% else %}
+                            <th>Inativo</th>
+                        {% endif %}
+                        
+                    </tr>
+                {% else %}
+                    <tr>
+                        <th>X</th>
+                        <th>X</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock  %}
