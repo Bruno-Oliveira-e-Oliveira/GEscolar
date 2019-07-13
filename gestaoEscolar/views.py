@@ -1505,3 +1505,78 @@ def aluno_deletar(request,id):
                 'idAluno': id
             }
             return render(request,'gestaoEscolar/aluno/aluno_form.html', context)
+
+
+@login_required
+def ano_listagem(request):
+    pessoa = Pessoa.obter_pessoa(request.user.username,'Pessoa')
+    if (pessoa is not None) and (pessoa.Escola is not None):
+        #Corrigir todas as listagens pegando a Escola da sessão
+        anos = AnoLetivo.objects.filter(Escola=pessoa.Escola).order_by('Ano')
+        context = {'anos': anos}
+        return render(request, 'gestaoEscolar/ano/ano_listagem.html', context)
+    else:
+        #Pessoa sem escola ou nome de usuario vazio 
+        #Tratar depois
+        return HttpResponse('Não foi encontrada nenhuma associação com uma escola')
+
+
+@login_required
+def ano_novo(request):
+    TIPOS_SITUACAO = AnoLetivo.TIPOS_SITUACAO
+    if request.method == 'GET':
+        context = {'Tipo_Transacao': 'INS', 'Tipos_Situacao': TIPOS_SITUACAO}
+        return render(request,'gestaoEscolar/ano/ano_form.html', context)
+    else:
+        dados = request.POST
+        ano_dados = {
+            'Ano': dados['Ano'],
+            'Situacao': dados['Situacao'],
+            'Data_Inicio': dados['Data_Inicio'],
+            'Data_Fim': dados['Data_Fim']
+        }
+        ano_form = AnoLetivoForm(ano_dados)
+        erros_ano = {}
+
+        if not ano_form.is_valid():
+            erros_ano = ano_form.errors
+
+        #Verifica se já existe um ano aberto
+        achou = AnoLetivo.checarSituacao()
+
+        if erros_ano or achou:
+            erros = []
+            for erro in erros_ano.values():
+                erros.append(erro)
+            if achou:
+                erro = 'Não é permitido ter dois anos letivos em aberto'
+                erros.append(erro)
+            context = {
+                'ano_dados':ano_dados, 
+                'erros':erros,  
+                'Tipos_Situacao': TIPOS_SITUACAO,
+                'Tipo_Transacao': 'INS'
+            }
+            return render(request,'gestaoEscolar/ano/ano_form.html', context)
+        else:
+            try:
+                with transaction.atomic():
+                    escola = Escola.objects.get(id=request.session['Escola'])
+                    ano_dados['Escola'] = escola.id
+                    ano_form = AnoLetivoForm(ano_dados)
+                    ano = ano_form.save()
+                    return redirect('ano_listagem')
+            except Exception as Error:
+                #Erros de servidor (500)
+                print('Erro no servidor: ' + str(Error))
+                Error = 'Erro no servidor'
+                erros = [Error]
+                context = {
+                    'ano_dados':ano_dados, 
+                    'erros':erros,  
+                    'Tipos_Situacao': TIPOS_SITUACAO,
+                    'Tipo_Transacao': 'INS'
+                }
+                return render(request,'gestaoEscolar/ano/ano_form.html', context)
+
+

@@ -1,0 +1,126 @@
+{% extends 'projeto/base/base.html' %}
+
+{% block title %}
+    {% if Tipo_Transacao == 'INS' %}
+        Cadastrar novo Ano Letivo | GEscolar 
+    {% elif Tipo_Transacao == 'UPD' %}
+        Alterar Ano Letivo | GEscolar 
+    {% elif Tipo_Transacao == 'CON' %}
+        Consultar Ano Letivo | GEscolar
+    {% elif Tipo_Transacao == 'DEL' %}
+        Apagar Ano Letivo | GEscolar
+    {% endif %}
+{% endblock  %}
+
+
+{% block main %}
+
+    {% if Tipo_Transacao == 'INS' %}
+        <h2>Cadastrar Ano Letivo</h2> 
+    {% elif Tipo_Transacao == 'UPD' %}
+        <h2>Atualizar dados do Ano Letivo</h2> 
+    {% elif Tipo_Transacao == 'CON' %}
+        <h2>Consultar Ano Letivo</h2> 
+    {% elif Tipo_Transacao == 'DEL' %}
+        <h2>Apagar Ano Letivo</h2>
+    {% endif %}
+
+    {% for erro in erros %}
+        {{ erro }}
+    {% endfor %}
+
+    <form action="
+            {% if Tipo_Transacao == 'INS' %}
+                {% url 'ano_novo' %}
+            {% elif Tipo_Transacao == 'UPD' %}
+                {% url 'ano_alterar' idAno %}
+            {% elif Tipo_Transacao == 'CON' %}
+                {% url 'ano_consultar' idAno %}
+            {% elif Tipo_Transacao == 'DEL' %}
+                {% url 'ano_deletar' idAno %}
+            {% endif %}
+        " method="POST">
+        {% csrf_token %}
+
+        {% if Tipo_Transacao == 'INS' or Tipo_Transacao == 'UPD' %}
+            <fieldset>
+                {% if Tipo_Transacao == 'INS' %}
+                    <div>
+                        <label for="id_Numero">Número:</label>
+                        <input type="number" name="Numero" min="0" required id="id_Numero" value='{{ ano_dados.Ano }}'>
+                    </div>
+                {% else %}
+                    <div>
+                        <label for="id_Numero">Número:</label>
+                        <input type="number" name="Numero" min="0" disabled required id="id_Numero" value='{{ ano_dados.Ano }}'>
+                    </div>
+                {% endif %}
+
+                <div>
+                    <label for="id_Situacao">Situacao:</label> 
+                    <select name="Situacao" id="id_Situacao">
+                        {% for situacao in Tipos_Situacao %}
+                            {% if ano_dados.Situacao == situacao.0 %}
+                                <option value="{{ situacao.0 }}" selected>{{ situacao.1 }}</option>
+                            {% else %}
+                                <option value="{{ situacao.0 }}" >{{ situacao.1 }}</option>
+                            {% endif %}
+                        {% endfor %}       
+                    </select>
+                </div>
+
+                <div>
+                    <label for="id_Data_Inicio">Data Inicial:</label> 
+                    <input type="date" name="Data_Inicio" required id="id_Data_Inicio" value='{{ ano_dados.Data_Inicio }}'>
+                </div>
+
+                <div>
+                    <label for="id_Data_Fim">Data Final:</label> 
+                    <input type="date" name="Data_Fim" required id="id_Data_Fim" value='{{ ano_dados.Data_Fim }}'>
+                </div>
+            </fieldset>
+
+        {% else %}
+
+            <fieldset>
+                <div>
+                    <label for="id_Numero">Número:</label>
+                    <input type="number" name="Numero" min="0" disabled required id="id_Numero" value='{{ ano_dados.Ano }}'>
+                </div>
+
+                <div>
+                    <label for="id_Situacao">Situacao:</label> 
+                    <select name="Situacao" id="id_Situacao" disabled>
+                        {% for situacao in Tipos_Situacao %}
+                            {% if ano_dados.Situacao == situacao.0 %}
+                                <option value="{{ situacao.0 }}" selected>{{ situacao.1 }}</option>
+                            {% else %}
+                                <option value="{{ situacao.0 }}" >{{ situacao.1 }}</option>
+                            {% endif %}
+                        {% endfor %}       
+                    </select>
+                </div>
+            
+                <div>
+                    <label for="id_Data_Inicio">Data Inicial:</label> 
+                    <input type="date" name="Data_Inicio" disabled required id="id_Data_Inicio" value='{{ ano_dados.Data_Inicio }}'>
+                </div>
+
+                <div>
+                    <label for="id_Data_Fim">Data Final:</label> 
+                    <input type="date" name="Data_Fim" disabled required id="id_Data_Fim" value='{{ ano_dados.Data_Fim }}'>
+                </div>
+            </fieldset>
+
+        {% endif %}
+
+        {% if Tipo_Transacao == 'INS' or Tipo_Transacao == 'UPD' %}
+            <button type="submit">Salvar</button>
+        {% elif Tipo_Transacao == 'DEL' %}
+            <button type="submit">Deletar</button>
+        {% endif %}
+
+        <a href="{% url 'ano_listagem' %}"> Voltar</a>
+    </form>
+
+{% endblock  %}

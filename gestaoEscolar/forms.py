@@ -112,6 +112,28 @@ class MatriculaForm(ModelForm):
     class Meta:
         model = Matricula
         fields = ('Situacao',)
+
+
+class AnoLetivoForm(ModelForm):
+    class Meta:
+        model = AnoLetivo
+        fields = ('Ano','Data_Inicio', 'Data_Fim',)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        Data_Inicio = cleaned_data.get('Data_Inicio')
+        Data_Fim = cleaned_data.get('Data_Fim')
+        data_atual = timezone.now()
+
+        if Data_Inicio.year() != data_atual.year() or Data_Fim.year() != data_atual.year():
+            raise forms.ValidationError(
+                'As datas inicial e final devem ser do ano atual.'
+            ) 
+        elif  Data_Inicio >  Data_Fim:
+            raise forms.ValidationError(
+                'A data inicial deve ser menor que a data final.'
+            ) 
+
     
 
     # Telefone

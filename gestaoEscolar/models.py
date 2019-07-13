@@ -481,6 +481,13 @@ class AnoLetivo(models.Model):
     Ano = models.PositiveSmallIntegerField(verbose_name='Ano')
     Data_Inicio = models.DateField(verbose_name='Abertura do ano letivo')
     Data_Fim = models.DateField(verbose_name='Fechamento do ano letivo')
+    ABERTO = 'A'
+    FECHADO = 'F'
+    TIPOS_SITUACAO = (
+        (ABERTO,'Aberto'),
+        (FECHADO,'Fechado')
+    )
+    Situacao = models.CharField('Situação', max_length=20, choices=TIPOS_SITUACAO, default=ABERTO)
     Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
 
     class Meta:
@@ -493,6 +500,10 @@ class AnoLetivo(models.Model):
 
     def __str__(self):
         return str(self.Ano)
+
+    def checarSituacao(self):
+        achou = AnoLetivo.objects.filter(Escola=request.session['Escola'], Situacao='A').exists()
+        return achou
 
 
 class Bimestre(models.Model):
