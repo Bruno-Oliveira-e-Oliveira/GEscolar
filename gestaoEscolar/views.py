@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login as login_auth, logout as log
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
+from django.utils import timezone
 from .forms import *
 from .models import *
 
@@ -1049,5 +1050,190 @@ def professor_deletar(request,id):
             return render(request,'gestaoEscolar/professor/professor_form.html', context)
 
 
+@login_required
+def aluno_listagem(request):
+    pessoa = Pessoa.obter_pessoa(request.user.username,'Pessoa')
+    if (pessoa is not None) and (pessoa.Escola is not None):
+        alunos = Aluno.objects.filter(Escola=pessoa.Escola).order_by('Nome')
+        context = {'alunos': alunos}
+        return render(request, 'gestaoEscolar/aluno/aluno_listagem.html', context)
+    else:
+        #Pessoa sem escola ou nome de usuario vazio 
+        #Tratar depois
+        return HttpResponse('Não foi encontrada nenhuma associação com uma escola')
 
-#Criar a matrícula durante o cadastro do aluno
+
+@login_required
+def aluno_novo(request):
+    TIPO_SEXO = Aluno.TIPO_SEXO
+    STATUS = Aluno.STATUS
+    SIM_NAO = Aluno.SIM_NAO
+    TIPOS_DEFICIENCIA = Aluno.TIPOS_DEFICIENCIA
+    TIPOS_TRANSTORNO = Aluno.TIPOS_TRANSTORNO
+    TIPOS_SITUACAO = Matricula.TIPOS_SITUACAO
+    ZONAS = Endereco.TIPOS_ZONAS
+    if request.method == 'GET':
+        context = {
+            'Tipo_Sexo': TIPO_SEXO, 
+            'Tipo_Status': STATUS,
+            'Sim_Nao':  SIM_NAO,
+            'Tipos_Deficiencia': TIPOS_DEFICIENCIA,
+            'Tipos_Transtorno': TIPOS_TRANSTORNO,
+            'Tipos_Situacao': TIPOS_SITUACAO,
+            'zonas': ZONAS, 
+            'Tipo_Transacao': 'INS'
+        }
+        return render(request,'gestaoEscolar/aluno/aluno_form.html', context)
+    else:
+        dados = request.POST
+        usuario_dados = {
+            'email': dados['email'],
+            'is_active': dados['is_active']
+        }
+        aluno_dados = {
+            'Nome': dados['Nome'], 
+            'Sexo': dados['Sexo'], 
+            'Data_Nascimento': dados['Data_Nascimento'], 
+            'Cpf': dados['Cpf'], 
+            'Rg': dados['Rg'],
+            'Ra': dados['Ra'],
+            'Cidade_Nascimento': dados['Cidade_Nascimento'],
+            'Estado_Nascimento': dados['Estado_Nascimento'],
+            'Nacionalidade': dados['Nacionalidade'],
+            'Irmao_Gemeo': dados['Irmao_Gemeo'],
+            'Nome_Pai': dados['Nome_Pai'],
+            'Nome_Mae': dados['Nome_Mae'],
+            'Necessidade_Educacional_Especial': dados['Necessidade_Educacional_Especial'],
+            'Superdotacao': dados['Superdotacao'],
+            'Deficiencia': dados['Deficiencia'],
+            'Transtorno_Global_do_Desenvolvimento': dados['Transtorno_Global_do_Desenvolvimento'],
+            'Bolsa_Familia': dados['Bolsa_Familia'],
+            'Turma': dados['Turma'],
+            'Usuario': '',
+            'Endereco': '',
+            'Tipo_Pessoa': 'A',
+            'Telefone': '',
+            'Escola': ''
+        }
+        matricula_dados = {
+            'Situacao': dados['Situacao']
+        }
+        endereco_dados = {
+            'Rua': dados['Rua'], 
+            'Numero': dados['Numero'], 
+            'Bairro': dados['Bairro'], 
+            'Cidade': dados['Cidade'], 
+            'Estado': dados['Estado'], 
+            'Complemento': dados['Complemento'],
+            'Zona': dados['Zona']
+        }
+        telefone_dados = {
+            'Numero1': dados['Numero1'], 
+            'Numero2': dados['Numero2']
+        }
+        aluno_form = AlunoForm(aluno_dados)
+        usuario_form = UsuarioEmailForm(usuario_dados)
+        matricula_form = MatriculaForm(matricula_dados)
+        endereco_form = EnderecoForm(endereco_dados)
+        telefone_form = TelefoneForm(telefone_dados)
+        erros_aluno = {}
+        erros_usuario = {}
+        erros_matricula = {}
+        erros_endereco = {}
+        erros_telefone = {}
+
+        if not aluno_form.is_valid():
+            erros_aluno = aluno_form.errors
+
+        if not usuario_form.is_valid():
+            erros_usuario = usuario_form.errors
+
+        if not matricula_form.is_valid():
+            erros_matricula = matricula_form.errors
+
+        if not endereco_form.is_valid():
+            erros_endereco = endereco_form.errors
+
+        if not telefone_form.is_valid():
+            erros_telefone = telefone1_form.errors
+
+        if erros_aluno or erros_endereco or erros_telefone or erros_usuario or erros_matricula:
+            erros = []
+            for erro in erros_aluno.values():
+                erros.append(erro)
+            for erro in erros_usuario.values():
+                erros.append(erro)   
+            for erro in erros_matricula.values():
+                erros.append(erro)              
+            for erro in erros_endereco.values():
+                erros.append(erro)
+            for erro in erros_telefone.values():
+                erros.append(erro)
+            context = {
+                'Tipo_Sexo': TIPO_SEXO, 
+                'Tipo_Status': STATUS,
+                'Sim_Nao':  SIM_NAO,
+                'Tipos_Deficiencia': TIPOS_DEFICIENCIA,
+                'Tipos_Transtorno': TIPOS_TRANSTORNO,
+                'Tipos_Situacao': TIPOS_SITUACAO,
+                'zonas': ZONAS, 
+                'erros':erros, 
+                'aluno_dados':aluno_dados, 
+                'usuario_dados': usuario_dados,
+                'matricula_dados': matricula_dados,
+                'endereco_dados': endereco_dados,
+                'telefone_dados': telefone_dados,
+                'Tipo_Transacao': 'INS'
+            }
+            return render(request,'gestaoEscolar/aluno/aluno_form.html', context)
+        else:
+            try:
+                with transaction.atomic():
+                    #Criar o nome de usuario a partir do RG e CPF 
+                    # (fazê-los obrigatórios nos cadastros exceto Diretores)
+                    nome_usuario = dados['Rg'] + dados['Estado']
+                    senha = dados['Cpf']
+                    usuario = User.objects.create_user(
+                        nome_usuario, 
+                        dados['email'], 
+                        senha
+                    )
+                    usuario.is_active = dados['is_active']                
+                    usuario.save()
+                    endereco = endereco_form.save()
+                    telefone = telefone_form.save()
+                    aluno_dados['Usuario'] = usuario.id
+                    aluno_dados['Telefone'] = telefone.id
+                    aluno_dados['Endereco'] = endereco.id
+                    escola = Escola.objects.get(id=request.session['Escola'])
+                    aluno_dados['Escola'] = escola.id
+                    aluno_form = AlunoForm(aluno_dados)
+                    aluno = aluno_form.save()
+                    matricula_dados['Data'] = timezone.now()
+                    matricula_dados['Aluno'] = aluno.id
+                    matricula_dados['Escola'] = escola.id
+                    matricula = Matricula(matricula_dados)
+                    matricula.save()
+                    return redirect('aluno_listagem')
+            except Exception as Error:
+                #Erros de servidor (500)
+                print('Erro no servidor: ' + str(Error))
+                Error = 'Erro no servidor'
+                erros = [Error]
+                context = {
+                    'Tipo_Sexo': TIPO_SEXO, 
+                    'Tipo_Status': STATUS,
+                    'Sim_Nao':  SIM_NAO,
+                    'Tipos_Deficiencia': TIPOS_DEFICIENCIA,
+                    'Tipos_Transtorno': TIPOS_TRANSTORNO,
+                    'Tipos_Situacao': TIPOS_SITUACAO,
+                    'zonas': ZONAS, 
+                    'erros':erros, 
+                    'aluno_dados':aluno_dados, 
+                    'usuario_dados': usuario_dados,
+                    'matricula_dados': matricula_dados,
+                    'endereco_dados': endereco_dados,
+                    'telefone_dados': telefone_dados,
+                    'Tipo_Transacao': 'INS'
+                }
+                return render(request,'gestaoEscolar/aluno/aluno_form.html', context)

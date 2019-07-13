@@ -102,6 +102,16 @@ class ProfessorForm(ModelForm):
         fields = '__all__'
 
 
+class AlunoForm(ModelForm):
+    class Meta:
+        model = Aluno
+        fields = '__all__'
+
+
+class MatriculaForm(ModelForm):
+    class Meta:
+        model = Matricula
+        fields = ('Situacao',)
     
 
     # Telefone

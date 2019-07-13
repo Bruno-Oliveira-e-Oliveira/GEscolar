@@ -156,7 +156,7 @@
                 <div>
                     <label for="id_Situacao">Status da Matrícula:</label>     
                     <select name="Situacao" id="id_Situacao">
-                        {% for situacao in Tipo_Situacao %}
+                        {% for situacao in Tipos_Situacao %}
                             {% if matricula_dados.Situacao == situacao.0 %}
                                 <option value="{{ situacao.0 }}" selected>{{ situacao.1 }}</option>
                             {% else %}
@@ -171,32 +171,82 @@
             <fieldset>
                 <div>
                     <label for="id_Irmao_Gemeo">Irmão Gêmeo:</label>
-                    <input type="text" name="Irmao_Gemeo" maxlength="20" required id="id_Irmao_Gemeo" value='{{ aluno_dados.Irmao_Gemeo }}'>
+                    <select name="Irmao_Gemeo" id="id_Irmao_Gemeo">
+                        {% for op in Sim_Nao %}
+                            {% if aluno_dados.Irmao_Gemeo == op.0 %}
+                                <option value="{{ op.0 }}" selected>{{ op.1 }}</option>
+                            {% else %}
+                                <option value="{{ op.0 }}" >{{ op.1 }}</option>
+                            {% endif %}
+                        {% endfor %}       
+                    </select>
                 </div>
 
                 <div>
                     <label for="id_Necessidade_Educacional_Especial">Necessidade Educacional Especial:</label>
-                    <input type="text" name="Necessidade_Educacional_Especial" maxlength="20" required id="id_Necessidade_Educacional_Especial" value='{{ aluno_dados.Necessidade_Educacional_Especial }}'>
+                    <select name="Necessidade_Educacional_Especial" id="id_Necessidade_Educacional_Especial">
+                        {% for op in Sim_Nao %}
+                            {% if aluno_dados.Necessidade_Educacional_Especial == op.0 %}
+                                <option value="{{ op.0 }}" selected>{{ op.1 }}</option>
+                            {% else %}
+                                <option value="{{ op.0 }}" >{{ op.1 }}</option>
+                            {% endif %}
+                        {% endfor %}       
+                    </select>
                 </div>
 
                 <div>
                     <label for="id_Superdotacao">Superdotacao:</label>
-                    <input type="text" name="Superdotacao" maxlength="20" required id="id_Superdotacao" value='{{ aluno_dados.Superdotacao }}'>
+                    <select name="Superdotacao" id="id_Superdotacao">
+                        {% for op in Sim_Nao %}
+                            {% if aluno_dados.Superdotacao == op.0 %}
+                                <option value="{{ op.0 }}" selected>{{ op.1 }}</option>
+                            {% else %}
+                                <option value="{{ op.0 }}" >{{ op.1 }}</option>
+                            {% endif %}
+                        {% endfor %}  
+                    </select> 
                 </div>
 
                 <div>
                     <label for="id_Deficiencia">Deficiencia:</label>
-                    <input type="text" name="Deficiencia" maxlength="20" required id="id_Deficiencia" value='{{ aluno_dados.Deficiencia }}'>
+                    <select name="Deficiencia" id="id_Deficiencia">
+                        {% for deficiencia in Tipos_Deficiencia %}
+                            {% if aluno_dados.Deficiencia == deficiencia.0 %}
+                                <option value="{{ deficiencia.0 }}" selected>{{ deficiencia.1 }}</option>
+                            {% else %}
+                                <option value="{{ deficiencia.0 }}" >{{ deficiencia.1 }}</option>
+                            {% endif %}
+                        {% endfor %}  
+                    </select> 
                 </div>
 
                 <div>
                     <label for="id_Transtorno_Global_do_Desenvolvimento">Transtorno Global do Desenvolvimento:</label>
                     <input type="text" name="Transtorno_Global_do_Desenvolvimento" maxlength="20" required id="id_Transtorno_Global_do_Desenvolvimento" value='{{ aluno_dados.Transtorno_Global_do_Desenvolvimento }}'>
+                    <select name="Transtorno_Global_do_Desenvolvimento" id="id_Transtorno_Global_do_Desenvolvimento">
+                        {% for transtorno in Tipos_Transtorno %}
+                            {% if aluno_dados.Transtorno_Global_do_Desenvolvimento == transtorno.0 %}
+                                <option value="{{ transtorno.0 }}" selected>{{ transtorno.1 }}</option>
+                            {% else %}
+                                <option value="{{ transtorno.0 }}" >{{ transtorno.1 }}</option>
+                            {% endif %}
+                        {% endfor %}  
+                    </select> 
                 </div>
 
                 <div>
                     <label for="id_Bolsa_Familia">Bolsa Familia:</label>
                     <input type="text" name="Bolsa_Familia" maxlength="20" required id="id_Bolsa_Familia" value='{{ aluno_dados.Bolsa_Familia }}'>
+                    <select name="Bolsa_Familia" id="id_Bolsa_Familia">
+                        {% for op in Sim_Nao %}
+                            {% if aluno_dados.Bolsa_Familia == op.0 %}
+                                <option value="{{ op.0 }}" selected>{{ op.1 }}</option>
+                            {% else %}
+                                <option value="{{ op.0 }}" >{{ op.1 }}</option>
+                            {% endif %}
+                        {% endfor %}  
+                    </select> 
                 </div>
 
             </fieldset>
