@@ -299,7 +299,9 @@ class Aluno(Pessoa):
     Turma = models.ForeignKey(
         'Turma', 
         on_delete=models.PROTECT, 
-        verbose_name='Turma'
+        verbose_name='Turma',
+        blank=True, 
+        null=True
     )
 
     def __str__(self):

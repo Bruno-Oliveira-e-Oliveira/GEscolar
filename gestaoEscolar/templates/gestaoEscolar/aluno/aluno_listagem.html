@@ -18,9 +18,9 @@
                 <th>RG</th>
                 <th>RA</th>
                 <th>RM</th>
-                <th>Email</th>
                 <th>Status da Matrícula</th>
                 <th>Status da Conta</th>
+                <th>Email</th>
             </tr>
             <a href="{% url 'aluno_novo' %}">Novo</a>
         </thead>
@@ -35,14 +35,26 @@
                         <th>{{ aluno.Cpf }}</th>
                         <th>{{ aluno.Rg }}</th>
                         <th>{{ aluno.Ra }}</th>
-                        <th>{{ aluno.Matricula.Rm }}</th>
-                        <th>{{ aluno.Usuario.email }}</th>
-                        <th>{{ aluno.Matricula.Situacao }}</th>
+                        {% for matricula in matriculas %}
+                            {% if matricula.Aluno.id == aluno.id %}
+                                <th>{{ matricula.Rm }}</th>
+                                {% if matricula.Situacao == 'matriculado' %}
+                                    <th>Matriculado</th>
+                                {% elif matricula.Situacao == 'concluido' %}
+                                    <th>Concluído</th>
+                                {% elif matricula.Situacao == 'transferido' %}
+                                    <th>Transferido</th>
+                                {% elif matricula.Situacao == 'trancado' %}
+                                    <th>Trancado</th>
+                                {% endif %} 
+                            {% endif %}
+                        {% endfor %}    
                         {% if aluno.Usuario.is_active %}
                             <th>Ativo</th>
                         {% else %}
                             <th>Inativo</th>
                         {% endif %}
+                        <th>{{ aluno.Usuario.email }}</th>
                         
                     </tr>
                 {% else %}
