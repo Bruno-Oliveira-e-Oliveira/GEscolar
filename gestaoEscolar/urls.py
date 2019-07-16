@@ -29,4 +29,10 @@ urlpatterns = [
     path('aluno/<int:id>', aluno_consultar, name='aluno_consultar'),
     path('aluno/deletar/<int:id>', aluno_deletar, name='aluno_deletar'),
 
+    path('anos/', ano_listagem, name='ano_listagem'),
+    path('ano/novo/', ano_novo, name='ano_novo'),
+    path('ano/alterar/<int:id>', ano_alterar, name='ano_alterar'),
+    path('ano/<int:id>', ano_consultar, name='ano_consultar'),
+    path('ano/deletar/<int:id>', ano_deletar, name='ano_deletar'),
+
 ]

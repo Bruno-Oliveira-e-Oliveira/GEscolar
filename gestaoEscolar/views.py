@@ -1327,7 +1327,6 @@ def aluno_alterar(request,id):
 
         if not aluno_form.is_valid():
             erros_aluno = aluno_form.errors
-            print(aluno_form.errors)
 
         if not matricula_form.is_valid():
             erros_matricula = matricula_form.errors
@@ -1496,6 +1495,7 @@ def aluno_deletar(request,id):
                 'Tipos_Transtorno': TIPOS_TRANSTORNO,
                 'Tipos_Situacao': TIPOS_SITUACAO,
                 'zonas': ZONAS, 
+                'erros':erros, 
                 'aluno_dados': aluno_obj,
                 'matricula_dados': matricula_obj,
                 'endereco_dados': endereco_obj,       
@@ -1580,3 +1580,107 @@ def ano_novo(request):
                 return render(request,'gestaoEscolar/ano/ano_form.html', context)
 
 
+@login_required
+def ano_alterar(request,id):
+    ano_obj = AnoLetivo.objects.get(id=id)
+    TIPOS_SITUACAO = AnoLetivo.TIPOS_SITUACAO
+    if request.method == 'GET':
+        context = {
+            'Tipos_Situacao': TIPOS_SITUACAO,
+            'ano_dados': ano_obj,
+            'Tipo_Transacao': 'UPD',
+            'idAno': id
+        }
+        return render(request,'gestaoEscolar/ano/ano_form.html', context)
+    else:
+        dados = request.POST
+        ano_dados = {
+            'Ano': ano_obj.Ano,
+            'Situacao': dados['Situacao'],
+            'Data_Inicio': dados['Data_Inicio'],
+            'Data_Fim': dados['Data_Fim']
+        }
+        ano_form = AnoForm(ano_dados , instance=ano_obj)
+        erros_ano = {}
+
+        if not ano_form.is_valid():
+            erros_ano = ano_form.errors
+
+        if erros_ano:
+            erros = []
+            for erro in erros_ano.values():
+                erros.append(erro)
+            context = {
+                'Tipos_Situacao': TIPOS_SITUACAO,
+                'erros':erros, 
+                'ano_dados':ano_dados, 
+                'Tipo_Transacao': 'UPD',
+                'idAno': id
+            }
+            return render(request,'gestaoEscolar/ano/ano_form.html', context)
+        else:
+            try:
+                with transaction.atomic():
+                    ano = ano_form.save()
+                    return redirect('ano_listagem')
+            except Exception as Error:
+                #Erros de servidor (500)
+                print('Erro no servidor: ' + str(Error))
+                Error = 'Erro no servidor'
+                erros = [Error]
+                context = {
+                    'Tipos_Situacao': TIPOS_SITUACAO,
+                    'erros':erros, 
+                    'ano_dados':ano_dados, 
+                    'Tipo_Transacao': 'UPD',
+                    'idAno': id
+                }
+                return render(request,'gestaoEscolar/ano/ano_form.html', context)
+
+
+@login_required
+def ano_consultar(request,id):
+    ano_obj = AnoLetivo.objects.get(id=id)
+    TIPOS_SITUACAO = AnoLetivo.TIPOS_SITUACAO
+    context = {
+        'Tipos_Situacao': TIPOS_SITUACAO,
+        'ano_dados': ano_obj,
+        'Tipo_Transacao': 'CON',
+        'idAno': id
+    }
+    return render(request,'gestaoEscolar/ano/ano_form.html', context)
+
+
+@login_required
+def aluno_deletar(request,id):
+    ano_obj = AnoLetivo.objects.get(id=id)
+    TIPOS_SITUACAO = AnoLetivo.TIPOS_SITUACAO
+    if request.method == 'GET':
+        context = {
+            'Tipos_Situacao': TIPOS_SITUACAO,
+            'ano_dados': ano_obj,
+            'Tipo_Transacao': 'CON',
+            'idAno': id
+        }
+        return render(request,'gestaoEscolar/ano/ano_form.html', context)
+    else:
+        try:
+            with transaction.atomic():
+                ano_obj.delete()
+                return redirect('ano_listagem')
+        except Exception as Error:
+            #Erros de servidor (500)
+            print('Erro no servidor: ' + str(Error))
+            Error = 'Erro no servidor'
+            erros = [Error]
+            context = {
+                'Tipos_Situacao': TIPOS_SITUACAO,
+                'erros':erros, 
+                'ano_dados':ano_dados, 
+                'Tipo_Transacao': 'UPD',
+                'idAno': id
+            }
+            return render(request,'gestaoEscolar/ano/ano_form.html', context)
+
+
+#Bimestre
