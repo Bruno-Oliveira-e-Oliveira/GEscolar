@@ -26,9 +26,13 @@
                         <th><a href="{% url 'ano_alterar' ano.id %}">X</a></th>
                         <th><a href="{% url 'ano_deletar' ano.id %}">X</a></th>
                         <th><a href="{% url 'ano_consultar' ano.id %}">{{ ano.Ano }}</a></th>
-                        <th>{{ ano.Situacao }}</th>
+                        {% if ano.Situacao == 'A' %}
+                            <th>Aberto</th>
+                        {% else  %}
+                            <th>Fechado</th>
+                        {% endif  %}
                         <th>{{ ano.Data_Inicio }}</th>
-                        <th>{{ ano.Data_Final }}</th>
+                        <th>{{ ano.Data_Fim }}</th>
                     </tr>
                 {% else %}
                     <tr>

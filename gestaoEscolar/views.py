@@ -1529,11 +1529,13 @@ def ano_novo(request):
         return render(request,'gestaoEscolar/ano/ano_form.html', context)
     else:
         dados = request.POST
+        escola = Escola.objects.get(id=request.session['Escola'])
         ano_dados = {
             'Ano': dados['Ano'],
-            'Situacao': dados['Situacao'],
+            'Situacao': 'A',
             'Data_Inicio': dados['Data_Inicio'],
-            'Data_Fim': dados['Data_Fim']
+            'Data_Fim': dados['Data_Fim'],
+            'Escola': escola.id
         }
         ano_form = AnoLetivoForm(ano_dados)
         erros_ano = {}
@@ -1542,8 +1544,8 @@ def ano_novo(request):
             erros_ano = ano_form.errors
 
         #Verifica se já existe um ano aberto
-        achou = AnoLetivo.checarSituacao()
-
+        achou = AnoLetivo.checarSituacao(request.session['Escola'])
+        
         if erros_ano or achou:
             erros = []
             for erro in erros_ano.values():
@@ -1561,10 +1563,7 @@ def ano_novo(request):
         else:
             try:
                 with transaction.atomic():
-                    escola = Escola.objects.get(id=request.session['Escola'])
-                    ano_dados['Escola'] = escola.id
-                    ano_form = AnoLetivoForm(ano_dados)
-                    ano = ano_form.save()
+                    ano_form.save()
                     return redirect('ano_listagem')
             except Exception as Error:
                 #Erros de servidor (500)
@@ -1600,7 +1599,7 @@ def ano_alterar(request,id):
             'Data_Inicio': dados['Data_Inicio'],
             'Data_Fim': dados['Data_Fim']
         }
-        ano_form = AnoForm(ano_dados , instance=ano_obj)
+        ano_form = AnoLetivoForm(ano_dados , instance=ano_obj)
         erros_ano = {}
 
         if not ano_form.is_valid():
@@ -1652,7 +1651,7 @@ def ano_consultar(request,id):
 
 
 @login_required
-def aluno_deletar(request,id):
+def ano_deletar(request,id):
     ano_obj = AnoLetivo.objects.get(id=id)
     TIPOS_SITUACAO = AnoLetivo.TIPOS_SITUACAO
     if request.method == 'GET':
@@ -1683,4 +1682,15 @@ def aluno_deletar(request,id):
             return render(request,'gestaoEscolar/ano/ano_form.html', context)
 
 
-#Bimestre
+# @login_required
+# def bimestre_listagem(request):
+#     pessoa = Pessoa.obter_pessoa(request.user.username,'Pessoa')
+#     if (pessoa is not None) and (pessoa.Escola is not None):
+#         #Corrigir todas as listagens pegando a Escola da sessão
+#         anos = AnoLetivo.objects.filter(Escola=pessoa.Escola).order_by('Ano')
+#         context = {'anos': anos}
+#         return render(request, 'gestaoEscolar/ano/ano_listagem.html', context)
+#     else:
+#         #Pessoa sem escola ou nome de usuario vazio 
+#         #Tratar depois
+#         return HttpResponse('Não foi encontrada nenhuma associação com uma escola')

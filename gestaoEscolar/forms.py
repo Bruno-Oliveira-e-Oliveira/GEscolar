@@ -1,5 +1,6 @@
 from django.forms import ModelForm
 from django import forms
+from django.utils import timezone
 from .models import (
     Escola,
     Telefone,
@@ -117,7 +118,7 @@ class MatriculaForm(ModelForm):
 class AnoLetivoForm(ModelForm):
     class Meta:
         model = AnoLetivo
-        fields = ('Ano','Data_Inicio', 'Data_Fim',)
+        fields = '__all__'
 
     def clean(self):
         cleaned_data = super().clean()
@@ -125,7 +126,7 @@ class AnoLetivoForm(ModelForm):
         Data_Fim = cleaned_data.get('Data_Fim')
         data_atual = timezone.now()
 
-        if Data_Inicio.year() != data_atual.year() or Data_Fim.year() != data_atual.year():
+        if Data_Inicio.year != data_atual.year or Data_Fim.year != data_atual.year:
             raise forms.ValidationError(
                 'As datas inicial e final devem ser do ano atual.'
             ) 

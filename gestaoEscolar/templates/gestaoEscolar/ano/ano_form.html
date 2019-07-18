@@ -46,37 +46,55 @@
             <fieldset>
                 {% if Tipo_Transacao == 'INS' %}
                     <div>
-                        <label for="id_Numero">Número:</label>
-                        <input type="number" name="Numero" min="0" required id="id_Numero" value='{{ ano_dados.Ano }}'>
+                        <label for="id_Ano">Ano:</label>
+                        <input type="number" name="Ano" min="0" required id="id_Ano" value='{{ ano_dados.Ano }}'>
                     </div>
                 {% else %}
                     <div>
-                        <label for="id_Numero">Número:</label>
-                        <input type="number" name="Numero" min="0" disabled required id="id_Numero" value='{{ ano_dados.Ano }}'>
+                        <label for="id_Ano">Ano:</label>
+                        <input type="number" name="Ano" min="0" disabled required id="id_Ano" value='{{ ano_dados.Ano }}'>
                     </div>
                 {% endif %}
 
-                <div>
-                    <label for="id_Situacao">Situacao:</label> 
-                    <select name="Situacao" id="id_Situacao">
-                        {% for situacao in Tipos_Situacao %}
-                            {% if ano_dados.Situacao == situacao.0 %}
-                                <option value="{{ situacao.0 }}" selected>{{ situacao.1 }}</option>
-                            {% else %}
-                                <option value="{{ situacao.0 }}" >{{ situacao.1 }}</option>
-                            {% endif %}
-                        {% endfor %}       
-                    </select>
-                </div>
+                {% if Tipo_Transacao == 'INS' %}
+                    <div>
+                        <label for="id_Situacao">Situacao:</label> 
+                        <select name="Situacao" id="id_Situacao" disabled>
+                            {% for situacao in Tipos_Situacao %}
+                                {% if ano_dados.Situacao == situacao.0 %}
+                                    <option value="{{ situacao.0 }}" selected>{{ situacao.1 }}</option>
+                                {% else %}
+                                    <option value="{{ situacao.0 }}" >{{ situacao.1 }}</option>
+                                {% endif %}
+                            {% endfor %}       
+                        </select>
+                    </div>
+                {% else %}
+                    <div>
+                        <label for="id_Situacao">Situacao:</label> 
+                        <select name="Situacao" id="id_Situacao">
+                            {% for situacao in Tipos_Situacao %}
+                                {% if ano_dados.Situacao == situacao.0 %}
+                                    <option value="{{ situacao.0 }}" selected>{{ situacao.1 }}</option>
+                                {% else %}
+                                    <option value="{{ situacao.0 }}" >{{ situacao.1 }}</option>
+                                {% endif %}
+                            {% endfor %}       
+                        </select>
+                    </div>
+                {% endif %}
+
+
+
 
                 <div>
                     <label for="id_Data_Inicio">Data Inicial:</label> 
-                    <input type="date" name="Data_Inicio" required id="id_Data_Inicio" value='{{ ano_dados.Data_Inicio }}'>
+                    <input type="date" name="Data_Inicio" required id="id_Data_Inicio" value='{{ ano_dados.Data_Inicio|date:"Y-m-d" }}'>
                 </div>
 
                 <div>
                     <label for="id_Data_Fim">Data Final:</label> 
-                    <input type="date" name="Data_Fim" required id="id_Data_Fim" value='{{ ano_dados.Data_Fim }}'>
+                    <input type="date" name="Data_Fim" required id="id_Data_Fim" value='{{ ano_dados.Data_Fim|date:"Y-m-d" }}'>
                 </div>
             </fieldset>
 
@@ -84,8 +102,8 @@
 
             <fieldset>
                 <div>
-                    <label for="id_Numero">Número:</label>
-                    <input type="number" name="Numero" min="0" disabled required id="id_Numero" value='{{ ano_dados.Ano }}'>
+                    <label for="id_Ano">Número:</label>
+                    <input type="number" name="Ano" min="0" disabled required id="id_Ano" value='{{ ano_dados.Ano }}'>
                 </div>
 
                 <div>
@@ -103,12 +121,12 @@
             
                 <div>
                     <label for="id_Data_Inicio">Data Inicial:</label> 
-                    <input type="date" name="Data_Inicio" disabled required id="id_Data_Inicio" value='{{ ano_dados.Data_Inicio }}'>
+                    <input type="date" name="Data_Inicio" disabled required id="id_Data_Inicio" value='{{ ano_dados.Data_Inicio|date:"Y-m-d" }}'>
                 </div>
 
                 <div>
                     <label for="id_Data_Fim">Data Final:</label> 
-                    <input type="date" name="Data_Fim" disabled required id="id_Data_Fim" value='{{ ano_dados.Data_Fim }}'>
+                    <input type="date" name="Data_Fim" disabled required id="id_Data_Fim" value='{{ ano_dados.Data_Fim|date:"Y-m-d" }}'>
                 </div>
             </fieldset>
 
