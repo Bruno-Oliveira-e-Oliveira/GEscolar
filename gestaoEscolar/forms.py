@@ -164,6 +164,12 @@ class BimestreForm(ModelForm):
             ) 
 
 
+class DisciplinaForm(ModelForm):
+    class Meta:
+        model = Disciplina
+        fields = '__all__'
+
+
 
     
 

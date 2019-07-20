@@ -1,0 +1,72 @@
+{% extends 'projeto/base/base.html' %}
+
+{% block title %}
+    {% if Tipo_Transacao == 'INS' %}
+        Cadastrar novo Disciplina | GEscolar 
+    {% elif Tipo_Transacao == 'UPD' %}
+        Alterar Disciplina | GEscolar 
+    {% elif Tipo_Transacao == 'CON' %}
+        Consultar Disciplina | GEscolar
+    {% elif Tipo_Transacao == 'DEL' %}
+        Apagar Disciplina | GEscolar
+    {% endif %}
+{% endblock  %}
+
+
+{% block main %}
+
+    {% if Tipo_Transacao == 'INS' %}
+        <h2>Cadastrar Disciplina</h2> 
+    {% elif Tipo_Transacao == 'UPD' %}
+        <h2>Atualizar dados do Disciplina</h2> 
+    {% elif Tipo_Transacao == 'CON' %}
+        <h2>Consultar Disciplina</h2> 
+    {% elif Tipo_Transacao == 'DEL' %}
+        <h2>Apagar Disciplina</h2>
+    {% endif %}
+
+    {% for erro in erros %}
+        {{ erro }}
+    {% endfor %}
+
+    <form action="
+            {% if Tipo_Transacao == 'INS' %}
+                {% url 'disciplina_novo' %}
+            {% elif Tipo_Transacao == 'UPD' %}
+                {% url 'disciplina_alterar' idDisciplina %}
+            {% elif Tipo_Transacao == 'CON' %}
+                {% url 'disciplina_consultar' idDisciplina %}
+            {% elif Tipo_Transacao == 'DEL' %}
+                {% url 'disciplina_deletar' idDisciplina %}
+            {% endif %}
+        " method="POST">
+        {% csrf_token %}
+
+        {% if Tipo_Transacao == 'INS' or Tipo_Transacao == 'UPD' %}
+            <fieldset>
+                <div>
+                    <label for="id_Nome">Nome:</label>
+                    <input type="text" name="Nome" maxlength="20" required id="id_Nome" value='{{ disciplina_dados.Nome }}'>
+                </div>
+            </fieldset>
+
+        {% else %}
+
+            <fieldset>
+                <div>
+                    <label for="id_Nome">Nome:</label>
+                    <input type="text" name="Nome" maxlength="20" disabled id="id_Nome" value='{{ disciplina_dados.Nome }}'>
+                </div>
+            </fieldset>
+        {% endif %}
+
+        {% if Tipo_Transacao == 'INS' or Tipo_Transacao == 'UPD' %}
+            <button type="submit">Salvar</button>
+        {% elif Tipo_Transacao == 'DEL' %}
+            <button type="submit">Deletar</button>
+        {% endif %}
+
+        <a href="{% url 'disciplina_listagem' %}"> Voltar</a>
+    </form>
+
+{% endblock  %}

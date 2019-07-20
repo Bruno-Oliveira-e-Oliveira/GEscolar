@@ -4,6 +4,7 @@ from .views import (
     aluno,
     ano,
     bimestre,
+    disciplina,
     escola,
     gestor,
     inicio,
@@ -53,4 +54,11 @@ urlpatterns = [
     path('ano/<int:idA>/bimestre/alterar/<int:idB>', bimestre.bimestre_alterar, name='bimestre_alterar'),
     path('ano/<int:idA>/bimestre/<int:idB>', bimestre.bimestre_consultar, name='bimestre_consultar'),
     path('ano/<int:idA>/bimestre/deletar/<int:idB>', bimestre.bimestre_deletar, name='bimestre_deletar'),
+
+    path('disciplinas/', disciplina.disciplina_listagem, name='disciplina_listagem'),
+    path('disciplina/novo/', disciplina.disciplina_novo, name='disciplina_novo'),
+    path('disciplina/alterar/<int:id>', disciplina.disciplina_alterar, name='disciplina_alterar'),
+    path('disciplina/<int:id>', disciplina.disciplina_consultar, name='disciplina_consultar'),
+    path('disciplina/deletar/<int:id>', disciplina.disciplina_deletar, name='disciplina_deletar'),
+
 ]
