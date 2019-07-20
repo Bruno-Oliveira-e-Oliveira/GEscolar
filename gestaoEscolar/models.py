@@ -531,6 +531,10 @@ class Bimestre(models.Model):
 
     def __str__(self):
         return str(self.AnoLetivo) + ' - ' + str(self.Bimestre)
+    
+    def checarSituacao(escola):
+        achou = Bimestre.objects.filter(Escola=escola, Situacao='A').exists()
+        return achou
 
 
 class Nota(models.Model):

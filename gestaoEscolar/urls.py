@@ -35,4 +35,9 @@ urlpatterns = [
     path('ano/<int:id>', ano_consultar, name='ano_consultar'),
     path('ano/deletar/<int:id>', ano_deletar, name='ano_deletar'),
 
+    path('ano/<int:idA>/bimestres/', bimestre_listagem, name='bimestre_listagem'),
+    path('ano/<int:idA>/bimestre/novo/', bimestre_novo, name='bimestre_novo'),
+    path('ano/<int:idA>/bimestre/alterar/<int:idB>', bimestre_alterar, name='bimestre_alterar'),
+    path('ano/<int:idA>/bimestre/<int:idB>', bimestre_consultar, name='bimestre_consultar'),
+    path('ano/<int:idA>/bimestre/deletar/<int:idB>', bimestre_deletar, name='bimestre_deletar'),
 ]

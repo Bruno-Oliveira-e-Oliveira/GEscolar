@@ -1,14 +1,19 @@
-from django.shortcuts import render, redirect, Http404, HttpResponse
+from django.shortcuts import render, redirect, Http404, HttpResponse, get_object_or_404
 from django.contrib.auth import authenticate, login as login_auth, logout as logout_auth
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
 from django.utils import timezone
+from datetime import datetime
 from .forms import *
 from .models import *
 
 
-# Create your views here.
+def checarPermEscola(objeto, escola):
+    if objeto.Escola == escola:
+        raise PermissionDenied
+
+
 def login(request):
     if request.method == 'GET':
         return render(request,'gestaoEscolar/autenticacao/login_form.html')
@@ -1509,16 +1514,10 @@ def aluno_deletar(request,id):
 
 @login_required
 def ano_listagem(request):
-    pessoa = Pessoa.obter_pessoa(request.user.username,'Pessoa')
-    if (pessoa is not None) and (pessoa.Escola is not None):
-        #Corrigir todas as listagens pegando a Escola da sessão
-        anos = AnoLetivo.objects.filter(Escola=pessoa.Escola).order_by('Ano')
-        context = {'anos': anos}
-        return render(request, 'gestaoEscolar/ano/ano_listagem.html', context)
-    else:
-        #Pessoa sem escola ou nome de usuario vazio 
-        #Tratar depois
-        return HttpResponse('Não foi encontrada nenhuma associação com uma escola')
+    escola = request.session['Escola']
+    anos = AnoLetivo.objects.filter(Escola=escola).order_by('Ano')
+    context = {'anos': anos}
+    return render(request, 'gestaoEscolar/ano/ano_listagem.html', context)
 
 
 @login_required
@@ -1544,8 +1543,8 @@ def ano_novo(request):
             erros_ano = ano_form.errors
 
         #Verifica se já existe um ano aberto
-        achou = AnoLetivo.checarSituacao(request.session['Escola'])
-        
+        achou = AnoLetivo.checarSituacao(escola.id)
+
         if erros_ano or achou:
             erros = []
             for erro in erros_ano.values():
@@ -1581,8 +1580,19 @@ def ano_novo(request):
 
 @login_required
 def ano_alterar(request,id):
-    ano_obj = AnoLetivo.objects.get(id=id)
+    ano_obj = get_object_or_404(AnoLetivo, id=id)
     TIPOS_SITUACAO = AnoLetivo.TIPOS_SITUACAO
+    escola = request.session['Escola']
+    checarPermEscola(ano_obj, escola)
+    if ano_obj.Situacao == 'F':
+        context = {
+            'Tipos_Situacao': TIPOS_SITUACAO,
+            'ano_dados': ano_obj,
+            'Tipo_Transacao': 'CON',
+            'idAno': id
+        }
+        return render(request,'gestaoEscolar/ano/ano_form.html', context)
+
     if request.method == 'GET':
         context = {
             'Tipos_Situacao': TIPOS_SITUACAO,
@@ -1593,11 +1603,16 @@ def ano_alterar(request,id):
         return render(request,'gestaoEscolar/ano/ano_form.html', context)
     else:
         dados = request.POST
+
+        if ano_obj.Situacao == 'A' and dados['Situacao'] == 'F':
+            achou = Bimestre.checarSituacao(escola)
+
         ano_dados = {
             'Ano': ano_obj.Ano,
             'Situacao': dados['Situacao'],
             'Data_Inicio': dados['Data_Inicio'],
-            'Data_Fim': dados['Data_Fim']
+            'Data_Fim': dados['Data_Fim'],
+            'Escola': ano_obj.Escola.id
         }
         ano_form = AnoLetivoForm(ano_dados , instance=ano_obj)
         erros_ano = {}
@@ -1605,9 +1620,12 @@ def ano_alterar(request,id):
         if not ano_form.is_valid():
             erros_ano = ano_form.errors
 
-        if erros_ano:
+        if erros_ano or achou:
             erros = []
             for erro in erros_ano.values():
+                erros.append(erro)
+            if achou:
+                erro = 'Não é possível fechar o ano pois há um bimestre em aberto.'
                 erros.append(erro)
             context = {
                 'Tipos_Situacao': TIPOS_SITUACAO,
@@ -1639,8 +1657,10 @@ def ano_alterar(request,id):
 
 @login_required
 def ano_consultar(request,id):
-    ano_obj = AnoLetivo.objects.get(id=id)
+    ano_obj = get_object_or_404(AnoLetivo, id=id)
     TIPOS_SITUACAO = AnoLetivo.TIPOS_SITUACAO
+    escola = request.session['Escola']
+    checarPermEscola(ano_obj, escola)
     context = {
         'Tipos_Situacao': TIPOS_SITUACAO,
         'ano_dados': ano_obj,
@@ -1652,13 +1672,15 @@ def ano_consultar(request,id):
 
 @login_required
 def ano_deletar(request,id):
-    ano_obj = AnoLetivo.objects.get(id=id)
+    ano_obj = get_object_or_404(AnoLetivo, id=id)
     TIPOS_SITUACAO = AnoLetivo.TIPOS_SITUACAO
+    escola = request.session['Escola']
+    checarPermEscola(ano_obj, escola)
     if request.method == 'GET':
         context = {
             'Tipos_Situacao': TIPOS_SITUACAO,
             'ano_dados': ano_obj,
-            'Tipo_Transacao': 'CON',
+            'Tipo_Transacao': 'DEL',
             'idAno': id
         }
         return render(request,'gestaoEscolar/ano/ano_form.html', context)
@@ -1675,22 +1697,259 @@ def ano_deletar(request,id):
             context = {
                 'Tipos_Situacao': TIPOS_SITUACAO,
                 'erros':erros, 
-                'ano_dados':ano_dados, 
-                'Tipo_Transacao': 'UPD',
+                'ano_dados':ano_obj, 
+                'Tipo_Transacao': 'DEL',
                 'idAno': id
             }
             return render(request,'gestaoEscolar/ano/ano_form.html', context)
 
 
-# @login_required
-# def bimestre_listagem(request):
-#     pessoa = Pessoa.obter_pessoa(request.user.username,'Pessoa')
-#     if (pessoa is not None) and (pessoa.Escola is not None):
-#         #Corrigir todas as listagens pegando a Escola da sessão
-#         anos = AnoLetivo.objects.filter(Escola=pessoa.Escola).order_by('Ano')
-#         context = {'anos': anos}
-#         return render(request, 'gestaoEscolar/ano/ano_listagem.html', context)
-#     else:
-#         #Pessoa sem escola ou nome de usuario vazio 
-#         #Tratar depois
-#         return HttpResponse('Não foi encontrada nenhuma associação com uma escola')
+@login_required
+def bimestre_listagem(request,idA):
+    escola = request.session['Escola']
+    ano = get_object_or_404(AnoLetivo, id=idA)
+    checarPermEscola(ano, escola)
+    bimestres = Bimestre.objects.filter(Escola=escola,AnoLetivo=idA).order_by('Bimestre')
+    context = {'bimestres': bimestres, 'idA': idA}
+    return render(request, 'gestaoEscolar/bimestre/bimestre_listagem.html', context)
+
+
+@login_required
+def bimestre_novo(request,idA):
+    escola = request.session['Escola']
+    ano = get_object_or_404(AnoLetivo, id=idA)
+    checarPermEscola(ano, escola)
+    TIPOS_SITUACAO = Bimestre.TIPOS_SITUACAO
+    if request.method == 'GET':
+        context = {'Tipo_Transacao': 'INS', 'Tipos_Situacao': TIPOS_SITUACAO, 'ano':ano, 'idA': idA}
+        return render(request,'gestaoEscolar/bimestre/bimestre_form.html', context)
+    else:
+        dados = request.POST
+        bimestre_dados = {
+            'AnoLetivo': ano.id,
+            'Bimestre': dados['Bimestre'],
+            'Situacao': 'A',
+            'Data_Inicio': dados['Data_Inicio'],
+            'Data_Limite_Notas': dados['Data_Limite_Notas'],
+            'Data_Fim': dados['Data_Fim'],
+            'Escola': escola
+        }
+        bimestre_form = BimestreForm(bimestre_dados)
+        erros_bimestre = {}
+
+        if not bimestre_form.is_valid():
+            erros_bimestre = bimestre_form.errors
+
+        #Verifica se já existe um bimestre em aberto
+        achou = Bimestre.checarSituacao(escola)
+
+        #Verifica se o ano letivo está aberto
+        fechado = False
+        if ano.Situacao == 'F':
+            fechado = True
+
+        errado = False
+        inicio = datetime.strptime(bimestre_dados['Data_Inicio'], '%Y-%m-%d')
+        fim = datetime.strptime(bimestre_dados['Data_Fim'], '%Y-%m-%d')
+        if inicio.date() < ano.Data_Inicio or fim.date() > ano.Data_Fim:
+            errado = True
+        
+        if erros_bimestre or achou or fechado or errado:
+            erros = []
+            for erro in erros_bimestre.values():
+                erros.append(erro)
+            if achou:
+                erro = 'Não é permitido ter dois bimestres em aberto.'
+                erros.append(erro)
+            if fechado:
+                erro = 'Ano letivo está fechado.'
+                erros.append(erro)
+            if errado:
+                erro = '''As datas inicial e final do bimestre devem estar dentro do período das datas 
+                    de abertura e encerramento do ano letivo ao qual elas pertencem.'''
+                erros.append(erro)
+            context = {
+                'bimestre_dados':bimestre_dados, 
+                'erros':erros,  
+                'Tipos_Situacao': TIPOS_SITUACAO,
+                'ano': ano,
+                'Tipo_Transacao': 'INS',
+                'idA': idA
+            }
+            return render(request,'gestaoEscolar/bimestre/bimestre_form.html', context)
+        else:
+            try:
+                with transaction.atomic():
+                    bimestre_form.save()
+                    return redirect('bimestre_listagem',idA)
+            except Exception as Error:
+                #Erros de servidor (500)
+                print('Erro no servidor: ' + str(Error))
+                Error = 'Erro no servidor'
+                erros = [Error]
+                context = {
+                    'bimestre_dados':bimestre_dados, 
+                    'erros':erros,  
+                    'Tipos_Situacao': TIPOS_SITUACAO,
+                    'ano':ano, 
+                    'Tipo_Transacao': 'INS',
+                    'idA': idA
+                }
+                return render(request,'gestaoEscolar/bimestre/bimestre_form.html', context)
+
+    
+@login_required
+def bimestre_alterar(request,idA,idB):
+    escola = request.session['Escola']
+    bimestre_obj = get_object_or_404(Bimestre, id=idB, Escola=escola)
+    ano = get_object_or_404(AnoLetivo, id=idA)
+    checarPermEscola(ano, escola)
+    checarPermEscola(bimestre_obj, escola)
+    TIPOS_SITUACAO = Bimestre.TIPOS_SITUACAO
+    if bimestre_obj.Situacao == 'F':
+        context = {
+            'Tipos_Situacao': TIPOS_SITUACAO,
+            'bimestre_dados': bimestre_obj,
+            'ano':ano, 
+            'Tipo_Transacao': 'CON',
+            'idBimestre': idB,
+            'idA': idA
+        }
+        return render(request,'gestaoEscolar/bimestre/bimestre_form.html', context)
+
+    if request.method == 'GET':
+        context = {
+            'Tipos_Situacao': TIPOS_SITUACAO,
+            'bimestre_dados': bimestre_obj,
+            'ano':ano, 
+            'Tipo_Transacao': 'UPD',
+            'idBimestre': idB,
+            'idA': idA
+        }
+        return render(request,'gestaoEscolar/bimestre/bimestre_form.html', context)
+    else:
+        dados = request.POST
+
+        #Verificar se todas as notas dos alunos estão fechadas
+        #Caso não estejam impedir o fechamento do bimestre
+    
+        bimestre_dados = {
+            'AnoLetivo': bimestre_obj.AnoLetivo.id,
+            'Bimestre': bimestre_obj.Bimestre,
+            'Situacao': dados['Situacao'],
+            'Data_Inicio': dados['Data_Inicio'],
+            'Data_Limite_Notas': dados['Data_Limite_Notas'],
+            'Data_Fim': dados['Data_Fim'],
+            'Escola': bimestre_obj.Escola.id
+        }
+        bimestre_form = BimestreForm(bimestre_dados , instance=bimestre_obj)
+        erros_bimestre = {}
+
+        if not bimestre_form.is_valid():
+            erros_bimestre = bimestre_form.errors
+            print(erros_bimestre)
+        
+        errado = False
+        inicio = datetime.strptime(bimestre_dados['Data_Inicio'], '%Y-%m-%d')
+        fim = datetime.strptime(bimestre_dados['Data_Fim'], '%Y-%m-%d')
+        if inicio.date() < ano.Data_Inicio or fim.date() > ano.Data_Fim:
+            errado = True
+
+        if erros_bimestre or errado:
+            erros = []
+            for erro in erros_bimestre.values():
+                erros.append(erro)
+            if errado:
+                erro = '''As datas inicial e final do bimestre devem estar dentro do período das datas 
+                    de abertura e encerramento do ano letivo ao qual elas pertencem.'''
+                erros.append(erro)
+            context = {
+                'Tipos_Situacao': TIPOS_SITUACAO,
+                'erros':erros, 
+                'bimestre_dados':bimestre_dados, 
+                'ano':ano,
+                'Tipo_Transacao': 'UPD',
+                'idBimestre': idB,
+                'idA': idA
+            }
+            return render(request,'gestaoEscolar/bimestre/bimestre_form.html', context)
+        else:
+            try:
+                with transaction.atomic():
+                    bimestre_form.save()
+                    return redirect('bimestre_listagem',idA)
+            except Exception as Error:
+                #Erros de servidor (500)
+                print('Erro no servidor: ' + str(Error))
+                Error = 'Erro no servidor'
+                erros = [Error]
+                context = {
+                    'Tipos_Situacao': TIPOS_SITUACAO,
+                    'erros':erros, 
+                    'bimestre_dados':bimestre_dados,
+                    'ano':ano, 
+                    'Tipo_Transacao': 'UPD',
+                    'idBimestre': idB,
+                    'idA': idA
+                }
+                return render(request,'gestaoEscolar/bimestre/bimestre_form.html', context)
+
+
+@login_required
+def bimestre_consultar(request,idA,idB):
+    escola = request.session['Escola']
+    bimestre_obj = get_object_or_404(Bimestre, id=idB, Escola=escola)
+    ano = get_object_or_404(AnoLetivo, id=idA)
+    checarPermEscola(ano, escola)
+    checarPermEscola(bimestre_obj, escola)
+    TIPOS_SITUACAO = Bimestre.TIPOS_SITUACAO
+    context = {
+        'Tipos_Situacao': TIPOS_SITUACAO,
+        'bimestre_dados': bimestre_obj,
+        'ano':ano, 
+        'Tipo_Transacao': 'CON',
+        'idBimestre': idB,
+        'idA': idA
+    }
+    return render(request,'gestaoEscolar/bimestre/bimestre_form.html', context)
+
+
+@login_required
+def bimestre_deletar(request,idA,idB):
+    escola = request.session['Escola']
+    bimestre_obj = get_object_or_404(Bimestre, id=idB, Escola=escola)
+    ano = get_object_or_404(AnoLetivo, id=idA)
+    checarPermEscola(ano, escola)
+    checarPermEscola(bimestre_obj, escola)
+    TIPOS_SITUACAO = Bimestre.TIPOS_SITUACAO
+    if request.method == 'GET':
+        context = {
+            'Tipos_Situacao': TIPOS_SITUACAO,
+            'bimestre_dados': bimestre_obj,
+            'ano':ano, 
+            'Tipo_Transacao': 'DEL',
+            'idBimestre': idB,
+            'idA': idA
+        }
+        return render(request,'gestaoEscolar/bimestre/bimestre_form.html', context)
+    else:
+        try:
+            with transaction.atomic():
+                bimestre_obj.delete()
+                return redirect('bimestre_listagem',idA)
+        except Exception as Error:
+            #Erros de servidor (500)
+            print('Erro no servidor: ' + str(Error))
+            Error = 'Erro no servidor'
+            erros = [Error]
+            context = {
+                'Tipos_Situacao': TIPOS_SITUACAO,
+                'erros':erros, 
+                'bimestre_dados':bimestre_dados, 
+                'ano':ano, 
+                'Tipo_Transacao': 'DEL',
+                'idBimestre': idB,
+                'idA': idA
+            }
+            return render(request,'gestaoEscolar/bimestre/bimestre_form.html', context)
+

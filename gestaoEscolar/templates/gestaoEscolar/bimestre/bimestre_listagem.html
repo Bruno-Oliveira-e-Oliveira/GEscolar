@@ -1,44 +1,42 @@
 {% extends 'projeto/base/base.html' %}
 
-{% block title %}Listagem de Anos Letivos | GEscolar{% endblock  %}
+{% block title %}Listagem de Bimestres | GEscolar{% endblock  %}
 
 
 {% block main %}
 
-    <h2>Listagem de Anos Letivos</h2> 
-    
+    <h2>Listagem de Bimestres</h2> 
+
     <table>
         <thead>
-            <tr>
+            <tr>    
                 <th>Alt</th>
                 <th>Exc</Th>
-                <th>Ano</th>
+                <th>Bimestre</th>
                 <th>Situação</th>
                 <th>Data Inicial</th>
                 <th>Data Final</th>
-                <th>Bimestres</th>
             </tr>
-            <a href="{% url 'ano_novo' %}">Novo</a>
+            <a href="{% url 'bimestre_novo' idA %}">Novo</a>
         </thead>
         <tbody>
-            {% for ano in anos %}
-                {% if anos is not None %}
+            {% for bimestre in bimestres %}
+                {% if bimestres is not None %}
                     <tr>
-                        {% if ano.Situacao == 'A' %}
-                            <th><a href="{% url 'ano_alterar' ano.id %}">X</a></th>
+                        {% if bimestre.Situacao == 'A' %}
+                            <th><a href="{% url 'bimestre_alterar' idA bimestre.id %}">X</a></th>
                         {% else  %}
                             <th>X</th>
                         {% endif  %}
-                        <th><a href="{% url 'ano_deletar' ano.id %}">X</a></th>
-                        <th><a href="{% url 'ano_consultar' ano.id %}">{{ ano.Ano }}</a></th>
-                        {% if ano.Situacao == 'A' %}
+                        <th><a href="{% url 'bimestre_deletar' idA bimestre.id %}">X</a></th>
+                        <th><a href="{% url 'bimestre_consultar' idA bimestre.id %}">{{ bimestre.Bimestre }} - {{ bimestre.AnoLetivo }}</a></th>
+                        {% if bimestre.Situacao == 'A' %}
                             <th>Aberto</th>
                         {% else  %}
                             <th>Fechado</th>
                         {% endif  %}
-                        <th>{{ ano.Data_Inicio }}</th>
-                        <th>{{ ano.Data_Fim }}</th>
-                        <th><a href="{% url 'bimestre_listagem' ano.id %}">X</a></th>
+                        <th>{{ bimestre.Data_Inicio }}</th>
+                        <th>{{ bimestre.Data_Fim }}</th>
                     </tr>
                 {% else %}
                     <tr>
@@ -48,7 +46,6 @@
                         <th></th>
                         <th></th>
                         <th></th>
-                        <th>X</th>
                     </tr>
                 {% endif %}
             {% endfor %}

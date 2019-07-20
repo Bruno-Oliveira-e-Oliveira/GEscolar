@@ -135,6 +135,36 @@ class AnoLetivoForm(ModelForm):
                 'A data inicial deve ser menor que a data final.'
             ) 
 
+
+class BimestreForm(ModelForm):
+    class Meta:
+        model = Bimestre
+        fields = '__all__'
+
+    def clean(self):
+        cleaned_data = super().clean()
+        Data_Inicio = cleaned_data.get('Data_Inicio')
+        Data_Fim = cleaned_data.get('Data_Fim')
+        Data_Limite_Notas = cleaned_data.get('Data_Limite_Notas')
+        Bimestre = cleaned_data.get('Bimestre')
+
+        if Data_Inicio > Data_Fim:
+            raise forms.ValidationError(
+                'A data inicial deve ser menor que a data final.'
+            ) 
+
+        if Data_Limite_Notas < Data_Inicio or Data_Limite_Notas > Data_Fim:
+            raise forms.ValidationError(
+                'A data do limite de entrega das notas devem estar dentro do período da data inicial e a data final.'
+            ) 
+
+        if Bimestre < 1 or Bimestre > 4:
+            raise forms.ValidationError(
+                'O bimestre está fora da faixa de valor permitido (1-4).' 
+            ) 
+
+
+
     
 
     # Telefone
