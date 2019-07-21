@@ -296,13 +296,6 @@ class Aluno(Pessoa):
         default=NAO_POSSUI
     )
     Bolsa_Familia = models.CharField(max_length=10, choices=SIM_NAO, default=SIM)
-    Turma = models.ForeignKey(
-        'Turma', 
-        on_delete=models.PROTECT, 
-        verbose_name='Turma',
-        blank=True, 
-        null=True
-    )
 
     def __str__(self):
         return self.Nome
@@ -414,6 +407,15 @@ class Turma(models.Model):
 
     def matricularNaTurma(self,idAluno):
         pass
+
+
+class Matricula_Turma(models.Model):
+    Turma = models.ForeignKey('Turma', on_delete=models.PROTECT, verbose_name='Turma')
+    Aluno = models.ForeignKey('Aluno', on_delete = models.PROTECT, verbose_name = 'Aluno')
+    Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
+
+    def __str__(self):
+        return self.Turma.Nome + ' - ' + self.Aluno.Nome
 
 
 class Aula(models.Model):
