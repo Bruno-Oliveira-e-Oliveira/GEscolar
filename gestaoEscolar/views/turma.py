@@ -210,3 +210,16 @@ def turma_deletar(request,id):
             }
             return render(request,'gestaoEscolar/turma/turma_form.html', context)
 
+
+@login_required
+def gerenciamento_turma_listagem(request,id):
+    turma = get_object_or_404(Turma, id=id)
+    escola = request.session['Escola']
+    checarPermEscola(turma, escola)
+    alunos = []
+    matriculas = Matricula_Turma.objects.filter(Turma=turma.id,Escola=escola)
+    if len(matriculas) > 0:
+        for matricula in matriculas:
+            alunos.append(matricula.Aluno)
+    context = {'alunos': alunos}
+    return render(request, 'gestaoEscolar/turma/gerenciamento_turma_listagem.html', context)

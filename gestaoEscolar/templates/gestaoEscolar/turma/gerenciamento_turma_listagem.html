@@ -1,0 +1,38 @@
+{% extends 'projeto/base/base.html' %}
+
+{% block title %}Gerenciamento de turma | GEscolar{% endblock  %}
+
+
+{% block main %}
+
+    <h2>Gerenciamento de turma</h2> 
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Exc</Th>
+                <th>Nome do Aluno</th>
+
+            </tr>
+            <a href="#">Matricular um aluno</a>
+            &NonBreakingSpace;
+            <a href="#">Matriz Curricular</a>
+        </thead>
+        <tbody>
+            <!-- {% for turma in turmas %}
+                {% if turmas is not None %}
+                    <tr>
+                        
+                    </tr>
+                {% else %}
+                    <tr>
+                        <th>X</th>
+                        <th></th>
+
+                    </tr>
+                {% endif %} -->
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock  %}

@@ -425,6 +425,17 @@ class Turma(models.Model):
 class Matricula_Turma(models.Model):
     Turma = models.ForeignKey('Turma', on_delete=models.PROTECT, verbose_name='Turma')
     Aluno = models.ForeignKey('Aluno', on_delete = models.PROTECT, verbose_name = 'Aluno')
+    MATRICULADO = 'matriculado'
+    CONCLUIDO = 'concluido'
+    TRANSFERIDO = 'transferido'
+    TRANCADO = 'trancado'
+    TIPOS_SITUACAO = (
+        (MATRICULADO, 'Matriculado'),
+        (CONCLUIDO, 'Concluído'),
+        (TRANSFERIDO, 'Transferido'),
+        (TRANCADO, 'Trancado')
+    )
+    Situacao = models.CharField('Situação', max_length=20, choices=TIPOS_SITUACAO, default=MATRICULADO)
     Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
 
     def __str__(self):

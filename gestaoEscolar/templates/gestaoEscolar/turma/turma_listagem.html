@@ -16,7 +16,7 @@
                 <th>Período</th>
                 <th>Nível de escolaridade</th>
                 <th>Ano</th>
-                <th>Alunos matriculados</th>
+                <th>Gerenciamento</th>
             </tr>
             <a href="{% url 'turma_novo' %}">Novo</a>
         </thead>
@@ -38,7 +38,7 @@
                             <th>Médio</th>
                         {% endif %}
                         <th>{{ turma.AnoLetivo.Ano }}</th>
-                        <th>X</th>
+                        <th><a href="{% url 'gerenciamento_turma_listagem' turma.id %}">X</a></th>
                     </tr>
                 {% else %}
                     <tr>
