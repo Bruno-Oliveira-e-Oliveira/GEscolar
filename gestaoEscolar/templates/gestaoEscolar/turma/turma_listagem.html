@@ -1,0 +1,38 @@
+{% extends 'projeto/base/base.html' %}
+
+{% block title %}Listagem de Disciplinas | GEscolar{% endblock  %}
+
+
+{% block main %}
+
+    <h2>Listagem de Disciplinas</h2> 
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Alt</th>
+                <th>Exc</Th>
+                <th>Nome</th>
+            </tr>
+            <a href="{% url 'disciplina_novo' %}">Novo</a>
+        </thead>
+        <tbody>
+            {% for disciplina in disciplinas %}
+                {% if disciplinas is not None %}
+                    <tr>
+                        <th><a href="{% url 'disciplina_alterar' disciplina.id %}">X</a></th>
+                        <th><a href="{% url 'disciplina_deletar' disciplina.id %}">X</a></th>
+                        <th><a href="{% url 'disciplina_consultar' disciplina.id %}">{{ disciplina.Nome }}</a></th>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <th>X</th>
+                        <th>X</th>
+                        <th></th>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock  %}

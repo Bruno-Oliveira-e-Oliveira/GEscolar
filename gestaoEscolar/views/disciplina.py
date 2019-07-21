@@ -21,7 +21,7 @@ def disciplina_listagem(request):
 @login_required
 def disciplina_novo(request):
     if request.method == 'GET':
-        context = {'Tipo_Transacao': 'INS',}
+        context = {'Tipo_Transacao': 'INS'}
         return render(request,'gestaoEscolar/disciplina/disciplina_form.html', context)
     else:
         dados = request.POST

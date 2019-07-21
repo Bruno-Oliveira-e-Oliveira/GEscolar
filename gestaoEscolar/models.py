@@ -389,12 +389,12 @@ class Turma(models.Model):
     Nivel_Escolaridade = models.CharField('Nível Escolaridade',max_length=20)
     Sala = models.PositiveSmallIntegerField(verbose_name = 'Sala')
     Max_Alunos = models.PositiveSmallIntegerField(verbose_name = 'Máximo de Alunos')
-    AnoLetivo = ''
+    AnoLetivo = models.ForeignKey('AnoLetivo', on_delete = models.PROTECT, verbose_name = 'Ano')
     Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['Nome', 'Escola'], name='unique_Turma'),
+            models.UniqueConstraint(fields=['Nome', 'AnoLetivo', 'Escola'], name='unique_Turma_Ano'),
             models.UniqueConstraint(
                 fields=['Sala','Periodo','Escola'], 
                 name='unique_Sala_Turma_Periodo'
