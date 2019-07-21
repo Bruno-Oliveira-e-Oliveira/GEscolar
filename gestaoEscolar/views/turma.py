@@ -21,50 +21,192 @@ def turma_listagem(request):
 @login_required
 def turma_novo(request):
     TIPO_PERIODO = Turma.TIPO_PERIODO
+    escola = Escola.objects.get(id=request.session['Escola'])
+    NIVEIS_ESCOLARIDADE = escola.retornar_nivel()
+    print(NIVEIS_ESCOLARIDADE)
     if request.method == 'GET':
-        context = {'Tipo_Transacao': 'INS', 'Tipo_Periodo': TIPO_PERIODO}
+        context = {
+            'Tipo_Transacao': 'INS', 
+            'Tipo_Periodo': TIPO_PERIODO, 
+            'Niveis_Escolaridade': NIVEIS_ESCOLARIDADE
+        }
         return render(request,'gestaoEscolar/turma/turma_form.html', context)
-    #PAREI AQUI
-
-
-    
     else:
         dados = request.POST
-        escola = Escola.objects.get(id=request.session['Escola'])
-        disciplina_dados = {
+
+        turma_dados = {
             'Nome': dados['Nome'],
+            'Periodo': dados['Periodo'],
+            'Nivel_Escolaridade': dados['Nivel_Escolaridade'],
+            'Sala': dados['Sala'],
+            'Max_Alunos': dados['Max_Alunos'],
             'Escola': escola.id
         }
-        disciplina_form = DisciplinaForm(disciplina_dados)
-        erros_disciplina = {}
 
-        if not disciplina_form.is_valid():
-            erros_disciplina = disciplina_form.errors
+        #Retorna o ano letivo ativo no momento
+        ano = AnoLetivo.retornar_ativo(escola.id)  
+        if ano is not None:
+            turma_dados['AnoLetivo'] = ano.id
 
-        if erros_disciplina:
+        turma_form = TurmaForm(turma_dados)
+        erros_turma = {}
+
+        if not turma_form.is_valid():
+            erros_turma = turma_form.errors
+        
+        if erros_turma or (ano is None):
             erros = []
-            for erro in erros_disciplina.values():
+            for erro in erros_turma.values():
+                erros.append(erro)
+            if ano is None:
+                erro = 'Não há nenhum ano letivo aberto no momento.'
                 erros.append(erro)
             context = {
-                'disciplina_dados':disciplina_dados, 
+                'turma_dados':turma_dados, 
                 'erros':erros,  
+                'Tipo_Periodo': TIPO_PERIODO, 
+                'Niveis_Escolaridade': NIVEIS_ESCOLARIDADE,
                 'Tipo_Transacao': 'INS'
             }
-            return render(request,'gestaoEscolar/disciplina/disciplina_form.html', context)
+            return render(request,'gestaoEscolar/turma/turma_form.html', context)
         else:
             try:
                 with transaction.atomic():
-                    disciplina_form.save()
-                    return redirect('disciplina_listagem')
+                    turma_form.save()
+                    return redirect('turma_listagem')
             except Exception as Error:
                 #Erros de servidor (500)
                 print('Erro no servidor: ' + str(Error))
                 Error = 'Erro no servidor'
                 erros = [Error]
                 context = {
-                    'disciplina_dados':disciplina_dados, 
+                    'turma_dados':turma_dados, 
                     'erros':erros,  
+                    'Tipo_Periodo': TIPO_PERIODO, 
+                    'Niveis_Escolaridade': NIVEIS_ESCOLARIDADE,
                     'Tipo_Transacao': 'INS'
                 }
-                return render(request,'gestaoEscolar/disciplina/disciplina_form.html', context)
+                return render(request,'gestaoEscolar/turma/turma_form.html', context)
+
+
+@login_required
+def turma_alterar(request,id):
+    turma_obj = get_object_or_404(Turma, id=id)
+    escola = Escola.objects.get(id=request.session['Escola'])
+    checarPermEscola(turma_obj, escola.id)
+    TIPO_PERIODO = Turma.TIPO_PERIODO
+    NIVEIS_ESCOLARIDADE = escola.retornar_nivel()
+    
+    if request.method == 'GET':
+        context = {
+            'turma_dados': turma_obj,
+            'Tipo_Periodo': TIPO_PERIODO, 
+            'Niveis_Escolaridade': NIVEIS_ESCOLARIDADE,
+            'Tipo_Transacao': 'UPD',
+            'idTurma': id
+        }
+        return render(request,'gestaoEscolar/turma/turma_form.html', context)
+    else:
+        dados = request.POST
+        turma_dados = {
+            'Nome': dados['Nome'],
+            'Periodo': dados['Periodo'],
+            'Nivel_Escolaridade': dados['Nivel_Escolaridade'],
+            'Sala': dados['Sala'],
+            'Max_Alunos': dados['Max_Alunos'],
+            'AnoLetivo': turma_obj.AnoLetivo.id,
+            'Escola': turma_obj.Escola.id
+        }
+        turma_form = TurmaForm(turma_dados , instance=turma_obj)
+        erros_turma = {}
+
+        if not turma_form.is_valid():
+            erros_turma = turma_form.errors
+
+        if erros_turma:
+            erros = []
+            for erro in erros_turma.values():
+                erros.append(erro)
+            context = {
+                'erros':erros, 
+                'turma_dados':turma_dados, 
+                'Tipo_Periodo': TIPO_PERIODO, 
+                'Niveis_Escolaridade': NIVEIS_ESCOLARIDADE,
+                'Tipo_Transacao': 'UPD',
+                'idTurma': id
+            }
+            return render(request,'gestaoEscolar/turma/turma_form.html', context)
+        else:
+            try:
+                with transaction.atomic():
+                    turma_form.save()
+                    return redirect('turma_listagem')
+            except Exception as Error:
+                #Erros de servidor (500)
+                print('Erro no servidor: ' + str(Error))
+                Error = 'Erro no servidor'
+                erros = [Error]
+                context = {
+                    'erros':erros, 
+                    'turma_dados':turma_dados, 
+                    'Tipo_Periodo': TIPO_PERIODO, 
+                    'Niveis_Escolaridade': NIVEIS_ESCOLARIDADE,
+                    'Tipo_Transacao': 'UPD',
+                    'idturma': id
+                }
+                return render(request,'gestaoEscolar/turma/turma_form.html', context)
+
+
+@login_required
+def turma_consultar(request,id):
+    turma_obj = get_object_or_404(Turma, id=id)
+    TIPO_PERIODO = Turma.TIPO_PERIODO
+    escola = Escola.objects.get(id=request.session['Escola'])
+    checarPermEscola(turma_obj, escola.id)
+    NIVEIS_ESCOLARIDADE = escola.retornar_nivel()
+    
+    context = {
+        'turma_dados': turma_obj,
+        'Tipo_Periodo': TIPO_PERIODO, 
+        'Niveis_Escolaridade': NIVEIS_ESCOLARIDADE,
+        'Tipo_Transacao': 'CON',
+        'idTurma': id
+    }
+    return render(request,'gestaoEscolar/turma/turma_form.html', context)
+
+
+@login_required
+def turma_deletar(request,id):
+    turma_obj = get_object_or_404(Turma, id=id)
+    TIPO_PERIODO = Turma.TIPO_PERIODO
+    escola = Escola.objects.get(id=request.session['Escola'])
+    checarPermEscola(turma_obj, escola.id)
+    NIVEIS_ESCOLARIDADE = escola.retornar_nivel()
+    if request.method == 'GET':
+        context = {
+            'turma_dados': turma_obj,
+            'Tipo_Periodo': TIPO_PERIODO, 
+            'Niveis_Escolaridade': NIVEIS_ESCOLARIDADE,
+            'Tipo_Transacao': 'DEL',
+            'idTurma': id
+        }
+        return render(request,'gestaoEscolar/turma/turma_form.html', context)
+    else:
+        try:
+            with transaction.atomic():
+                turma_obj.delete()
+                return redirect('turma_listagem')
+        except Exception as Error:
+            #Erros de servidor (500)
+            print('Erro no servidor: ' + str(Error))
+            Error = 'Erro no servidor'
+            erros = [Error]
+            context = {
+                'turma_dados': turma_obj,
+                'Tipo_Periodo': TIPO_PERIODO, 
+                'Niveis_Escolaridade': NIVEIS_ESCOLARIDADE,
+                'Tipo_Transacao': 'DEL',
+                'idTurma': id
+            }
+            return render(request,'gestaoEscolar/turma/turma_form.html', context)
 

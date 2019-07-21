@@ -59,6 +59,13 @@ class Escola(models.Model):
     def __str__(self):
         return self.Nome
 
+    def retornar_nivel(self):
+        if self.Nivel_Escolaridade == 'F':
+            return (('F','Ensino Fundamental'),)
+        elif self.Nivel_Escolaridade == 'M':
+            return (('M','Ensino Médio'),)
+        elif self.Nivel_Escolaridade == 'FM':
+            return (('F','Ensino Fundamental'),('M','Ensino Médio'))
 
 class Telefone(models.Model):
     Numero1 = models.CharField('Número 1',max_length=20)
@@ -382,7 +389,13 @@ class Turma(models.Model):
     Nivel_Escolaridade = models.CharField('Nível Escolaridade',max_length=20)
     Sala = models.PositiveSmallIntegerField(verbose_name = 'Sala')
     Max_Alunos = models.PositiveSmallIntegerField(verbose_name = 'Máximo de Alunos')
-    AnoLetivo = models.ForeignKey('AnoLetivo', on_delete = models.PROTECT, verbose_name = 'Ano')
+    AnoLetivo = models.ForeignKey(
+        'AnoLetivo', 
+        on_delete = models.PROTECT, 
+        verbose_name = 'Ano',
+        blank=True, 
+        null=True
+    )
     Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
 
     class Meta:
@@ -408,7 +421,7 @@ class Turma(models.Model):
     def matricularNaTurma(self,idAluno):
         pass
 
-
+    
 class Matricula_Turma(models.Model):
     Turma = models.ForeignKey('Turma', on_delete=models.PROTECT, verbose_name='Turma')
     Aluno = models.ForeignKey('Aluno', on_delete = models.PROTECT, verbose_name = 'Aluno')
@@ -503,9 +516,16 @@ class AnoLetivo(models.Model):
     def __str__(self):
         return str(self.Ano)
 
-    def checarSituacao(escola):
-        achou = AnoLetivo.objects.filter(Escola=escola, Situacao='A').exists()
+    def checarSituacao(escolaid):
+        achou = AnoLetivo.objects.filter(Escola=escolaid, Situacao='A').exists()
         return achou
+
+    def retornar_ativo(escolaid):
+        ano = AnoLetivo.objects.filter(Escola=escolaid, Situacao='A')
+        if len(ano) == 0:
+            return None
+        else:
+            return ano[0]
 
 
 class Bimestre(models.Model):

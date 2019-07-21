@@ -1,11 +1,11 @@
 {% extends 'projeto/base/base.html' %}
 
-{% block title %}Listagem de Disciplinas | GEscolar{% endblock  %}
+{% block title %}Listagem de Turmas | GEscolar{% endblock  %}
 
 
 {% block main %}
 
-    <h2>Listagem de Disciplinas</h2> 
+    <h2>Listagem de Turmas</h2> 
     
     <table>
         <thead>
@@ -13,22 +13,43 @@
                 <th>Alt</th>
                 <th>Exc</Th>
                 <th>Nome</th>
+                <th>Período</th>
+                <th>Nível de escolaridade</th>
+                <th>Ano</th>
+                <th>Alunos matriculados</th>
             </tr>
-            <a href="{% url 'disciplina_novo' %}">Novo</a>
+            <a href="{% url 'turma_novo' %}">Novo</a>
         </thead>
         <tbody>
-            {% for disciplina in disciplinas %}
-                {% if disciplinas is not None %}
+            {% for turma in turmas %}
+                {% if turmas is not None %}
                     <tr>
-                        <th><a href="{% url 'disciplina_alterar' disciplina.id %}">X</a></th>
-                        <th><a href="{% url 'disciplina_deletar' disciplina.id %}">X</a></th>
-                        <th><a href="{% url 'disciplina_consultar' disciplina.id %}">{{ disciplina.Nome }}</a></th>
+                        <th><a href="{% url 'turma_alterar' turma.id %}">X</a></th>
+                        <th><a href="{% url 'turma_deletar' turma.id %}">X</a></th>
+                        <th><a href="{% url 'turma_consultar' turma.id %}">{{ turma.Nome }}</a></th>
+                        {% if turma.Periodo == 'M' %}
+                            <th>Manhã</th>
+                        {% else %}
+                            <th>Tarde</th>
+                        {% endif %}
+                        {% if turma.Nivel_Escolaridade == 'F' %}
+                            <th>Fundamental</th>
+                        {% else %}
+                            <th>Médio</th>
+                        {% endif %}
+                        <th>{{ turma.AnoLetivo.Ano }}</th>
+                        <th>X</th>
                     </tr>
                 {% else %}
                     <tr>
                         <th>X</th>
                         <th>X</th>
                         <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th>X</th>
                     </tr>
                 {% endif %}
             {% endfor %}

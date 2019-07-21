@@ -2,13 +2,13 @@
 
 {% block title %}
     {% if Tipo_Transacao == 'INS' %}
-        Cadastrar novo Disciplina | GEscolar 
+        Cadastrar novo Turma | GEscolar 
     {% elif Tipo_Transacao == 'UPD' %}
-        Alterar Disciplina | GEscolar 
+        Alterar Turma | GEscolar 
     {% elif Tipo_Transacao == 'CON' %}
-        Consultar Disciplina | GEscolar
+        Consultar Turma | GEscolar
     {% elif Tipo_Transacao == 'DEL' %}
-        Apagar Disciplina | GEscolar
+        Apagar Turma | GEscolar
     {% endif %}
 {% endblock  %}
 
@@ -16,13 +16,13 @@
 {% block main %}
 
     {% if Tipo_Transacao == 'INS' %}
-        <h2>Cadastrar Disciplina</h2> 
+        <h2>Cadastrar Turma</h2> 
     {% elif Tipo_Transacao == 'UPD' %}
-        <h2>Atualizar dados do Disciplina</h2> 
+        <h2>Atualizar dados do Turma</h2> 
     {% elif Tipo_Transacao == 'CON' %}
-        <h2>Consultar Disciplina</h2> 
+        <h2>Consultar Turma</h2> 
     {% elif Tipo_Transacao == 'DEL' %}
-        <h2>Apagar Disciplina</h2>
+        <h2>Apagar Turma</h2>
     {% endif %}
 
     {% for erro in erros %}
@@ -31,13 +31,13 @@
 
     <form action="
             {% if Tipo_Transacao == 'INS' %}
-                {% url 'disciplina_novo' %}
+                {% url 'turma_novo' %}
             {% elif Tipo_Transacao == 'UPD' %}
-                {% url 'disciplina_alterar' idDisciplina %}
+                {% url 'turma_alterar' idTurma %}
             {% elif Tipo_Transacao == 'CON' %}
-                {% url 'disciplina_consultar' idDisciplina %}
+                {% url 'turma_consultar' idTurma %}
             {% elif Tipo_Transacao == 'DEL' %}
-                {% url 'disciplina_deletar' idDisciplina %}
+                {% url 'turma_deletar' idTurma %}
             {% endif %}
         " method="POST">
         {% csrf_token %}
@@ -46,17 +46,101 @@
             <fieldset>
                 <div>
                     <label for="id_Nome">Nome:</label>
-                    <input type="text" name="Nome" maxlength="20" required id="id_Nome" value='{{ disciplina_dados.Nome }}'>
+                    <input type="text" name="Nome" maxlength="20" required id="id_Nome" value='{{ turma_dados.Nome }}'>
                 </div>
+
+                <div>
+                    <label for="id_Periodo">Período:</label>     
+                    <select name="Periodo" id="id_Periodo">
+                        {% for periodo in Tipo_Periodo %}
+                            {% if turma_dados.Periodo == periodo.0 %}
+                                <option value="{{ periodo.0 }}" selected>{{ periodo.1 }}</option>
+                            {% else %}
+                                <option value="{{ periodo.0 }}" >{{ periodo.1 }}</option>
+                            {% endif %}
+                        {% endfor %}       
+                    </select>
+                </div>
+
+                <div>
+                    <label for="id_Nivel_Escolaridade">Nível de escolaridade:</label>     
+                    <select name="Nivel_Escolaridade" id="id_Nivel_Escolaridade">
+                        {% for nivel in Niveis_Escolaridade %}
+                            {% if turma_dados.Nivel_Escolaridade == nivel.0 %}
+                                <option value="{{ nivel.0 }}" selected>{{ nivel.1 }}</option>
+                            {% else %}
+                                <option value="{{ nivel.0 }}" >{{ nivel.1 }}</option>
+                            {% endif %}
+                        {% endfor %}       
+                    </select>
+                </div>
+
+                <div>
+                    <label for="id_Max_Alunos">Número da sala:</label>
+                    <input type="number" name="Sala" min="0" max="4294967295" required id="id_Sala" value='{{ turma_dados.Sala }}'>
+                </div>
+
+                <div>
+                    <label for="id_Max_Alunos">Capacidade de alunos:</label>
+                    <input type="number" name="Max_Alunos" min="0" max="4294967295" required id="id_Max_Alunos" value='{{ turma_dados.Max_Alunos }}'>
+                </div>
+
+                {% if Tipo_Transacao == 'UPD' %}
+                    <div>
+                        <label for="id_AnoLetivo">Ano:</label>
+                        <input type="text" name="AnoLetivo" min="0" max="4294967295" disabled id="id_AnoLetivo" value='{{ turma_dados.AnoLetivo }}'>
+                    </div>
+                {% endif %}
             </fieldset>
 
         {% else %}
-
             <fieldset>
                 <div>
                     <label for="id_Nome">Nome:</label>
-                    <input type="text" name="Nome" maxlength="20" disabled id="id_Nome" value='{{ disciplina_dados.Nome }}'>
+                    <input type="text" name="Nome" maxlength="20" disabled id="id_Nome" value='{{ turma_dados.Nome }}'>
                 </div>
+
+                <div>
+                    <label for="id_Periodo">Período:</label>     
+                    <select name="Periodo" id="id_Periodo" disabled>
+                        {% for periodo in Tipo_Periodo %}
+                            {% if turma_dados.Periodo == periodo.0 %}
+                                <option value="{{ periodo.0 }}" selected>{{ periodo.1 }}</option>
+                            {% else %}
+                                <option value="{{ periodo.0 }}" >{{ periodo.1 }}</option>
+                            {% endif %}
+                        {% endfor %}       
+                    </select>
+                </div>
+
+                <div>
+                    <label for="id_Nivel_Escolaridade">Nível de escolaridade:</label>     
+                    <select name="Nivel_Escolaridade" id="id_Nivel_Escolaridade" disabled>
+                        {% for nivel in Niveis_Escolaridade %}
+                            {% if turma_dados.Nivel_Escolaridade == nivel.0 %}
+                                <option value="{{ nivel.0 }}" selected>{{ nivel.1 }}</option>
+                            {% else %}
+                                <option value="{{ nivel.0 }}" >{{ nivel.1 }}</option>
+                            {% endif %}
+                        {% endfor %}       
+                    </select>
+                </div>
+
+                <div>
+                    <label for="id_Max_Alunos">Número da sala:</label>
+                    <input type="number" name="Sala" min="0" max="4294967295" disabled id="id_Sala" value='{{ turma_dados.Sala }}'>
+                </div>
+
+                <div>
+                    <label for="id_Max_Alunos">Capacidade de alunos:</label>
+                    <input type="number" name="Max_Alunos" min="0" max="4294967295" disabled id="id_Max_Alunos" value='{{ turma_dados.Max_Alunos }}'>
+                </div>
+                
+                <div>
+                    <label for="id_AnoLetivo">Ano:</label>
+                    <input type="text" name="AnoLetivo" min="0" max="4294967295" disabled id="id_AnoLetivo" value='{{ turma_dados.AnoLetivo }}'>
+                </div>
+            
             </fieldset>
         {% endif %}
 
@@ -66,7 +150,7 @@
             <button type="submit">Deletar</button>
         {% endif %}
 
-        <a href="{% url 'disciplina_listagem' %}"> Voltar</a>
+        <a href="{% url 'turma_listagem' %}"> Voltar</a>
     </form>
 
 {% endblock  %}

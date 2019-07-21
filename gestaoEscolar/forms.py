@@ -169,7 +169,10 @@ class DisciplinaForm(ModelForm):
         model = Disciplina
         fields = '__all__'
 
-
+class TurmaForm(ModelForm):
+    class Meta:
+        model = Turma
+        fields = '__all__'
 
     
 

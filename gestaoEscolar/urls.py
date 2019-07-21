@@ -11,6 +11,7 @@ from .views import (
     login,
     professor,
     secretario,
+    turma,
 
 )
 
@@ -60,5 +61,11 @@ urlpatterns = [
     path('disciplina/alterar/<int:id>', disciplina.disciplina_alterar, name='disciplina_alterar'),
     path('disciplina/<int:id>', disciplina.disciplina_consultar, name='disciplina_consultar'),
     path('disciplina/deletar/<int:id>', disciplina.disciplina_deletar, name='disciplina_deletar'),
+
+    path('turmas/', turma.turma_listagem, name='turma_listagem'),
+    path('turma/novo/', turma.turma_novo, name='turma_novo'),
+    path('turma/alterar/<int:id>', turma.turma_alterar, name='turma_alterar'),
+    path('turma/<int:id>', turma.turma_consultar, name='turma_consultar'),
+    path('turma/deletar/<int:id>', turma.turma_deletar, name='turma_deletar'),
 
 ]
