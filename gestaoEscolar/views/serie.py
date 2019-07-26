@@ -9,7 +9,11 @@ from gestaoEscolar.forms import *
 from gestaoEscolar.models import *
 from .permissoes import checarPermEscola
 
+ 
 @login_required
-def gestao_escolar_inicio(request):
-    print('Escola: '+str(request.session['Escola']))
-    return render(request,'gestaoEscolar/inicio/gestaoescolar.html')
+def serie_listagem(request):
+    escola = request.session['Escola']
+    series = Serie.objects.filter(Escola=escola).order_by('Nivel_Escolaridade','Numero')
+    context = {'series': series}
+    return render(request, 'gestaoEscolar/serie/serie_listagem.html', context)
+

@@ -1,0 +1,41 @@
+{% extends 'projeto/base/base.html' %}
+
+{% block title %}Listagem de Séries | GEscolar{% endblock  %}
+
+
+{% block main %}
+
+    <h2>Listagem de Séries</h2> 
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Número</th>
+                <th>Nível de escolaridade</th>
+                <th>Matriz curricular</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for serie in series %}
+                {% if series is not None %}
+                    <tr>
+                        <th>{{ serie.Numero }}</th>
+                        {% if serie.Nivel_Escolaridade == 'F' %}
+                            <th>Fundamental</th>
+                        {% elif serie.Nivel_Escolaridade == 'M' %}
+                            <th>Médio</th>
+                        {% endif  %}
+                        <th><a href="{% url 'matrizItem_listagem' serie.id %}">X</a></th>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th>X</th>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock  %}

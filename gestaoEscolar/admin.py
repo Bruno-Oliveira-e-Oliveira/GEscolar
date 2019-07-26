@@ -18,7 +18,9 @@ from .models import (
     AnoLetivo,
     Bimestre,
     Nota,
-    Matricula_Turma
+    Matricula_Turma,
+    Serie,
+    Matriz_Item
 )
 
 # Register your models here.
@@ -42,6 +44,8 @@ admin.site.register(AnoLetivo)
 admin.site.register(Bimestre)
 admin.site.register(Nota)
 admin.site.register(Matricula_Turma)
+admin.site.register(Serie)
+admin.site.register(Matriz_Item)
 
 
 

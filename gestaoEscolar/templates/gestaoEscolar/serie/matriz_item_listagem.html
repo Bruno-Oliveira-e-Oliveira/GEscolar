@@ -1,0 +1,41 @@
+{% extends 'projeto/base/base.html' %}
+
+{% block title %}Listagem da Matriz curricular | GEscolar{% endblock  %}
+
+
+{% block main %}
+
+    <h2>Listagem da Matriz curricular</h2> 
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Alt</th>
+                <th>Exc</th>
+                <th>Disciplina</th>
+                <th>Carga horária</th>
+            </tr>
+            <a href="{% url 'matrizItem_novo' idSerie %}">Novo</a>
+        </thead>
+        <tbody>
+            {% for matriz_item in matriz_itens %}
+                {% if matriz_itens is not None %}
+                    <th><a href="{% url 'matrizItem_alterar' idS=idSerie idM=matriz_item.id %}">X</a></th>
+                    <th><a href="{% url 'matrizItem_deletar' idS=idSerie idM=matriz_item.id %}">X</a></th>
+                    <th><a href="{% url 'matrizItem_consultar' idS=idSerie idM=matriz_item.id %}">{{ matriz_item.Disciplina.Nome }}</a></th>
+                    <th>{{ matriz_item.Carga }}</th>
+                {% else %}
+                    <tr>
+                        <th>X</th>
+                        <th>X</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{% url 'serie_listagem' %}"> Voltar</a>
+
+{% endblock  %}

@@ -12,9 +12,9 @@ from .views import (
     professor,
     secretario,
     turma,
-
+    serie,
+    matriz
 )
-
 
 urlpatterns = [
     path('', inicio.gestao_escolar_inicio , name='gestao_escolar_inicio'),
@@ -68,4 +68,12 @@ urlpatterns = [
     path('turma/<int:id>', turma.turma_consultar, name='turma_consultar'),
     path('turma/deletar/<int:id>', turma.turma_deletar, name='turma_deletar'),
     path('turma/<int:id>/gestao/',turma.gerenciamento_turma_listagem,name='gerenciamento_turma_listagem'),
+
+    path('series/', serie.serie_listagem, name='serie_listagem'),
+    path('serie/<int:id>/matriz/', matriz.matriz_item_listagem, name='matrizItem_listagem'),
+    path('serie/<int:idS>/matriz/novo/', matriz.matriz_item_novo, name='matrizItem_novo'),
+    path('serie/<int:idS>/matriz/alterar/<int:idM>', matriz.matriz_item_alterar, name='matrizItem_alterar'),
+    path('serie/<int:idS>/matriz/<int:idM>', matriz.matriz_item_consultar, name='matrizItem_consultar'),
+    path('serie/<int:idS>/matriz/deletar/<int:idM>', matriz.matriz_item_deletar, name='matrizItem_deletar'),
+    
 ]

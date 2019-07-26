@@ -23,6 +23,7 @@ def login(request):
                 request.session['Escola'] = pessoa.Escola.id
             else:
                 request.session['Escola'] = ''
+                print('Sem relacionamento com uma escola')
             return redirect('gestao_escolar_inicio')
         else:
             erro = 'Usuário ou senha inválidos'

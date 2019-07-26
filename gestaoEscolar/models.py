@@ -386,7 +386,9 @@ class Turma(models.Model):
         choices = TIPO_PERIODO, 
         default = MANHA
     )
+    #Tirar NVE
     Nivel_Escolaridade = models.CharField('Nível Escolaridade',max_length=20)
+
     Sala = models.PositiveSmallIntegerField(verbose_name = 'Sala')
     Max_Alunos = models.PositiveSmallIntegerField(verbose_name = 'Máximo de Alunos')
     AnoLetivo = models.ForeignKey(
@@ -605,5 +607,68 @@ class Nota(models.Model):
 
     def __str__(self):
         return self.Leciona.Disciplina.Nome + ' - ' + self.Tipo + ' - ' + self.Aluno.Nome
-        
 
+
+class Serie(models.Model):
+    Numero = models.DecimalField(max_digits=1, decimal_places=0, verbose_name='Numero')
+    FUNDAMENTAL = 'F'
+    MEDIO = 'M'
+    NIVEIS_DE_ESCOLARIDADE = (
+        (FUNDAMENTAL,'Ensino Fundamental'),
+        (MEDIO,'Ensino Médio')
+    )
+    Nivel_Escolaridade = models.CharField(
+        'Nível Escolaridade',
+        max_length=20, 
+        choices=NIVEIS_DE_ESCOLARIDADE,
+        default=FUNDAMENTAL
+    )
+    Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')   
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['Numero','Nivel_Escolaridade','Escola'], 
+                name='unique_Serie_NVE_Escola'
+            )
+        ]
+
+    def __str__(self):
+        return str(self.Numero) + ' - ' + self.Nivel_Escolaridade
+
+    def gerar_series(nivel,escola):
+        if nivel == 'F':
+            Serie.gerar_series_fundamental(escola)
+        elif nivel == 'M':
+            Serie.gerar_series_medio(escola)
+        elif nivel == 'FM':
+            Serie.gerar_series_fundamental(escola)
+            Serie.gerar_series_medio(escola)
+
+    def gerar_series_fundamental(escola):
+        for i in range(1,10):
+            serie = Serie(Numero=i, Nivel_Escolaridade='F', Escola=escola)
+            serie.save()
+    
+    def gerar_series_medio(escola):
+        for i in range(1,4):
+            serie = Serie(Numero=i, Nivel_Escolaridade='M', Escola=escola)
+            serie.save()
+
+        
+class Matriz_Item(models.Model):
+    Serie = models.ForeignKey('Serie', on_delete = models.PROTECT, verbose_name = 'Serie') 
+    Disciplina = models.ForeignKey('Disciplina', on_delete = models.PROTECT, verbose_name = 'Disciplina') 
+    Carga = models.DecimalField(max_digits=2, decimal_places=0, verbose_name='Carga')
+    Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')  
+
+    class Meta:
+        constraints = [
+        models.UniqueConstraint(
+            fields=['Serie','Disciplina','Escola'], 
+            name='unique_Serie_Disciplina_Escola'
+        )
+    ]
+
+    def __str__(self):
+        return str(self.Serie.Numero)+' - '+self.Serie.Nivel_Escolaridade+' - '+self.Disciplina.Nome

@@ -90,6 +90,7 @@ def escola_novo(request):
                     escola_form = EscolaForm(escola_dados)
                     escola = escola_form.save()
                     diretor.tornar_diretor(escola,0) 
+                    Serie.gerar_series(escola.Nivel_Escolaridade, escola)
                     return redirect('gestao_escolar_inicio')
             except Exception as Error:
                 #Erros de servidor (500)

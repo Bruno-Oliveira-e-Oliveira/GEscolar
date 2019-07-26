@@ -19,7 +19,8 @@ from .models import (
     Matricula,
     AnoLetivo,
     Bimestre,
-    Nota
+    Nota,
+    Matriz_Item
 )
 from django.contrib.auth.models import User
 
@@ -169,11 +170,17 @@ class DisciplinaForm(ModelForm):
         model = Disciplina
         fields = '__all__'
 
+
 class TurmaForm(ModelForm):
     class Meta:
         model = Turma
         fields = '__all__'
 
+
+class Matriz_Item_Form(ModelForm):
+    class Meta:
+        model = Matriz_Item
+        fields = '__all__'
     
 
     # Telefone
