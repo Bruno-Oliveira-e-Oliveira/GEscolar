@@ -10,14 +10,15 @@ from gestaoEscolar.models import *
 from .permissoes import checarPermEscola
 
 
-
 @login_required
 def bimestre_listagem(request,idA):
     escola = request.session['Escola']
     ano = get_object_or_404(AnoLetivo, id=idA)
     checarPermEscola(ano, escola)
     bimestres = Bimestre.objects.filter(Escola=escola,AnoLetivo=idA).order_by('Bimestre')
-    context = {'bimestres': bimestres, 'idA': idA}
+    #Gera o número do bimestre em sequência
+    numero_bimestre = Bimestre.gerar_bimestre(ano,escola)
+    context = {'bimestres': bimestres, 'numero_bimestre': numero_bimestre, 'idA': idA}
     return render(request, 'gestaoEscolar/bimestre/bimestre_listagem.html', context)
 
 
@@ -27,14 +28,23 @@ def bimestre_novo(request,idA):
     ano = get_object_or_404(AnoLetivo, id=idA)
     checarPermEscola(ano, escola)
     TIPOS_SITUACAO = Bimestre.TIPOS_SITUACAO
+    #Gera o número do bimestre em sequência
+    numero_bimestre = Bimestre.gerar_bimestre(ano,escola)
+
     if request.method == 'GET':
-        context = {'Tipo_Transacao': 'INS', 'Tipos_Situacao': TIPOS_SITUACAO, 'ano':ano, 'idA': idA}
+        context = {
+            'Tipo_Transacao': 'INS', 
+            'Tipos_Situacao': TIPOS_SITUACAO, 
+            'ano':ano, 
+            'numero_bimestre': numero_bimestre,
+            'idA': idA
+        }
         return render(request,'gestaoEscolar/bimestre/bimestre_form.html', context)
     else:
         dados = request.POST
         bimestre_dados = {
             'AnoLetivo': ano.id,
-            'Bimestre': dados['Bimestre'],
+            'Bimestre': numero_bimestre,
             'Situacao': 'A',
             'Data_Inicio': dados['Data_Inicio'],
             'Data_Limite_Notas': dados['Data_Limite_Notas'],

@@ -17,7 +17,9 @@
                 <th>Data Inicial</th>
                 <th>Data Final</th>
             </tr>
-            <a href="{% url 'bimestre_novo' idA %}">Novo</a>
+            {% if numero_bimestre < 5 %}
+                <a href="{% url 'bimestre_novo' idA %}">Novo</a>
+            {% endif  %}
         </thead>
         <tbody>
             {% for bimestre in bimestres %}
@@ -51,5 +53,6 @@
             {% endfor %}
         </tbody>
     </table>
+    <a href="{% url 'ano_listagem' %}"> Voltar</a>
 
 {% endblock  %}

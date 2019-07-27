@@ -567,9 +567,19 @@ class Bimestre(models.Model):
     def __str__(self):
         return str(self.AnoLetivo) + ' - ' + str(self.Bimestre)
     
-    def checarSituacao(escola):
-        achou = Bimestre.objects.filter(Escola=escola, Situacao='A').exists()
+    def checarSituacao(idEscola):
+        achou = Bimestre.objects.filter(Escola=idEscola, Situacao='A').exists()
         return achou
+    
+    def gerar_bimestre(ano,idEscola):
+        bimestres = Bimestre.objects.filter(Escola=idEscola, AnoLetivo=ano.id).order_by('Bimestre')
+        numero = 1
+        if len(bimestres) > 0:
+            for bimestre in bimestres:
+                numero = bimestre.Bimestre
+            numero += 1
+        return int(numero)
+                
 
 
 class Nota(models.Model):
