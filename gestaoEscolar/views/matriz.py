@@ -16,18 +16,18 @@ def matriz_item_listagem(request,id):
     escola = request.session['Escola']
     checarPermEscola(serie, escola)
     matriz_itens = Matriz_Item.objects.filter(Serie=serie.id,Escola=escola).order_by('Disciplina')
-    context = {'matriz_itens': matriz_itens, 'idSerie': id}
+    context = {'matriz_itens': matriz_itens, 'serie': serie}
     return render(request, 'gestaoEscolar/serie/matriz_item_listagem.html', context)
 
 
 @login_required
 def matriz_item_novo(request,idS):
     escola = Escola.objects.get(id=request.session['Escola'])
-    disciplinas = Disciplina.objects.filter(Escola=escola.id)
+    disciplinas = Disciplina.objects.filter(Escola=escola.id).order_by('Nome')
     serie = get_object_or_404(Serie, id=idS)
     checarPermEscola(serie, escola.id)
     if request.method == 'GET':
-        context = {'disciplinas': disciplinas, 'Tipo_Transacao': 'INS', 'idSerie': id}
+        context = {'disciplinas': disciplinas, 'Tipo_Transacao': 'INS', 'serie': serie, 'idSerie': idS}
         return render(request,'gestaoEscolar/serie/matriz_item_form.html', context)
     else:
         dados = request.POST
@@ -51,15 +51,16 @@ def matriz_item_novo(request,idS):
                 'matriz_item_dados':matriz_item_dados, 
                 'erros':erros,  
                 'disciplinas': disciplinas,
+                'serie': serie,
                 'Tipo_Transacao': 'INS',
-                'idSerie': id
+                'idSerie': idS
             }
             return render(request,'gestaoEscolar/serie/matriz_item_form.html', context)
         else:
             try:
                 with transaction.atomic():
                     matriz_item_form.save()
-                    return redirect('matrizItem_listagem')
+                    return redirect('matriz_item_listagem', idS)
             except Exception as Error:
                 #Erros de servidor (500)
                 print('Erro no servidor: ' + str(Error))
@@ -69,8 +70,9 @@ def matriz_item_novo(request,idS):
                     'matriz_item_dados':matriz_item_dados, 
                     'erros':erros,  
                     'disciplinas': disciplinas,
+                    'serie': serie,
                     'Tipo_Transacao': 'INS',
-                    'idSerie': id
+                    'idSerie': idS
                 }
                 return render(request,'gestaoEscolar/serie/matriz_item_form.html', context)
 
@@ -82,7 +84,7 @@ def matriz_item_alterar(request,idS,idM):
     escola = request.session['Escola']
     checarPermEscola(serie, escola)
     checarPermEscola(matriz_item_obj, escola)
-    disciplinas = Disciplina.objects.filter(Escola=escola)
+    disciplinas = Disciplina.objects.filter(Escola=escola).order_by('Nome')
     if request.method == 'GET':
         context = {
             'matriz_item_dados': matriz_item_obj,
@@ -123,7 +125,7 @@ def matriz_item_alterar(request,idS,idM):
             try:
                 with transaction.atomic():
                     matriz_item_form.save()
-                    return redirect('matrizItem_listagem')
+                    return redirect('matriz_item_listagem', idS)
             except Exception as Error:
                 #Erros de servidor (500)
                 print('Erro no servidor: ' + str(Error))
@@ -147,7 +149,7 @@ def matriz_item_consultar(request,idS,idM):
     escola = request.session['Escola']
     checarPermEscola(serie, escola)
     checarPermEscola(matriz_item_obj, escola)
-    disciplinas = Disciplina.objects.filter(Escola=escola)
+    disciplinas = Disciplina.objects.filter(Escola=escola).order_by('Nome')
     context = {
         'matriz_item_dados':matriz_item_obj,
         'disciplinas': disciplinas, 
@@ -165,7 +167,7 @@ def matriz_item_deletar(request,idS,idM):
     escola = request.session['Escola']
     checarPermEscola(serie, escola)
     checarPermEscola(matriz_item_obj, escola)
-    disciplinas = Disciplina.objects.filter(Escola=escola)
+    disciplinas = Disciplina.objects.filter(Escola=escola).order_by('Nome')
     if request.method == 'GET':
         context = {
             'matriz_item_dados':matriz_item_obj,
@@ -179,7 +181,7 @@ def matriz_item_deletar(request,idS,idM):
         try:
             with transaction.atomic():
                 matriz_item_obj.delete()
-                return redirect('matrizItem_listagem')
+                return redirect('matriz_item_listagem', idS)
         except Exception as Error:
             #Erros de servidor (500)
             print('Erro no servidor: ' + str(Error))

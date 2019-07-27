@@ -5,7 +5,15 @@
 
 {% block main %}
 
-    <h2>Listagem da Matriz curricular</h2> 
+    <h2>
+        Listagem da matriz curricular do {{ serie.Numero }}º Ano do 
+        {% if serie.Nivel_Escolaridade == 'F' %}
+            Ensino Fundamental
+        {% else %}
+            Ensino Médio
+        {% endif %}
+    
+    </h2> 
     
     <table>
         <thead>
@@ -15,15 +23,17 @@
                 <th>Disciplina</th>
                 <th>Carga horária</th>
             </tr>
-            <a href="{% url 'matrizItem_novo' idSerie %}">Novo</a>
+            <a href="{% url 'matriz_item_novo' serie.id %}">Novo</a>
         </thead>
         <tbody>
             {% for matriz_item in matriz_itens %}
                 {% if matriz_itens is not None %}
-                    <th><a href="{% url 'matrizItem_alterar' idS=idSerie idM=matriz_item.id %}">X</a></th>
-                    <th><a href="{% url 'matrizItem_deletar' idS=idSerie idM=matriz_item.id %}">X</a></th>
-                    <th><a href="{% url 'matrizItem_consultar' idS=idSerie idM=matriz_item.id %}">{{ matriz_item.Disciplina.Nome }}</a></th>
-                    <th>{{ matriz_item.Carga }}</th>
+                    <tr>
+                        <th><a href="{% url 'matriz_item_alterar' idS=serie.id idM=matriz_item.id %}">X</a></th>
+                        <th><a href="{% url 'matriz_item_deletar' idS=serie.id idM=matriz_item.id %}">X</a></th>
+                        <th><a href="{% url 'matriz_item_consultar' idS=serie.id idM=matriz_item.id %}">{{ matriz_item.Disciplina.Nome }}</a></th>
+                        <th>{{ matriz_item.Carga }}</th>
+                    </tr>
                 {% else %}
                     <tr>
                         <th>X</th>

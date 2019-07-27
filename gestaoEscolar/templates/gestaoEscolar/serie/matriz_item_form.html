@@ -2,13 +2,13 @@
 
 {% block title %}
     {% if Tipo_Transacao == 'INS' %}
-        Cadastrar novo Ano Letivo | GEscolar 
+        Cadastrar novo item da matriz curricular | GEscolar 
     {% elif Tipo_Transacao == 'UPD' %}
-        Alterar Ano Letivo | GEscolar 
+        Alterar item da matriz curricular | GEscolar 
     {% elif Tipo_Transacao == 'CON' %}
-        Consultar Ano Letivo | GEscolar
+        Consultar item da matriz curricular | GEscolar
     {% elif Tipo_Transacao == 'DEL' %}
-        Apagar Ano Letivo | GEscolar
+        Apagar item da matriz curricular | GEscolar
     {% endif %}
 {% endblock  %}
 
@@ -16,13 +16,13 @@
 {% block main %}
 
     {% if Tipo_Transacao == 'INS' %}
-        <h2>Cadastrar Ano Letivo</h2> 
+        <h2>Cadastrar item da matriz curricular</h2> 
     {% elif Tipo_Transacao == 'UPD' %}
-        <h2>Atualizar dados do Ano Letivo</h2> 
+        <h2>Atualizar dados do item da matriz curricular</h2> 
     {% elif Tipo_Transacao == 'CON' %}
-        <h2>Consultar Ano Letivo</h2> 
+        <h2>Consultar item da matriz curricular</h2> 
     {% elif Tipo_Transacao == 'DEL' %}
-        <h2>Apagar Ano Letivo</h2>
+        <h2>Apagar item da matriz curricular</h2>
     {% endif %}
 
     {% for erro in erros %}
@@ -31,103 +31,59 @@
 
     <form action="
             {% if Tipo_Transacao == 'INS' %}
-                {% url 'ano_novo' %}
+                {% url 'matriz_item_novo' idSerie %}
             {% elif Tipo_Transacao == 'UPD' %}
-                {% url 'ano_alterar' idAno %}
+                {% url 'matriz_item_alterar' idSerie idMatriz_Item %}
             {% elif Tipo_Transacao == 'CON' %}
-                {% url 'ano_consultar' idAno %}
+                {% url 'matriz_item_consultar' idSerie idMatriz_Item %}
             {% elif Tipo_Transacao == 'DEL' %}
-                {% url 'ano_deletar' idAno %}
+                {% url 'matriz_item_deletar' idSerie idMatriz_Item %}
             {% endif %}
         " method="POST">
         {% csrf_token %}
 
         {% if Tipo_Transacao == 'INS' or Tipo_Transacao == 'UPD' %}
             <fieldset>
-                {% if Tipo_Transacao == 'INS' %}
-                    <div>
-                        <label for="id_Ano">Ano:</label>
-                        <input type="number" name="Ano" min="0" required id="id_Ano" value='{{ ano_dados.Ano }}'>
-                    </div>
-                {% else %}
-                    <div>
-                        <label for="id_Ano">Ano:</label>
-                        <input type="number" name="Ano" min="0" disabled required id="id_Ano" value='{{ ano_dados.Ano }}'>
-                    </div>
-                {% endif %}
-
-                {% if Tipo_Transacao == 'INS' %}
-                    <div>
-                        <label for="id_Situacao">Situação:</label> 
-                        <select name="Situacao" id="id_Situacao" disabled>
-                            {% for situacao in Tipos_Situacao %}
-                                {% if ano_dados.Situacao == situacao.0 %}
-                                    <option value="{{ situacao.0 }}" selected>{{ situacao.1 }}</option>
-                                {% else %}
-                                    <option value="{{ situacao.0 }}" >{{ situacao.1 }}</option>
-                                {% endif %}
-                            {% endfor %}       
-                        </select>
-                    </div>
-                {% else %}
-                    <div>
-                        <label for="id_Situacao">Situação:</label> 
-                        <select name="Situacao" id="id_Situacao">
-                            {% for situacao in Tipos_Situacao %}
-                                {% if ano_dados.Situacao == situacao.0 %}
-                                    <option value="{{ situacao.0 }}" selected>{{ situacao.1 }}</option>
-                                {% else %}
-                                    <option value="{{ situacao.0 }}" >{{ situacao.1 }}</option>
-                                {% endif %}
-                            {% endfor %}       
-                        </select>
-                    </div>
-                {% endif %}
-
-
-
-
                 <div>
-                    <label for="id_Data_Inicio">Data Inicial:</label> 
-                    <input type="date" name="Data_Inicio" required id="id_Data_Inicio" value='{{ ano_dados.Data_Inicio|date:"Y-m-d" }}'>
-                </div>
-
-                <div>
-                    <label for="id_Data_Fim">Data Final:</label> 
-                    <input type="date" name="Data_Fim" required id="id_Data_Fim" value='{{ ano_dados.Data_Fim|date:"Y-m-d" }}'>
-                </div>
-            </fieldset>
-
-        {% else %}
-
-            <fieldset>
-                <div>
-                    <label for="id_Ano">Número:</label>
-                    <input type="number" name="Ano" min="0" disabled required id="id_Ano" value='{{ ano_dados.Ano }}'>
-                </div>
-
-                <div>
-                    <label for="id_Situacao">Situação:</label> 
-                    <select name="Situacao" id="id_Situacao" disabled>
-                        {% for situacao in Tipos_Situacao %}
-                            {% if ano_dados.Situacao == situacao.0 %}
-                                <option value="{{ situacao.0 }}" selected>{{ situacao.1 }}</option>
+                    <label for="id_Disciplina">Disciplina:</label> 
+                    <select name="Disciplina" id="id_Disciplina" >
+                        {% for disciplina in disciplinas %}
+                            {% if matriz_item_dados.Disciplina == disciplina.id %}
+                                <option value="{{ disciplina.id }}" selected>{{ disciplina.Nome }}</option>
                             {% else %}
-                                <option value="{{ situacao.0 }}" >{{ situacao.1 }}</option>
+                                <option value="{{ disciplina.id }}" >{{ disciplina.Nome }}</option>
                             {% endif %}
                         {% endfor %}       
                     </select>
                 </div>
-            
+
                 <div>
-                    <label for="id_Data_Inicio">Data Inicial:</label> 
-                    <input type="date" name="Data_Inicio" disabled required id="id_Data_Inicio" value='{{ ano_dados.Data_Inicio|date:"Y-m-d" }}'>
+                    <label for="id_Carga">Carga horária:</label>
+                    <input type="number" name="Carga" min="0"  required id="id_Carga" value='{{ matriz_item_dados.Carga }}'>
+                </div>
+
+            </fieldset>
+
+        {% else %}
+            <fieldset>
+                <div>
+                    <label for="id_Disciplina">Disciplina:</label> 
+                    <select name="Disciplina" id="id_Disciplina" disabled>
+                        {% for disciplina in disciplinas %}
+                            {% if matriz_item_dados.Disciplina == disciplina.id %}
+                                <option value="{{ disciplina.id }}" selected>{{ disciplina.Nome }}</option>
+                            {% else %}
+                                <option value="{{ disciplina.id }}" >{{ disciplina.Nome }}</option>
+                            {% endif %}
+                        {% endfor %}       
+                    </select>
                 </div>
 
                 <div>
-                    <label for="id_Data_Fim">Data Final:</label> 
-                    <input type="date" name="Data_Fim" disabled required id="id_Data_Fim" value='{{ ano_dados.Data_Fim|date:"Y-m-d" }}'>
+                    <label for="id_Carga">Carga horária:</label>
+                    <input type="number" name="Carga" min="0"  disabled id="id_Carga" value='{{ matriz_item_dados.Carga }}'>
                 </div>
+
             </fieldset>
 
         {% endif %}
@@ -138,7 +94,7 @@
             <button type="submit">Deletar</button>
         {% endif %}
 
-        <a href="{% url 'ano_listagem' %}"> Voltar</a>
+        <a href="{% url 'matriz_item_listagem' idSerie %}"> Voltar</a>
     </form>
 
 {% endblock  %}
