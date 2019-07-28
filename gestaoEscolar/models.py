@@ -373,7 +373,7 @@ class Leciona(models.Model):
             
          
 class Turma(models.Model):
-    Nome = models.CharField('Nome',max_length=20)
+    Nome = models.CharField('Nome',max_length=1)
     MANHA = 'M'
     TARDE = 'T'
     TIPO_PERIODO = (
@@ -386,11 +386,9 @@ class Turma(models.Model):
         choices = TIPO_PERIODO, 
         default = MANHA
     )
-    #Tirar NVE
-    Nivel_Escolaridade = models.CharField('Nível Escolaridade',max_length=20)
-
     Sala = models.PositiveSmallIntegerField(verbose_name = 'Sala')
     Max_Alunos = models.PositiveSmallIntegerField(verbose_name = 'Máximo de Alunos')
+    Serie = models.ForeignKey('Serie', on_delete = models.PROTECT, verbose_name = 'Serie')
     AnoLetivo = models.ForeignKey(
         'AnoLetivo', 
         on_delete = models.PROTECT, 
@@ -402,9 +400,12 @@ class Turma(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['Nome', 'AnoLetivo', 'Escola'], name='unique_Turma_Ano'),
             models.UniqueConstraint(
-                fields=['Sala','Periodo','Escola'], 
+                fields=['Nome', 'Serie', 'AnoLetivo', 'Escola'], 
+                name='unique_Turma_Serie_Ano'
+            ),
+            models.UniqueConstraint(
+                fields=['Sala', 'Periodo', 'Escola'], 
                 name='unique_Sala_Turma_Periodo'
             )
         ]
@@ -431,11 +432,13 @@ class Matricula_Turma(models.Model):
     CONCLUIDO = 'concluido'
     TRANSFERIDO = 'transferido'
     TRANCADO = 'trancado'
+    REPROVADO = 'reprovado'
     TIPOS_SITUACAO = (
         (MATRICULADO, 'Matriculado'),
         (CONCLUIDO, 'Concluído'),
         (TRANSFERIDO, 'Transferido'),
-        (TRANCADO, 'Trancado')
+        (TRANCADO, 'Trancado'),
+        (REPROVADO, 'Reprovado')
     )
     Situacao = models.CharField('Situação', max_length=20, choices=TIPOS_SITUACAO, default=MATRICULADO)
     Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')

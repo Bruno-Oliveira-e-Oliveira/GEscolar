@@ -14,8 +14,8 @@
                 <th>Exc</Th>
                 <th>Nome</th>
                 <th>Período</th>
-                <th>Nível de escolaridade</th>
-                <th>Ano</th>
+                <th>Série</th>
+                <th>Ano letivo</th>
                 <th>Gerenciamento</th>
             </tr>
             <a href="{% url 'turma_novo' %}">Novo</a>
@@ -32,10 +32,10 @@
                         {% else %}
                             <th>Tarde</th>
                         {% endif %}
-                        {% if turma.Nivel_Escolaridade == 'F' %}
-                            <th>Fundamental</th>
+                        {% if turma.Serie.Nivel_Escolaridade == 'F' %}
+                            <th>Ensino Fundamental</th>
                         {% else %}
-                            <th>Médio</th>
+                            <th>Ensino Médio</th>
                         {% endif %}
                         <th>{{ turma.AnoLetivo.Ano }}</th>
                         <th><a href="{% url 'gerenciamento_turma_listagem' turma.id %}">X</a></th>
