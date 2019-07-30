@@ -2,7 +2,7 @@
 
 {% block title %}
     {% if Tipo_Transacao == 'INS' %}
-        Cadastrar novo Turma | GEscolar 
+        Cadastrar nova Turma | GEscolar 
     {% elif Tipo_Transacao == 'UPD' %}
         Alterar Turma | GEscolar 
     {% elif Tipo_Transacao == 'CON' %}
@@ -18,7 +18,7 @@
     {% if Tipo_Transacao == 'INS' %}
         <h2>Cadastrar Turma</h2> 
     {% elif Tipo_Transacao == 'UPD' %}
-        <h2>Atualizar dados do Turma</h2> 
+        <h2>Atualizar dados da Turma</h2> 
     {% elif Tipo_Transacao == 'CON' %}
         <h2>Consultar Turma</h2> 
     {% elif Tipo_Transacao == 'DEL' %}
@@ -62,19 +62,62 @@
                     </select>
                 </div>
 
-                <!-- Parei aqui  -->
-                <div>
-                    <label for="id_Serie">Série:</label>     
-                    <select name="Serie" id="id_Serie">
-                        {% for nivel in Niveis_Escolaridade %}
-                            {% if turma_dados.Serie == serie.id %}
-                                <option value="{{ serie.id }}" selected>{{ serie.Numero }}</option>
-                            {% else %}
-                                <option value="{{ serie.id }}" >{{ serie.Numero }}</option>
-                            {% endif %}
-                        {% endfor %}       
-                    </select>
-                </div>
+                {% if Tipo_Transacao == 'INS' %}
+                    <div>
+                        <label for="id_Serie">Série:</label>     
+                        <select name="Serie" id="id_Serie">
+                            {% for serie in series %}
+                                {% if turma_dados.Serie == serie.id %}
+                                    <option value="{{ serie.id }}" selected>
+                                        {{ serie.Numero }}º Ano do Ensino
+                                        {% if serie.Nivel_Escolaridade == 'F' %}
+                                            Fundamental
+                                        {% else %}
+                                            Médio
+                                        {% endif %}
+                                    </option>
+                                {% else %}
+                                    <option value="{{ serie.id }}">
+                                        {{ serie.Numero }}º Ano do Ensino
+                                        {% if serie.Nivel_Escolaridade == 'F' %}
+                                            Fundamental
+                                        {% else %}
+                                            Médio
+                                        {% endif %}
+                                    </option>
+                                {% endif %}
+                            {% endfor %}       
+                        </select>
+                    </div>
+                {% else %}
+                    <div>
+                        <label for="id_Serie">Série:</label>     
+                        <select name="Serie" id="id_Serie" disabled>
+                            {% for serie in series %}
+                                {% if turma_dados.Serie == serie.id %}
+                                    <option value="{{ serie.id }}" selected>
+                                        {{ serie.Numero }}º Ano do Ensino
+                                        {% if serie.Nivel_Escolaridade == 'F' %}
+                                            Fundamental
+                                        {% else %}
+                                            Médio
+                                        {% endif %}
+                                    </option>
+                                {% else %}
+                                    <option value="{{ serie.id }}" >
+                                        {{ serie.Numero }}º Ano do Ensino
+                                        {% if serie.Nivel_Escolaridade == 'F' %}
+                                            Fundamental
+                                        {% else %}
+                                            Médio
+                                        {% endif %}
+                                    </option>
+                                {% endif %}
+                            {% endfor %}       
+                        </select>
+                    </div>
+                {% endif %}
+
 
                 <div>
                     <label for="id_Max_Alunos">Número da sala:</label>
@@ -89,15 +132,75 @@
                 {% if Tipo_Transacao == 'UPD' %}
                     <div>
                         <label for="id_AnoLetivo">Ano:</label>
-                        <input type="text" name="AnoLetivo" min="0" max="4294967295" disabled id="id_AnoLetivo" value='{{ turma_dados.AnoLetivo }}'>
+                        <input type="text" name="AnoLetivo" min="0" max="4294967295" disabled id="id_AnoLetivo" value='{{ ano }}'>
                     </div>
                 {% endif %}
             </fieldset>
 
         {% else %}
-            
+        <fieldset>
+                <div>
+                    <label for="id_Nome">Nome (A,B,C):</label>
+                    <input type="text" name="Nome" maxlength="1" disabled id="id_Nome" value='{{ turma_dados.Nome }}'>
+                </div>
 
+                <div>
+                    <label for="id_Periodo">Período:</label>     
+                    <select name="Periodo" id="id_Periodo" disabled>
+                        {% for periodo in Tipo_Periodo %}
+                            {% if turma_dados.Periodo == periodo.0 %}
+                                <option value="{{ periodo.0 }}" selected>{{ periodo.1 }}</option>
+                            {% else %}
+                                <option value="{{ periodo.0 }}" >{{ periodo.1 }}</option>
+                            {% endif %}
+                        {% endfor %}       
+                    </select>
+                </div>
 
+                <div>
+                    <label for="id_Serie">Série:</label>     
+                    <select name="Serie" id="id_Serie" disabled>
+                        {% for serie in series %}
+                            {% if turma_dados.Serie.id == serie.id %}
+                                <option value="{{ serie.id }}" selected>
+                                    {{ serie.Numero }}º Ano do Ensino
+                                    {% if serie.Nivel_Escolaridade == 'F' %}
+                                        Fundamental
+                                    {% else %}
+                                        Médio
+                                    {% endif %}
+                                </option>
+                            {% else %}
+                                <option value="{{ serie.id }}" >
+                                    {{ serie.Numero }}º Ano do Ensino
+                                    {% if serie.Nivel_Escolaridade == 'F' %}
+                                        Fundamental
+                                    {% else %}
+                                        Médio
+                                    {% endif %}
+                                </option>
+                            {% endif %}
+                        {% endfor %}       
+                    </select>
+                </div>
+
+                <div>
+                    <label for="id_Max_Alunos">Número da sala:</label>
+                    <input type="number" name="Sala" min="0" max="4294967295" disabled id="id_Sala" value='{{ turma_dados.Sala }}'>
+                </div>
+
+                <div>
+                    <label for="id_Max_Alunos">Capacidade de alunos:</label>
+                    <input type="number" name="Max_Alunos" min="0" max="4294967295" disabled id="id_Max_Alunos" value='{{ turma_dados.Max_Alunos }}'>
+                </div>
+
+                
+                <div>
+                    <label for="id_AnoLetivo">Ano:</label>
+                    <input type="text" name="AnoLetivo" min="0" max="4294967295" disabled id="id_AnoLetivo" value='{{ turma_dados.AnoLetivo }}'>
+                </div>
+                
+            </fieldset>
         {% endif %}
 
         {% if Tipo_Transacao == 'INS' or Tipo_Transacao == 'UPD' %}

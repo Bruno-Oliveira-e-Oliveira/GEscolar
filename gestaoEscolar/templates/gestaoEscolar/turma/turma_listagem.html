@@ -26,7 +26,7 @@
                     <tr>
                         <th><a href="{% url 'turma_alterar' turma.id %}">X</a></th>
                         <th><a href="{% url 'turma_deletar' turma.id %}">X</a></th>
-                        <th><a href="{% url 'turma_consultar' turma.id %}">{{ turma.Nome }}</a></th>
+                        <th><a href="{% url 'turma_consultar' turma.id %}">{{ turma.Serie.Numero }}-{{ turma.Nome }}</a></th>
                         {% if turma.Periodo == 'M' %}
                             <th>Manhã</th>
                         {% else %}

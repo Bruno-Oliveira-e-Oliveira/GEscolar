@@ -13,24 +13,20 @@ from .permissoes import checarPermEscola
 @login_required
 def turma_listagem(request):
     escola = request.session['Escola']
-    turmas = Turma.objects.filter(Escola=escola).order_by('Nome')
+    turmas = Turma.objects.filter(Escola=escola).order_by('Serie','Nome')
     context = {'turmas': turmas}
     return render(request, 'gestaoEscolar/turma/turma_listagem.html', context)
-
-
-
-# Aqui
-
-
 
 
 @login_required
 def turma_novo(request):
     TIPO_PERIODO = Turma.TIPO_PERIODO
     escola = Escola.objects.get(id=request.session['Escola'])
+    series = Serie.objects.filter(Escola=escola.id).order_by('Nivel_Escolaridade','Numero')
     if request.method == 'GET':
         context = {
             'Tipo_Transacao': 'INS', 
+            'series': series,
             'Tipo_Periodo': TIPO_PERIODO
         }
         return render(request,'gestaoEscolar/turma/turma_form.html', context)
@@ -42,6 +38,7 @@ def turma_novo(request):
             'Periodo': dados['Periodo'],
             'Sala': dados['Sala'],
             'Max_Alunos': dados['Max_Alunos'],
+            'Serie': dados['Serie'],
             'Escola': escola.id
         }
 
@@ -66,9 +63,11 @@ def turma_novo(request):
             context = {
                 'turma_dados':turma_dados, 
                 'erros':erros,  
+                'series': series,
                 'Tipo_Periodo': TIPO_PERIODO, 
                 'Tipo_Transacao': 'INS'
             }
+
             return render(request,'gestaoEscolar/turma/turma_form.html', context)
         else:
             try:
@@ -82,7 +81,8 @@ def turma_novo(request):
                 erros = [Error]
                 context = {
                     'turma_dados':turma_dados, 
-                    'erros':erros,  
+                    'erros':erros, 
+                    'series': series, 
                     'Tipo_Periodo': TIPO_PERIODO, 
                     'Tipo_Transacao': 'INS'
                 }
@@ -95,11 +95,24 @@ def turma_alterar(request,id):
     escola = Escola.objects.get(id=request.session['Escola'])
     checarPermEscola(turma_obj, escola.id)
     TIPO_PERIODO = Turma.TIPO_PERIODO
+    series = Serie.objects.filter(Escola=escola.id).order_by('Nivel_Escolaridade','Numero')
+    ano = turma_obj.AnoLetivo.Ano
     
     if request.method == 'GET':
+        turma_dados = {
+            'Nome': turma_obj.Nome,
+            'Periodo': turma_obj.Periodo,
+            'Sala': turma_obj.Sala,
+            'Max_Alunos': turma_obj.Max_Alunos,
+            'Serie': turma_obj.Serie.id,
+            'AnoLetivo': turma_obj.AnoLetivo.id,
+            'Escola': turma_obj.Escola.id
+        }
         context = {
-            'turma_dados': turma_obj,
-            'Tipo_Periodo': TIPO_PERIODO, 
+            'turma_dados': turma_dados,
+            'Tipo_Periodo': TIPO_PERIODO,
+            'series': series, 
+            'ano': ano,
             'Tipo_Transacao': 'UPD',
             'idTurma': id
         }
@@ -111,6 +124,7 @@ def turma_alterar(request,id):
             'Periodo': dados['Periodo'],
             'Sala': dados['Sala'],
             'Max_Alunos': dados['Max_Alunos'],
+            'Serie': turma_obj.Serie.id,
             'AnoLetivo': turma_obj.AnoLetivo.id,
             'Escola': turma_obj.Escola.id
         }
@@ -128,6 +142,8 @@ def turma_alterar(request,id):
                 'erros':erros, 
                 'turma_dados':turma_dados, 
                 'Tipo_Periodo': TIPO_PERIODO, 
+                'series': series, 
+                'ano': ano,
                 'Tipo_Transacao': 'UPD',
                 'idTurma': id
             }
@@ -145,7 +161,9 @@ def turma_alterar(request,id):
                 context = {
                     'erros':erros, 
                     'turma_dados':turma_dados, 
-                    'Tipo_Periodo': TIPO_PERIODO, 
+                    'Tipo_Periodo': TIPO_PERIODO,
+                    'series': series, 
+                    'ano': ano, 
                     'Tipo_Transacao': 'UPD',
                     'idturma': id
                 }
@@ -158,11 +176,12 @@ def turma_consultar(request,id):
     TIPO_PERIODO = Turma.TIPO_PERIODO
     escola = Escola.objects.get(id=request.session['Escola'])
     checarPermEscola(turma_obj, escola.id)
-    NIVEIS_ESCOLARIDADE = escola.retornar_nivel()
-    
+    series = Serie.objects.filter(Escola=escola.id).order_by('Nivel_Escolaridade','Numero')
+
     context = {
         'turma_dados': turma_obj,
         'Tipo_Periodo': TIPO_PERIODO, 
+        'series': series, 
         'Tipo_Transacao': 'CON',
         'idTurma': id
     }
@@ -175,10 +194,13 @@ def turma_deletar(request,id):
     TIPO_PERIODO = Turma.TIPO_PERIODO
     escola = Escola.objects.get(id=request.session['Escola'])
     checarPermEscola(turma_obj, escola.id)
+    series = Serie.objects.filter(Escola=escola.id).order_by('Nivel_Escolaridade','Numero')
+
     if request.method == 'GET':
         context = {
             'turma_dados': turma_obj,
-            'Tipo_Periodo': TIPO_PERIODO, 
+            'Tipo_Periodo': TIPO_PERIODO,
+            'series': series,  
             'Tipo_Transacao': 'DEL',
             'idTurma': id
         }
@@ -196,6 +218,7 @@ def turma_deletar(request,id):
             context = {
                 'turma_dados': turma_obj,
                 'Tipo_Periodo': TIPO_PERIODO, 
+                'series': series, 
                 'Tipo_Transacao': 'DEL',
                 'idTurma': id
             }
