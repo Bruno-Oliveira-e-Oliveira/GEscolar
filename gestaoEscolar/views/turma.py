@@ -72,7 +72,8 @@ def turma_novo(request):
         else:
             try:
                 with transaction.atomic():
-                    turma_form.save()
+                    turma = turma_form.save()
+                    Leciona.gerar_lecionas(turma)
                     return redirect('turma_listagem')
             except Exception as Error:
                 #Erros de servidor (500)

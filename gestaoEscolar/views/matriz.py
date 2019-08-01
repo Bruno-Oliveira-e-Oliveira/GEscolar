@@ -59,7 +59,8 @@ def matriz_item_novo(request,idS):
         else:
             try:
                 with transaction.atomic():
-                    matriz_item_form.save()
+                    item = matriz_item_form.save()
+                    Leciona.atualizar_lecionas_turma('INS', item, escola.id)
                     return redirect('matriz_item_listagem', idS)
             except Exception as Error:
                 #Erros de servidor (500)
@@ -180,6 +181,7 @@ def matriz_item_deletar(request,idS,idM):
     else:
         try:
             with transaction.atomic():
+                Leciona.atualizar_lecionas_turma('DEL', matriz_item_obj, escola)
                 matriz_item_obj.delete()
                 return redirect('matriz_item_listagem', idS)
         except Exception as Error:

@@ -8,7 +8,7 @@ from .models import (
     Professor,
     Aluno,
     Disciplina,
-    # Leciona,
+    Leciona,
     Turma,
     # Aula,
     # Avaliacao,
@@ -33,7 +33,7 @@ admin.site.register(Secretaria)
 admin.site.register(Professor)
 admin.site.register(Aluno)
 admin.site.register(Disciplina)
-# admin.site.register(Leciona)
+admin.site.register(Leciona)
 admin.site.register(Turma)
 # admin.site.register(Aula)
 # admin.site.register(Avaliacao)

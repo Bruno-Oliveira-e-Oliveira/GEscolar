@@ -18,12 +18,7 @@ def login(request):
         usuario = authenticate(request, username=username, password=password)
         if usuario is not None:
             login_auth(request, usuario)
-            pessoa = Pessoa.obter_pessoa(usuario.username,'Pessoa')
-            if pessoa.Escola is not None:
-                request.session['Escola'] = pessoa.Escola.id
-            else:
-                request.session['Escola'] = ''
-                print('Sem relacionamento com uma escola')
+            request = salvar_escola_sessao(request)
             return redirect('gestao_escolar_inicio')
         else:
             erro = 'Usuário ou senha inválidos'
@@ -34,3 +29,14 @@ def login(request):
 def logout(request):
     logout_auth(request)
     return render(request,'gestaoEscolar/autenticacao/logout.html')
+
+
+def salvar_escola_sessao(request):
+    pessoa = Pessoa.obter_pessoa(request.user.username,'Pessoa')
+    if pessoa.Escola is not None:
+        request.session['Escola'] = pessoa.Escola.id
+    else:
+        request.session['Escola'] = ''
+        print('Sem relacionamento com uma escola')
+
+    return request

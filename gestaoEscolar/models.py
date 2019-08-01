@@ -348,7 +348,7 @@ class Disciplina(models.Model):
 
 
 class Leciona(models.Model):
-    Aulas_Previstas = models.PositiveSmallIntegerField(verbose_name='Aulas Previstas')
+    Aulas_Previstas = models.PositiveSmallIntegerField(verbose_name='Aulas Previstas', blank=True, null=True)
     Matriz_Item = models.ForeignKey('Matriz_Item',on_delete=models.PROTECT, verbose_name='Matriz_Item')
     Turma = models.ForeignKey('Turma',on_delete=models.PROTECT, verbose_name='Turma')
     Professor = models.ForeignKey(
@@ -367,8 +367,29 @@ class Leciona(models.Model):
 
     def __str__(self):
         return self.Turma.Nome + ' - ' + self.Matriz_Item.Disciplina.Nome
-            
-         
+
+    def gerar_lecionas(turma):
+        itens = Matriz_Item.objects.filter(Serie=turma.Serie.id)
+        for item in itens:
+            leciona = Leciona(Matriz_Item=item, Turma=turma, Escola=turma.Escola)
+            leciona.save()
+    
+    def atualizar_lecionas_turma(tipo_transacao, item, escolaid):
+        achou = Turma.objects.filter(Escola=escolaid).exists()
+        escola = Escola.objects.get(id=escolaid)
+        if achou:
+            turmas = Turma.objects.filter(Escola=escolaid, Serie=item.Serie.id)
+            if tipo_transacao == 'INS':
+                for turma in turmas:
+                    leciona = Leciona(Matriz_Item=item, Turma=turma, Escola=escola)
+                    leciona.save()
+            elif tipo_transacao == 'DEL':
+                for turma in turmas:
+                    lecionas = Leciona.objects.filter(Matriz_Item=item.id, Turma=turma.id)
+                    if len(lecionas) > 0:
+                        lecionas[0].delete()
+                    
+
 class Turma(models.Model):
     Nome = models.CharField('Nome',max_length=1)
     MANHA = 'M'
