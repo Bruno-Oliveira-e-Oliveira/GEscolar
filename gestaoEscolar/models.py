@@ -349,7 +349,7 @@ class Disciplina(models.Model):
 
 class Leciona(models.Model):
     Aulas_Previstas = models.PositiveSmallIntegerField(verbose_name='Aulas Previstas')
-    Disciplina = models.ForeignKey('Disciplina',on_delete=models.PROTECT, verbose_name='Disciplina')
+    Matriz_Item = models.ForeignKey('Matriz_Item',on_delete=models.PROTECT, verbose_name='Matriz_Item')
     Turma = models.ForeignKey('Turma',on_delete=models.PROTECT, verbose_name='Turma')
     Professor = models.ForeignKey(
         'Professor',
@@ -362,14 +362,11 @@ class Leciona(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['Disciplina', 'Turma', 'Escola'], name='unique_Leciona')
+            models.UniqueConstraint(fields=['Matriz_Item', 'Turma', 'Escola'], name='unique_Leciona_Matriz_Item')
         ]
 
     def __str__(self):
-        try:
-            return self.Turma.Nome + ' - '+ self.Disciplina.Nome + ' - ' + self.Professor.Nome
-        except:
-            return self.Turma.Nome + ' - ' + self.Disciplina.Nome
+        return self.Turma.Nome + ' - ' + self.Matriz_Item.Disciplina.Nome
             
          
 class Turma(models.Model):
@@ -447,65 +444,65 @@ class Matricula_Turma(models.Model):
         return self.Turma.Nome + ' - ' + self.Aluno.Nome
 
 
-class Aula(models.Model):
-    Data = models.DateField(verbose_name='Data')
-    Turma = models.ForeignKey('Turma', on_delete=models.PROTECT, verbose_name='Turma')
-    Leciona = models.ForeignKey('Leciona', on_delete=models.PROTECT, verbose_name='Leciona')
-    Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
+# class Aula(models.Model):
+#     Data = models.DateField(verbose_name='Data')
+#     Turma = models.ForeignKey('Turma', on_delete=models.PROTECT, verbose_name='Turma')
+#     Leciona = models.ForeignKey('Leciona', on_delete=models.PROTECT, verbose_name='Leciona')
+#     Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
 
-    def __str__(self):
-        return self.Turma.Nome + ' - ' + self.Leciona.Disciplina.Nome + ' - ' + str(self.Data)
+#     def __str__(self):
+#         return self.Turma.Nome + ' - ' + self.Leciona.Disciplina.Nome + ' - ' + str(self.Data)
 
-    def checarData(self):
-        pass
-
-
-class Avaliacao(models.Model):
-    Tema = models.CharField('Tema', max_length=30)
-    #Tirado o campo Nota máxima
-    Peso = models.PositiveSmallIntegerField(verbose_name='Peso')
-    Aula = models.ForeignKey('Aula', on_delete = models.PROTECT, verbose_name = 'Aula')
-    Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
-
-    def __str__(self):
-        return self.Aula.Turma.Nome + ' - '+ self.Tema + ' - ' + str(self.Aula.Data)
+#     def checarData(self):
+#         pass
 
 
-class Frequencia(models.Model):
-    #Campo Frequencia adicionado
-    Presenca = models.BooleanField(verbose_name='Presença', default=True)
-    Aula = models.ForeignKey('Aula', on_delete = models.PROTECT, verbose_name = 'Aula')
-    Aluno = models.ForeignKey('Aluno', on_delete = models.PROTECT, verbose_name = 'Aluno')
-    Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
+# class Avaliacao(models.Model):
+#     Tema = models.CharField('Tema', max_length=30)
+#     #Tirado o campo Nota máxima
+#     Peso = models.PositiveSmallIntegerField(verbose_name='Peso')
+#     Aula = models.ForeignKey('Aula', on_delete = models.PROTECT, verbose_name = 'Aula')
+#     Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
 
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=['Aula','Aluno'], 
-                name='unique_Aula_Aluno'
-            )
-        ]
+#     def __str__(self):
+#         return self.Aula.Turma.Nome + ' - '+ self.Tema + ' - ' + str(self.Aula.Data)
+
+
+# class Frequencia(models.Model):
+#     #Campo Frequencia adicionado
+#     Presenca = models.BooleanField(verbose_name='Presença', default=True)
+#     Aula = models.ForeignKey('Aula', on_delete = models.PROTECT, verbose_name = 'Aula')
+#     Aluno = models.ForeignKey('Aluno', on_delete = models.PROTECT, verbose_name = 'Aluno')
+#     Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
+
+#     class Meta:
+#         constraints = [
+#             models.UniqueConstraint(
+#                 fields=['Aula','Aluno'], 
+#                 name='unique_Aula_Aluno'
+#             )
+#         ]
     
-    def __str__(self):
-        return self.Aula.Turma.Nome + ' - '+ self.Aluno.Nome + ' - ' + str(self.Aula.Data)
+#     def __str__(self):
+#         return self.Aula.Turma.Nome + ' - '+ self.Aluno.Nome + ' - ' + str(self.Aula.Data)
 
 
-class Aplicacao(models.Model):
-    Nota = models.DecimalField(verbose_name='Nota', max_digits=4, decimal_places=2)
-    Avaliacao = models.ForeignKey('Avaliacao', on_delete = models.PROTECT, verbose_name = 'Avaliação')
-    Aluno = models.ForeignKey('Aluno', on_delete = models.PROTECT, verbose_name = 'Aluno')
-    Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
+# class Aplicacao(models.Model):
+#     Nota = models.DecimalField(verbose_name='Nota', max_digits=4, decimal_places=2)
+#     Avaliacao = models.ForeignKey('Avaliacao', on_delete = models.PROTECT, verbose_name = 'Avaliação')
+#     Aluno = models.ForeignKey('Aluno', on_delete = models.PROTECT, verbose_name = 'Aluno')
+#     Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
 
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=['Avaliacao','Aluno'], 
-                name='unique_Avaliacao_Aluno'
-            )
-        ]
+#     class Meta:
+#         constraints = [
+#             models.UniqueConstraint(
+#                 fields=['Avaliacao','Aluno'], 
+#                 name='unique_Avaliacao_Aluno'
+#             )
+#         ]
 
-    def __str__(self):
-        return self.Avaliacao.Tema + ' - ' + str(self.Avaliacao.Aula.Data)
+#     def __str__(self):
+#         return self.Avaliacao.Tema + ' - ' + str(self.Avaliacao.Aula.Data)
 
     
 class AnoLetivo(models.Model):
@@ -584,42 +581,41 @@ class Bimestre(models.Model):
         return int(numero)
                 
 
+# class Nota(models.Model):
+#     BIMESTRAL = 'B'
+#     FINAL = 'F'
+#     TIPOS_NOTA = (
+#         (BIMESTRAL, 'Bimestral'),
+#         (FINAL, 'Final')
+#     ) 
+#     Tipo = models.CharField('Tipo', max_length=20, choices=TIPOS_NOTA, default=BIMESTRAL)
+#     Valor = models.DecimalField(verbose_name='Nota', max_digits=4, decimal_places=2)
+#     Aluno = models.ForeignKey('Aluno', on_delete = models.PROTECT, verbose_name = 'Aluno')
+#     Leciona = models.ForeignKey('Leciona', on_delete=models.PROTECT, verbose_name='Leciona')
+#     AnoLetivo = models.ForeignKey('AnoLetivo',on_delete=models.PROTECT,verbose_name='Ano')
+#     Bimestre = models.ForeignKey(
+#         'Bimestre', 
+#         on_delete = models.PROTECT,
+#         verbose_name = 'Bimestre',
+#         blank = True, 
+#         null = True
+#     )
+#     Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
 
-class Nota(models.Model):
-    BIMESTRAL = 'B'
-    FINAL = 'F'
-    TIPOS_NOTA = (
-        (BIMESTRAL, 'Bimestral'),
-        (FINAL, 'Final')
-    ) 
-    Tipo = models.CharField('Tipo', max_length=20, choices=TIPOS_NOTA, default=BIMESTRAL)
-    Valor = models.DecimalField(verbose_name='Nota', max_digits=4, decimal_places=2)
-    Aluno = models.ForeignKey('Aluno', on_delete = models.PROTECT, verbose_name = 'Aluno')
-    Leciona = models.ForeignKey('Leciona', on_delete=models.PROTECT, verbose_name='Leciona')
-    AnoLetivo = models.ForeignKey('AnoLetivo',on_delete=models.PROTECT,verbose_name='Ano')
-    Bimestre = models.ForeignKey(
-        'Bimestre', 
-        on_delete = models.PROTECT,
-        verbose_name = 'Bimestre',
-        blank = True, 
-        null = True
-    )
-    Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
+#     class Meta:
+#         constraints = [
+#         models.UniqueConstraint(
+#             fields=['AnoLetivo','Bimestre','Aluno','Leciona','Escola'], 
+#             name='unique_Ano_Bimestre_Aluno_Leciona'
+#         ),
+#         models.UniqueConstraint(
+#             fields=['AnoLetivo','Aluno','Leciona','Escola'], 
+#             name='unique_Ano_Aluno_Leciona'
+#         )
+#     ]
 
-    class Meta:
-        constraints = [
-        models.UniqueConstraint(
-            fields=['AnoLetivo','Bimestre','Aluno','Leciona','Escola'], 
-            name='unique_Ano_Bimestre_Aluno_Leciona'
-        ),
-        models.UniqueConstraint(
-            fields=['AnoLetivo','Aluno','Leciona','Escola'], 
-            name='unique_Ano_Aluno_Leciona'
-        )
-    ]
-
-    def __str__(self):
-        return self.Leciona.Disciplina.Nome + ' - ' + self.Tipo + ' - ' + self.Aluno.Nome
+#     def __str__(self):
+#         return self.Leciona.Disciplina.Nome + ' - ' + self.Tipo + ' - ' + self.Aluno.Nome
 
 
 class Serie(models.Model):

@@ -10,16 +10,16 @@ from .models import (
     Professor,
     Aluno,
     Disciplina,
-    Leciona,
+    # Leciona,
     Turma,
-    Aula,
-    Avaliacao,
-    Frequencia,
-    Aplicacao,
+    # Aula,
+    # Avaliacao,
+    # Frequencia,
+    # Aplicacao,
     Matricula,
     AnoLetivo,
     Bimestre,
-    Nota,
+    # Nota,
     Matriz_Item
 )
 from django.contrib.auth.models import User
@@ -183,36 +183,3 @@ class Matriz_Item_Form(ModelForm):
         fields = '__all__'
     
 
-    # Telefone
-
-    # Endereco
-
-    # Gestor
-
-    # Secretaria
-
-    # Professor
-
-    # Aluno
-
-    # Disciplina
-
-    # Leciona
-
-    # Turma
-
-    # Aula
-
-    # Avaliacao
-
-    # Frequencia
-
-    # Aplicacao
-
-    # Matricula
-
-    # AnoLetivo
-
-    # Bimestre
-
-    # Nota
