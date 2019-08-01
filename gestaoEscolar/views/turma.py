@@ -236,5 +236,5 @@ def gerenciamento_turma_listagem(request,id):
     if len(matriculas) > 0:
         for matricula in matriculas:
             alunos.append(matricula.Aluno)
-    context = {'alunos': alunos}
+    context = {'alunos': alunos, 'id': id}
     return render(request, 'gestaoEscolar/turma/gerenciamento_turma_listagem.html', context)

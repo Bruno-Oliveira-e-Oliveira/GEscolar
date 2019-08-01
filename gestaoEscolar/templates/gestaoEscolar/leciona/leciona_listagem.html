@@ -1,0 +1,52 @@
+{% extends 'projeto/base/base.html' %}
+
+{% block title %}Listagem da tabela de Disciplina x Professor | GEscolar{% endblock  %}
+
+
+{% block main %}
+
+    <h2>Listagem da tabela de Disciplina x Professor</h2> 
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Alt</th>
+                <th>Professor</th>
+                <th>Disciplina</th>
+                <th>Aulas previstas</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for disciplina in disciplinas %}
+
+                {% if disciplinas is not None %}
+                    {% for leciona in lecionas %}
+
+                        {% if lecionas is not None and disciplina.id == leciona.Matriz_Item.Disciplina.id %}
+                            <tr>
+                                <th><a href="#">X</a></th>
+                                <th><a href="#">{{ leciona.Matriz_Item.Disciplina.Nome }}</a></th>
+                                <th>{{ leciona.Professor.Nome }}</th>
+                                {% if leciona.Aulas_Previstas is not None %}
+                                    <th>{{ leciona.Aulas_Previstas }}</th>
+                                {% else %}
+                                    <th></th>
+                                {% endif %}
+                            </tr>
+                        {% endif %}
+
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <th>X</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                {% endif %}
+
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock  %}
