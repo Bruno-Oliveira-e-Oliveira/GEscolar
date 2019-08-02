@@ -23,3 +23,85 @@ def leciona_listagem(request,idT):
         'idT': idT
         }
     return render(request, 'gestaoEscolar/leciona/leciona_listagem.html', context)
+
+
+@login_required
+def leciona_alterar(request,idT,idL):
+    leciona_obj = get_object_or_404(Leciona, id=idL)
+    escola = request.session['Escola']
+    checarPermEscola(leciona_obj, escola)
+    professores = Professor.objects.filter(Escola=escola).order_by('Nome')
+
+    if request.method == 'GET':
+        context = {
+            'professores': professores,
+            'leciona_dados': leciona_obj,
+            'Tipo_Transacao': 'UPD',
+            'idL': idL,
+            'idT': idT
+        }
+        return render(request,'gestaoEscolar/leciona/leciona_form.html', context)
+    else:
+        dados = request.POST
+
+        leciona_dados = {
+            'Aulas_Previstas': dados['Aulas_Previstas'],
+            'Matriz_Item': leciona_obj.Matriz_Item.id,
+            'Turma': leciona_obj.Turma.id,
+            'Professor': dados['Professor'],
+            'Escola': leciona_obj.Escola.id
+        }
+        leciona_form = LecionaForm(leciona_dados , instance=leciona_obj)
+        erros_leciona = {}
+
+        if not leciona_form.is_valid():
+            erros_leciona = leciona_form.errors
+
+        if erros_leciona:
+            erros = []
+            for erro in erros_leciona.values():
+                erros.append(erro)
+            context = {
+                'professores': professores,
+                'erros':erros, 
+                'leciona_dados':leciona_dados, 
+                'Tipo_Transacao': 'UPD',
+                'idL': idL,
+                'idT': idT
+            }
+            return render(request,'gestaoEscolar/leciona/leciona_form.html', context)
+        else:
+            try:
+                with transaction.atomic():
+                    leciona_form.save()
+                    return redirect('leciona_listagem',idT)
+            except Exception as Error:
+                #Erros de servidor (500)
+                print('Erro no servidor: ' + str(Error))
+                Error = 'Erro no servidor'
+                erros = [Error]
+                context = {
+                    'professores': professores,
+                    'erros':erros, 
+                    'leciona_dados':leciona_dados, 
+                    'Tipo_Transacao': 'UPD',
+                    'idL': idL,
+                    'idT': idT
+                }
+                return render(request,'gestaoEscolar/leciona/leciona_form.html', context)
+
+
+@login_required
+def leciona_consultar(request,idT,idL):
+    leciona_obj = get_object_or_404(Leciona, id=idL)
+    escola = request.session['Escola']
+    checarPermEscola(leciona_obj, escola)
+    professores = Professor.objects.filter(Escola=escola).order_by('Nome')
+    context = {
+        'professores': professores,
+        'leciona_dados': leciona_obj,
+        'Tipo_Transacao': 'CON',
+        'idL': idL,
+        'idT': idT
+    }
+    return render(request,'gestaoEscolar/leciona/leciona_form.html', context)

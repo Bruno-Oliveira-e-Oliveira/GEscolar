@@ -10,7 +10,7 @@ from .models import (
     Professor,
     Aluno,
     Disciplina,
-    # Leciona,
+    Leciona,
     Turma,
     # Aula,
     # Avaliacao,
@@ -180,6 +180,12 @@ class TurmaForm(ModelForm):
 class Matriz_Item_Form(ModelForm):
     class Meta:
         model = Matriz_Item
+        fields = '__all__'
+
+
+class LecionaForm(ModelForm):
+    class Meta:
+        model = Leciona
         fields = '__all__'
     
 

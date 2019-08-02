@@ -1,0 +1,132 @@
+{% extends 'projeto/base/base.html' %}
+
+{% block title %}
+    {% if Tipo_Transacao == 'INS' %}
+        Cadastrar novo item da tabela de Disciplina x Professor | GEscolar 
+    {% elif Tipo_Transacao == 'UPD' %}
+        Alterar item da tabela de Disciplina x Professor | GEscolar 
+    {% elif Tipo_Transacao == 'CON' %}
+        Consultar item da tabela de Disciplina x Professor | GEscolar
+    {% elif Tipo_Transacao == 'DEL' %}
+        Apagar item da tabela de Disciplina x Professor | GEscolar
+    {% endif %}
+{% endblock  %}
+
+
+{% block main %}
+
+    {% if Tipo_Transacao == 'INS' %}
+        <h2>Cadastrar item da tabela de Disciplina x Professor</h2> 
+    {% elif Tipo_Transacao == 'UPD' %}
+        <h2>Atualizar dados do item da tabela de Disciplina x Professor</h2> 
+    {% elif Tipo_Transacao == 'CON' %}
+        <h2>Consultar item da tabela de Disciplina x Professor</h2> 
+    {% elif Tipo_Transacao == 'DEL' %}
+        <h2>Apagar item da tabela de Disciplina x Professor</h2>
+    {% endif %}
+
+    {% for erro in erros %}
+        {{ erro }}
+    {% endfor %}
+
+    <form action="
+            {% if Tipo_Transacao == 'UPD' %}
+                {% url 'leciona_alterar' idT idL %}
+            {% elif Tipo_Transacao == 'CON' %}
+                {% url 'leciona_consultar' idT idL %}
+            {% endif %}
+        " method="POST">
+        {% csrf_token %}
+
+        {% if Tipo_Transacao == 'UPD' %}
+            <fieldset>
+                <div>
+                    <label for="id_Aulas_Previstas">Aulas_Previstas:</label>
+                    <input type="number" name="Aulas_Previstas" min="0" required id="id_Aulas_Previstas" value='{{ leciona_dados.Aulas_Previstas }}'>
+                </div>
+
+                <div>
+                    <label for="id_Matriz_Item">Disciplina:</label>
+                    <input type="text" name="Matriz_Item" disabled id="id_Matriz_Item" value='{{ leciona_dados.Matriz_Item.Disciplina.Nome }}'>
+                </div>
+
+                {% if leciona_dados.Turma.Serie.Nivel_Escolaridade == 'F' %}
+                    <div>
+                        <label for="id_Turma">Turma:</label>
+                        <input type="text" name="Turma" disabled id="id_Turma" value='{{ leciona_dados.Turma.Serie.Numero }}{{ leciona_dados.Turma.Nome }} Ensino Fundamental'>
+                    </div>
+                {% else %}
+                    <div>
+                        <label for="id_Turma">Turma:</label>
+                        <input type="text" name="Turma" disabled id="id_Turma" value='{{ leciona_dados.Turma.Serie.Numero }}{{ leciona_dados.Turma.Nome }} Ensino Médio'>
+                    </div>
+
+                {% endif %}
+
+                <div>
+                    <label for="id_Professor">Professor:</label> 
+                    <select name="Professor" id="id_Professor">
+                        {% for professor in professores %}
+                            {% if leciona_dados.Professor.id == professor.id %}
+                                <option value="{{ professor.id }}" selected>{{ professor.Nome }}</option>
+                            {% else %}
+                                <option value="{{ professor.id }}" >{{ professor.Nome }}</option>
+                            {% endif %}
+                        {% endfor %}       
+                    </select>
+                </div>
+
+            </fieldset>
+
+        {% else %}
+            <fieldset>
+                <div>
+                    <label for="id_Aulas_Previstas">Aulas_Previstas:</label>
+                    <input type="number" name="Aulas_Previstas" min="0" disabled id="id_Aulas_Previstas" value='{{ leciona_dados.Aulas_Previstas }}'>
+                </div>
+
+                <div>
+                    <label for="id_Matriz_Item">Disciplina:</label>
+                    <input type="text" name="Matriz_Item" disabled id="id_Matriz_Item" value='{{ leciona_dados.Matriz_Item.Disciplina.Nome }}'>
+                </div>
+
+                {% if leciona_dados.Turma.Serie.Nivel_Escolaridade == 'F' %}
+                    <div>
+                        <label for="id_Turma">Turma:</label>
+                        <input type="text" name="Turma" disabled id="id_Turma" value='{{ leciona_dados.Turma.Serie.Numero }}{{ leciona_dados.Turma.Nome }} Ensino Fundamental'>
+                    </div>
+                {% else %}
+                    <div>
+                        <label for="id_Turma">Turma:</label>
+                        <input type="text" name="Turma" disabled id="id_Turma" value='{{ leciona_dados.Turma.Serie.Numero }}{{ leciona_dados.Turma.Nome }} Ensino Médio'>
+                    </div>
+
+                {% endif %}
+
+                <div>
+                    <label for="id_Professor">Professor:</label> 
+                    <select name="Professor" id="id_Professor" disabled>
+                        {% for professor in professores %}
+                            {% if leciona_dados.Professor.id == professor.id %}
+                                <option value="{{ professor.id }}" selected>{{ professor.Nome }}</option>
+                            {% else %}
+                                <option value="{{ professor.id }}" >{{ professor.Nome }}</option>
+                            {% endif %}
+                        {% endfor %}       
+                    </select>
+                </div>
+
+            </fieldset>
+
+        {% endif %}
+
+        {% if Tipo_Transacao == 'INS' or Tipo_Transacao == 'UPD' %}
+            <button type="submit">Salvar</button>
+        {% elif Tipo_Transacao == 'DEL' %}
+            <button type="submit">Deletar</button>
+        {% endif %}
+
+        <a href="{% url 'leciona_listagem' idT %}"> Voltar</a>
+    </form>
+
+{% endblock  %}
