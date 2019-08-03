@@ -1,0 +1,103 @@
+{% extends 'projeto/base/base.html' %}
+
+{% block title %}
+    {% if Tipo_Transacao == 'INS' %}
+        Cadastrar nova matrícula na turma | GEscolar 
+    {% elif Tipo_Transacao == 'UPD' %}
+        Alterar matrícula na turma | GEscolar 
+    {% elif Tipo_Transacao == 'CON' %}
+        Consultar matrícula na turma | GEscolar
+    {% elif Tipo_Transacao == 'DEL' %}
+        Apagar matrícula na turma | GEscolar
+    {% endif %}
+{% endblock  %}
+
+
+{% block main %}
+
+    {% if Tipo_Transacao == 'INS' %}
+        <h2>Cadastrar matrícula na turma</h2> 
+    {% elif Tipo_Transacao == 'UPD' %}
+        <h2>Atualizar dados da matrícula na turma</h2> 
+    {% elif Tipo_Transacao == 'CON' %}
+        <h2>Consultar matrícula na turma</h2> 
+    {% elif Tipo_Transacao == 'DEL' %}
+        <h2>Apagar matrícula na turma</h2>
+    {% endif %}
+
+    {% for erro in erros %}
+        {{ erro }}
+    {% endfor %}
+
+    <form action="
+            {% if Tipo_Transacao == 'INS' %}
+                {% url 'matricula_turma_novo' idT %}
+            {% elif Tipo_Transacao == 'UPD' %}
+                
+            {% elif Tipo_Transacao == 'CON' %}
+                
+            {% elif Tipo_Transacao == 'DEL' %}
+                
+            {% endif %}
+        " method="POST">
+        {% csrf_token %}
+
+        {% if Tipo_Transacao == 'INS' or Tipo_Transacao == 'UPD' %}
+            <fieldset>
+                {% if matricula_turma_dados.Turma.Serie.Nivel_Escolaridade == 'F' %}
+                    <div>
+                        <label for="id_Turma">Turma:</label>
+                        <input type="text" name="Turma" disabled id="id_Turma" value='{{ turma.Serie.Numero }}{{ turma.Nome }} Ensino Fundamental'>
+                    </div>
+                {% else %}
+                    <div>
+                        <label for="id_Turma">Turma:</label>
+                        <input type="text" name="Turma" disabled id="id_Turma" value='{{ turma.Serie.Numero }}{{ turma.Nome }} Ensino Médio'>
+                    </div>
+                {% endif %}
+
+                <div>
+                    <label for="id_Aluno">Aluno:</label>     
+                    <select name="Aluno" id="id_Aluno" required>
+                        {% for aluno in alunos %}
+                            {% if matricula_turma_dados.Aluno.id == aluno.id %}
+                                <option value="{{ aluno.id }}" selected>{{ aluno.Nome }}</option>
+                            {% else %}
+                                <option value="{{ aluno.id }}" >{{ aluno.Nome }}</option>
+                            {% endif %}
+                        {% endfor %}       
+                    </select>
+                </div>
+
+                {% if Tipo_Transacao == 'UPD' %}
+                    <div>
+                        <label for="id_Situacao">Situação:</label>     
+                        <select name="Situacao" id="id_Situacao" disabled>
+                            {% for situacao in Tipo_Situacao %}
+                                {% if matricula_turma_dados.Situacao == Situacao.0 %}
+                                    <option value="{{ situacao.0 }}" selected>{{ situacao.1 }}</option>
+                                {% else %}
+                                    <option value="{{ situacao.0 }}" >{{ situacao.1 }}</option>
+                                {% endif %}
+                            {% endfor %}       
+                        </select>
+                    </div>
+                {% endif %}
+            </fieldset>
+
+        {% else %}
+        
+
+
+        {% endif %}
+
+        {% if Tipo_Transacao == 'INS' or Tipo_Transacao == 'UPD' %}
+            <button type="submit">Salvar</button>
+        {% elif Tipo_Transacao == 'DEL' %}
+            <button type="submit">Deletar</button>
+        {% endif %}
+
+        <a href="{% url 'gerenciamento_turma_listagem' idT %}"> Voltar</a>
+    </form>
+
+{% endblock  %}

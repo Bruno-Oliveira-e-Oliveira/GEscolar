@@ -307,6 +307,34 @@ class Aluno(Pessoa):
     def __str__(self):
         return self.Nome
 
+    def retornar_alunos_sem_turma(escolaid):
+        alunos = Aluno.objects.filter(Escola=escolaid)
+        if len(alunos) == 0:
+            return 0
+        else:
+            ano = AnoLetivo.retornar_ativo(escolaid)  
+            alunos_sem_turma = []
+            if ano is not None:
+                turmas_ativas = Turma.objects.filter(Escola=escolaid, AnoLetivo=ano.id) 
+                if len(turmas_ativas) == 0:
+                    return alunos
+                else:
+                    for aluno in alunos:
+                        achou = False
+                        for turma in turmas_ativas:
+                            matriculas = Matricula_Turma.objects.filter(Escola=escolaid, Turma=turma.id)
+                            for matricula in matriculas:
+                                if matricula.Aluno.id == aluno.id:
+                                    achou = True
+                        if not achou:
+                            alunos_sem_turma.append(aluno)
+                    if len(alunos_sem_turma) == 0:
+                        return -2
+                    else:
+                        return alunos_sem_turma
+            else:
+                return -1
+
 
 class Matricula(models.Model):
     Rm = models.AutoField(primary_key=True, verbose_name='RM')
@@ -432,15 +460,12 @@ class Turma(models.Model):
         return self.Nome
 
     def checarMaxAlunos(self):
-        alunos = len(Aluno.objects.filter(Turma=self.id))
+        matriculas = Matricula_Turma.objects.filter(Turma=self.id)
 
-        if alunos < self.Max_Alunos:
+        if len(matriculas) < self.Max_Alunos:
             return True
         else:
             return False
-
-    def matricularNaTurma(self,idAluno):
-        pass
 
     
 class Matricula_Turma(models.Model):

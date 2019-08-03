@@ -10,27 +10,44 @@
     <table>
         <thead>
             <tr>
+                <th>Alt</Th>
                 <th>Exc</Th>
                 <th>Nome do Aluno</th>
+                <th>Situação</th>
 
             </tr>
-            <a href="#">Matricular um aluno</a>
+            <a href="{% url 'matricula_turma_novo' idT %}">Matricular um aluno</a>
             &NonBreakingSpace;
-            <a href="{% url 'leciona_listagem' id %}">Disciplina x Professor</a>
+            <a href="{% url 'leciona_listagem' idT %}">Disciplina x Professor</a>
         </thead>
         <tbody>
-            <!-- {% for turma in turmas %}
-                {% if turmas is not None %}
+            {% for matricula in matriculas %}
+                {% if matriculas is not None %}
                     <tr>
-                        
+                        <th>X</th>
+                        <th>X</th>
+                        <th>{{ matricula.Aluno.Nome }}</th>
+                        {% if matricula.Situacao == 'matriculado' %}
+                            <th>Matriculado</th>
+                        {% elif matricula.Situacao == 'concluido' %}
+                            <th>Concluído</th>
+                        {% elif matricula.Situacao == 'transferido' %}
+                            <th>Transferido</th>
+                        {% elif matricula.Situacao == 'trancado' %}
+                            <th>Trancado</th>
+                        {% elif matricula.Situacao == 'reprovado' %}
+                            <th>Reprovado</th>
+                        {% endif %}
+                            
                     </tr>
                 {% else %}
                     <tr>
                         <th>X</th>
+                        <th>X</th>
                         <th></th>
-
+                        <th></th>
                     </tr>
-                {% endif %} -->
+                {% endif %}
             {% endfor %}
         </tbody>
     </table>

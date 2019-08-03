@@ -227,14 +227,102 @@ def turma_deletar(request,id):
 
 
 @login_required
-def gerenciamento_turma_listagem(request,id):
-    turma = get_object_or_404(Turma, id=id)
+def gerenciamento_turma_listagem(request,idT):
+    turma = get_object_or_404(Turma, id=idT)
     escola = request.session['Escola']
     checarPermEscola(turma, escola)
-    alunos = []
+    alunos = Aluno.objects.filter(Escola=escola).order_by('Nome')
+    matriculas_ordenadas = []
     matriculas = Matricula_Turma.objects.filter(Turma=turma.id,Escola=escola)
     if len(matriculas) > 0:
-        for matricula in matriculas:
-            alunos.append(matricula.Aluno)
-    context = {'alunos': alunos, 'id': id}
+        for aluno in alunos:
+            for matricula in matriculas:
+                if matricula.Aluno.id == aluno.id:
+                    matriculas_ordenadas.append(matricula)
+    context = {'matriculas': matriculas_ordenadas, 'idT': idT}
     return render(request, 'gestaoEscolar/turma/gerenciamento_turma_listagem.html', context)
+
+
+@login_required
+def matricula_turma_novo(request,idT):
+    turma = get_object_or_404(Turma, id=idT)
+    escola = Escola.objects.get(id=request.session['Escola'])
+    checarPermEscola(turma, escola.id)
+    TIPOS_SITUACAO = Matricula_Turma.TIPOS_SITUACAO
+    alunos = Aluno.retornar_alunos_sem_turma(escola.id)
+    erros = []
+    if alunos == 0:
+        erros.append('Não há alunos cadastrados no sistema.')
+    elif alunos == -1:
+        erros.append('Não há nenhum ano letivo em aberto.')
+    elif alunos == -2:
+        erros.append('Não há nenhum aluno que precisa ser matriculado.')
+    
+    if turma.AnoLetivo.Situacao == 'F':
+        erros.append('O ano letivo dessa turma já foi fechado.')
+
+    if not turma.checarMaxAlunos():
+        erros.append('O limite de alunos dessa turma já foi alcançado.')
+
+    if len(erros) > 0:
+        alunos = []
+    
+    if request.method == 'GET':
+        context = {
+            'erros': erros,
+            'Tipo_Transacao': 'INS', 
+            'alunos': alunos,
+            'Tipo_Situacao': TIPOS_SITUACAO,
+            'idT': idT,
+            'turma': turma
+        }
+        return render(request,'gestaoEscolar/turma/matricula_turma_form.html', context)
+    else:
+        dados = request.POST
+
+        matricula_turma_dados = {
+            'Turma': turma.id ,
+            'Aluno': dados['Aluno'],
+            'Situacao': 'matriculado',
+            'Escola': escola.id
+        }
+
+        matricula_turma_form = Matricula_Turma_Form(matricula_turma_dados)
+        erros_matricula_turma = {}
+
+        if not matricula_turma_form.is_valid():
+            erros_matricula_turma = matricula_turma_form.errors
+        
+        if erros_matricula_turma:
+            for erro in erros_matricula_turma.values():
+                erros.append(erro)
+            context = {
+                'matricula_turma_dados':matricula_turma_dados, 
+                'erros':erros,  
+                'alunos': alunos,
+                'Tipo_Situacao': TIPOS_SITUACAO,
+                'Tipo_Transacao': 'INS',
+                'idT': idT,
+                'turma': turma
+            }
+            return render(request,'gestaoEscolar/turma/matricula_turma_form.html', context)
+        else:
+            try:
+                with transaction.atomic():
+                    matricula_turma_form.save()
+                    return redirect('gerenciamento_turma_listagem',idT)
+            except Exception as Error:
+                #Erros de servidor (500)
+                print('Erro no servidor: ' + str(Error))
+                Error = 'Erro no servidor'
+                erros = [Error]
+                context = {
+                    'matricula_turma_dados':matricula_turma_dados, 
+                    'erros':erros,  
+                    'alunos': alunos,
+                    'Tipo_Situacao': TIPOS_SITUACAO,
+                    'Tipo_Transacao': 'INS',
+                    'idT': idT,
+                    'turma': turma
+                }
+                return render(request,'gestaoEscolar/turma/matricula_turma_form.html', context)

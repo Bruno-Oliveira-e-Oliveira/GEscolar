@@ -20,7 +20,8 @@ from .models import (
     AnoLetivo,
     Bimestre,
     # Nota,
-    Matriz_Item
+    Matriz_Item,
+    Matricula_Turma
 )
 from django.contrib.auth.models import User
 
@@ -186,6 +187,12 @@ class Matriz_Item_Form(ModelForm):
 class LecionaForm(ModelForm):
     class Meta:
         model = Leciona
+        fields = '__all__'
+
+
+class Matricula_Turma_Form(ModelForm):
+    class Meta:
+        model = Matricula_Turma
         fields = '__all__'
     
 

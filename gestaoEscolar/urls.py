@@ -68,7 +68,10 @@ urlpatterns = [
     path('turma/alterar/<int:id>', turma.turma_alterar, name='turma_alterar'),
     path('turma/<int:id>', turma.turma_consultar, name='turma_consultar'),
     path('turma/deletar/<int:id>', turma.turma_deletar, name='turma_deletar'),
-    path('turma/<int:id>/gestao/',turma.gerenciamento_turma_listagem,name='gerenciamento_turma_listagem'),
+
+    path('turma/<int:idT>/gestao/',turma.gerenciamento_turma_listagem,name='gerenciamento_turma_listagem'),
+    path('turma/<int:idT>/gestao/matricula/novo',turma.matricula_turma_novo,name='matricula_turma_novo'),
+
 
     path('turma/<int:idT>/gestao/lecionas/',leciona.leciona_listagem,name='leciona_listagem'),
     path('turma/<int:idT>/gestao/leciona/alterar/<int:idL>', leciona.leciona_alterar, name='leciona_alterar'),
