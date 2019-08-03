@@ -263,7 +263,7 @@ def matricula_turma_novo(request,idT):
 
     if not turma.checarMaxAlunos():
         erros.append('O limite de alunos dessa turma já foi alcançado.')
-
+ 
     if len(erros) > 0:
         alunos = []
     
