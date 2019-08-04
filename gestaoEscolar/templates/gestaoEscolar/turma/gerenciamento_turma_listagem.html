@@ -16,17 +16,24 @@
                 <th>Situação</th>
 
             </tr>
-            <a href="{% url 'matricula_turma_novo' idT %}">Matricular um aluno</a>
-            &NonBreakingSpace;
+            {% if turma.AnoLetivo.Situacao == 'A' %}
+                <a href="{% url 'matricula_turma_novo' idT %}">Matricular um aluno</a>
+                &NonBreakingSpace;
+            {% endif%}
             <a href="{% url 'leciona_listagem' idT %}">Disciplina x Professor</a>
         </thead>
         <tbody>
             {% for matricula in matriculas %}
                 {% if matriculas is not None %}
                     <tr>
-                        <th>X</th>
-                        <th>X</th>
-                        <th>{{ matricula.Aluno.Nome }}</th>
+                        {% if turma.AnoLetivo.Situacao == 'A' %}
+                            <th><a href="{% url 'matricula_turma_alterar' idT matricula.id %}">X</a></th>
+                            <th><a href="{% url 'matricula_turma_deletar' idT matricula.id %}">X</a></th>
+                        {% else %}
+                            <th>X</th>
+                            <th>X</th>
+                        {% endif %}
+                        <th><a href="{% url 'matricula_turma_consultar' idT matricula.id %}">{{ matricula.Aluno.Nome }}</a></th>
                         {% if matricula.Situacao == 'matriculado' %}
                             <th>Matriculado</th>
                         {% elif matricula.Situacao == 'concluido' %}
@@ -51,5 +58,6 @@
             {% endfor %}
         </tbody>
     </table>
+    <a href="{% url 'turma_listagem' %}"> Voltar</a>
 
 {% endblock  %}

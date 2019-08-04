@@ -71,7 +71,9 @@ urlpatterns = [
 
     path('turma/<int:idT>/gestao/',turma.gerenciamento_turma_listagem,name='gerenciamento_turma_listagem'),
     path('turma/<int:idT>/gestao/matricula/novo',turma.matricula_turma_novo,name='matricula_turma_novo'),
-
+    path('turma/<int:idT>/gestao/matricula/alterar/<int:idM>', turma.matricula_turma_alterar, name='matricula_turma_alterar'),
+    path('turma/<int:idT>/gestao/matricula/<int:idM>', turma.matricula_turma_consultar, name='matricula_turma_consultar'),
+    path('turma/<int:idT>/gestao/matricula/deletar/<int:idM>', turma.matricula_turma_deletar, name='matricula_turma_deletar'),
 
     path('turma/<int:idT>/gestao/lecionas/',leciona.leciona_listagem,name='leciona_listagem'),
     path('turma/<int:idT>/gestao/leciona/alterar/<int:idL>', leciona.leciona_alterar, name='leciona_alterar'),

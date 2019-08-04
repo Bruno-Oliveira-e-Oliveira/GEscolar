@@ -56,25 +56,39 @@
                     </div>
                 {% endif %}
 
-                <div>
-                    <label for="id_Aluno">Aluno:</label>     
-                    <select name="Aluno" id="id_Aluno" required>
-                        {% for aluno in alunos %}
-                            {% if matricula_turma_dados.Aluno.id == aluno.id %}
-                                <option value="{{ aluno.id }}" selected>{{ aluno.Nome }}</option>
-                            {% else %}
-                                <option value="{{ aluno.id }}" >{{ aluno.Nome }}</option>
-                            {% endif %}
-                        {% endfor %}       
-                    </select>
-                </div>
 
-                {% if Tipo_Transacao == 'UPD' %}
+                {% if Tipo_Transacao == 'INS' %}
+                    <div>
+                        <label for="id_Aluno">Aluno:</label>     
+                        <select name="Aluno" id="id_Aluno" required>
+                            {% for aluno in alunos %}
+                                {% if matricula_turma_dados.Aluno.id == aluno.id %}
+                                    <option value="{{ aluno.id }}" selected>{{ aluno.Nome }}</option>
+                                {% else %}
+                                    <option value="{{ aluno.id }}" >{{ aluno.Nome }}</option>
+                                {% endif %}
+                            {% endfor %}       
+                        </select>
+                    </div>
+                {% else %}
+                    <div>
+                        <label for="id_Aluno">Aluno:</label>     
+                        <select name="Aluno" id="id_Aluno" disabled>
+                            {% for aluno in alunos %}
+                                {% if matricula_turma_dados.Aluno.id == aluno.id %}
+                                    <option value="{{ aluno.id }}" selected>{{ aluno.Nome }}</option>
+                                {% else %}
+                                    <option value="{{ aluno.id }}" >{{ aluno.Nome }}</option>
+                                {% endif %}
+                            {% endfor %}       
+                        </select>
+                    </div>
+
                     <div>
                         <label for="id_Situacao">Situação:</label>     
-                        <select name="Situacao" id="id_Situacao" disabled>
+                        <select name="Situacao" id="id_Situacao" required>
                             {% for situacao in Tipo_Situacao %}
-                                {% if matricula_turma_dados.Situacao == Situacao.0 %}
+                                {% if matricula_turma_dados.Situacao == situacao.0 %}
                                     <option value="{{ situacao.0 }}" selected>{{ situacao.1 }}</option>
                                 {% else %}
                                     <option value="{{ situacao.0 }}" >{{ situacao.1 }}</option>
@@ -87,14 +101,58 @@
 
         {% else %}
         
+        <fieldset>
+                {% if matricula_turma_dados.Turma.Serie.Nivel_Escolaridade == 'F' %}
+                    <div>
+                        <label for="id_Turma">Turma:</label>
+                        <input type="text" name="Turma" disabled id="id_Turma" value='{{ turma.Serie.Numero }}{{ turma.Nome }} Ensino Fundamental'>
+                    </div>
+                {% else %}
+                    <div>
+                        <label for="id_Turma">Turma:</label>
+                        <input type="text" name="Turma" disabled id="id_Turma" value='{{ turma.Serie.Numero }}{{ turma.Nome }} Ensino Médio'>
+                    </div>
+                {% endif %}
+
+                <div>
+                    <label for="id_Aluno">Aluno:</label>     
+                    <select name="Aluno" id="id_Aluno" disabled>
+                        {% for aluno in alunos %}
+                            {% if matricula_turma_dados.Aluno.id == aluno.id %}
+                                <option value="{{ aluno.id }}" selected>{{ aluno.Nome }}</option>
+                            {% else %}
+                                <option value="{{ aluno.id }}" >{{ aluno.Nome }}</option>
+                            {% endif %}
+                        {% endfor %}       
+                    </select>
+                </div>
+
+
+                <div>
+                    <label for="id_Situacao">Situação:</label>     
+                    <select name="Situacao" id="id_Situacao" disabled>
+                        {% for situacao in Tipo_Situacao %}
+                            {% if matricula_turma_dados.Situacao == situacao.0 %}
+                                <option value="{{ situacao.0 }}" selected>{{ situacao.1 }}</option>
+                            {% else %}
+                                <option value="{{ situacao.0 }}" >{{ situacao.1 }}</option>
+                            {% endif %}
+                        {% endfor %}       
+                    </select>
+                    
+                </div>
+                
+            </fieldset>
 
 
         {% endif %}
-
-        {% if Tipo_Transacao == 'INS' or Tipo_Transacao == 'UPD' %}
-            <button type="submit">Salvar</button>
-        {% elif Tipo_Transacao == 'DEL' %}
-            <button type="submit">Deletar</button>
+        
+        {% if bloqueio == False %}
+            {% if Tipo_Transacao == 'INS' or Tipo_Transacao == 'UPD' %}
+                <button type="submit">Salvar</button>
+            {% elif Tipo_Transacao == 'DEL' %}
+                <button type="submit">Deletar</button>
+            {% endif %}
         {% endif %}
 
         <a href="{% url 'gerenciamento_turma_listagem' idT %}"> Voltar</a>

@@ -221,7 +221,8 @@ def turma_deletar(request,id):
                 'Tipo_Periodo': TIPO_PERIODO, 
                 'series': series, 
                 'Tipo_Transacao': 'DEL',
-                'idTurma': id
+                'idTurma': id,
+                'erros': erros
             }
             return render(request,'gestaoEscolar/turma/turma_form.html', context)
 
@@ -239,7 +240,7 @@ def gerenciamento_turma_listagem(request,idT):
             for matricula in matriculas:
                 if matricula.Aluno.id == aluno.id:
                     matriculas_ordenadas.append(matricula)
-    context = {'matriculas': matriculas_ordenadas, 'idT': idT}
+    context = {'matriculas': matriculas_ordenadas, 'turma': turma, 'idT': idT}
     return render(request, 'gestaoEscolar/turma/gerenciamento_turma_listagem.html', context)
 
 
@@ -251,6 +252,7 @@ def matricula_turma_novo(request,idT):
     TIPOS_SITUACAO = Matricula_Turma.TIPOS_SITUACAO
     alunos = Aluno.retornar_alunos_sem_turma(escola.id)
     erros = []
+    bloqueio = False
     if alunos == 0:
         erros.append('Não há alunos cadastrados no sistema.')
     elif alunos == -1:
@@ -266,6 +268,7 @@ def matricula_turma_novo(request,idT):
  
     if len(erros) > 0:
         alunos = []
+        bloqueio = True
     
     if request.method == 'GET':
         context = {
@@ -274,7 +277,8 @@ def matricula_turma_novo(request,idT):
             'alunos': alunos,
             'Tipo_Situacao': TIPOS_SITUACAO,
             'idT': idT,
-            'turma': turma
+            'turma': turma,
+            'bloqueio': bloqueio
         }
         return render(request,'gestaoEscolar/turma/matricula_turma_form.html', context)
     else:
@@ -303,7 +307,8 @@ def matricula_turma_novo(request,idT):
                 'Tipo_Situacao': TIPOS_SITUACAO,
                 'Tipo_Transacao': 'INS',
                 'idT': idT,
-                'turma': turma
+                'turma': turma,
+                'bloqueio': bloqueio
             }
             return render(request,'gestaoEscolar/turma/matricula_turma_form.html', context)
         else:
@@ -323,6 +328,165 @@ def matricula_turma_novo(request,idT):
                     'Tipo_Situacao': TIPOS_SITUACAO,
                     'Tipo_Transacao': 'INS',
                     'idT': idT,
-                    'turma': turma
+                    'turma': turma,
+                    'bloqueio': bloqueio
                 }
                 return render(request,'gestaoEscolar/turma/matricula_turma_form.html', context)
+
+
+@login_required
+def matricula_turma_alterar(request,idT,idM):
+    turma_obj = get_object_or_404(Turma, id=idT)
+    matricula_turma_obj = get_object_or_404(Matricula_Turma, id=idM)
+    escola = Escola.objects.get(id=request.session['Escola'])
+    checarPermEscola(turma_obj, escola.id)
+    checarPermEscola(matricula_turma_obj, escola.id)
+    TIPOS_SITUACAO = Matricula_Turma.TIPOS_SITUACAO
+    alunos = Aluno.objects.filter(Escola=escola.id, id=matricula_turma_obj.Aluno.id)
+
+    erros = []
+    bloqueio = False
+    if turma_obj.AnoLetivo.Situacao == 'F':
+        erros.append('O ano letivo dessa turma já foi fechado.')
+        bloqueio = True
+
+    if request.method == 'GET':
+        context = {
+            'matricula_turma_dados': matricula_turma_obj,
+            'erros':erros,  
+            'alunos': alunos,
+            'Tipo_Situacao': TIPOS_SITUACAO,
+            'Tipo_Transacao': 'UPD',
+            'idT': idT,
+            'idM': idM,
+            'turma': turma_obj,
+            'bloqueio': bloqueio
+        }
+        return render(request,'gestaoEscolar/turma/matricula_turma_form.html', context)
+    else:
+        dados = request.POST
+        matricula_turma_dados = {
+            'Turma': matricula_turma_obj.Turma.id,
+            'Aluno': matricula_turma_obj.Aluno.id,
+            'Situacao': dados['Situacao'],
+            'Escola': matricula_turma_obj.Escola.id
+        }
+        matricula_turma_form = Matricula_Turma_Form(matricula_turma_dados , instance=matricula_turma_obj)
+        erros_matricula_turma = {}
+
+        if not matricula_turma_form.is_valid():
+            erros_matricula_turma = matricula_turma_form.errors
+
+        if erros_matricula_turma:
+            erros = []
+            for erro in erros_matricula_turma.values():
+                erros.append(erro)
+            context = {
+                'matricula_turma_dados': matricula_turma_dados,
+                'erros':erros,  
+                'alunos': alunos,
+                'Tipo_Situacao': TIPOS_SITUACAO,
+                'Tipo_Transacao': 'UPD',
+                'idT': idT,
+                'idM': idM,
+                'turma': turma_obj,
+                'bloqueio': bloqueio
+            }
+            return render(request,'gestaoEscolar/turma/matricula_turma_form.html', context)
+        else:
+            try:
+                with transaction.atomic():
+                    matricula_turma_form.save()
+                    return redirect('gerenciamento_turma_listagem',idT)
+            except Exception as Error:
+                #Erros de servidor (500)
+                print('Erro no servidor: ' + str(Error))
+                Error = 'Erro no servidor'
+                erros = [Error]
+                context = {
+                    'matricula_turma_dados': matricula_turma_dados,
+                    'erros':erros,  
+                    'alunos': alunos,
+                    'Tipo_Situacao': TIPOS_SITUACAO,
+                    'Tipo_Transacao': 'UPD',
+                    'idT': idT,
+                    'idM': idM,
+                    'turma': turma_obj,
+                    'bloqueio': bloqueio
+                }
+                return render(request,'gestaoEscolar/turma/matricula_turma_form.html', context)
+
+
+@login_required
+def matricula_turma_consultar(request,idT,idM):
+    turma_obj = get_object_or_404(Turma, id=idT)
+    matricula_turma_obj = get_object_or_404(Matricula_Turma, id=idM)
+    escola = Escola.objects.get(id=request.session['Escola'])
+    checarPermEscola(turma_obj, escola.id)
+    checarPermEscola(matricula_turma_obj, escola.id)
+    TIPOS_SITUACAO = Matricula_Turma.TIPOS_SITUACAO
+    alunos = Aluno.objects.filter(Escola=escola.id, id=matricula_turma_obj.Aluno.id)
+
+    context = {
+        'matricula_turma_dados': matricula_turma_obj, 
+        'alunos': alunos,
+        'Tipo_Situacao': TIPOS_SITUACAO,
+        'Tipo_Transacao': 'CON',
+        'idT': idT,
+        'idM': idM,
+        'turma': turma_obj,
+    }
+    return render(request,'gestaoEscolar/turma/matricula_turma_form.html', context)
+
+
+@login_required
+def matricula_turma_deletar(request,idT,idM):
+    turma_obj = get_object_or_404(Turma, id=idT)
+    matricula_turma_obj = get_object_or_404(Matricula_Turma, id=idM)
+    escola = Escola.objects.get(id=request.session['Escola'])
+    checarPermEscola(turma_obj, escola.id)
+    checarPermEscola(matricula_turma_obj, escola.id)
+    TIPOS_SITUACAO = Matricula_Turma.TIPOS_SITUACAO
+    alunos = Aluno.objects.filter(Escola=escola.id, id=matricula_turma_obj.Aluno.id)
+
+    erros = []
+    bloqueio = False
+    if turma_obj.AnoLetivo.Situacao == 'F':
+        erros.append('O ano letivo dessa turma já foi fechado.')
+        bloqueio = True
+    
+    if request.method == 'GET':
+        context = {
+            'matricula_turma_dados': matricula_turma_obj,
+            'erros':erros,  
+            'alunos': alunos,
+            'Tipo_Situacao': TIPOS_SITUACAO,
+            'Tipo_Transacao': 'DEL',
+            'idT': idT,
+            'idM': idM,
+            'turma': turma_obj,
+            'bloqueio': bloqueio
+        }
+        return render(request,'gestaoEscolar/turma/matricula_turma_form.html', context)
+    else:
+        try:
+            with transaction.atomic():
+                matricula_turma_obj.delete()
+                return redirect('gerenciamento_turma_listagem',idT)
+        except Exception as Error:
+            #Erros de servidor (500)
+            print('Erro no servidor: ' + str(Error))
+            Error = 'Erro no servidor'
+            erros = [Error]
+            context = {
+                'matricula_turma_dados': matricula_turma_obj,
+                'erros':erros,  
+                'alunos': alunos,
+                'Tipo_Situacao': TIPOS_SITUACAO,
+                'Tipo_Transacao': 'DEL',
+                'idT': idT,
+                'idM': idM,
+                'turma': turma_obj,
+                'bloqueio': bloqueio
+            }
+            return render(request,'gestaoEscolar/turma/matricula_turma_form.html', context)

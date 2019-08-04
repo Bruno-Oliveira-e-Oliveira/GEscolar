@@ -12,23 +12,27 @@ from .permissoes import checarPermEscola
 
 @login_required
 def leciona_listagem(request,idT):
+    turma_obj = get_object_or_404(Turma, id=idT)
     escola = request.session['Escola']
-    lecionas = Leciona.objects.filter(Escola=escola)
+    checarPermEscola(turma_obj, escola)
+    lecionas = Leciona.objects.filter(Escola=escola, Turma=turma_obj.id)
     professores = Professor.objects.filter(Escola=escola)
     disciplinas = Disciplina.objects.filter(Escola=escola).order_by('Nome')
     context = {
         'lecionas': lecionas,
         'professores': professores,
         'disciplinas': disciplinas,
-        'idT': idT
+        'turma': turma_obj
         }
     return render(request, 'gestaoEscolar/leciona/leciona_listagem.html', context)
 
 
 @login_required
 def leciona_alterar(request,idT,idL):
+    turma_obj = get_object_or_404(Turma, id=idT)
     leciona_obj = get_object_or_404(Leciona, id=idL)
     escola = request.session['Escola']
+    checarPermEscola(turma_obj, escola)
     checarPermEscola(leciona_obj, escola)
     professores = Professor.objects.filter(Escola=escola).order_by('Nome')
 
@@ -93,8 +97,10 @@ def leciona_alterar(request,idT,idL):
 
 @login_required
 def leciona_consultar(request,idT,idL):
+    turma_obj = get_object_or_404(Turma, id=idT)
     leciona_obj = get_object_or_404(Leciona, id=idL)
     escola = request.session['Escola']
+    checarPermEscola(turma_obj, escola)
     checarPermEscola(leciona_obj, escola)
     professores = Professor.objects.filter(Escola=escola).order_by('Nome')
     context = {

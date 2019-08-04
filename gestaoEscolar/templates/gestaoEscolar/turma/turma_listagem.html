@@ -24,8 +24,14 @@
             {% for turma in turmas %}
                 {% if turmas is not None %}
                     <tr>
-                        <th><a href="{% url 'turma_alterar' turma.id %}">X</a></th>
-                        <th><a href="{% url 'turma_deletar' turma.id %}">X</a></th>
+                            
+                        {% if turma.AnoLetivo.Situacao == 'A' %}
+                            <th><a href="{% url 'turma_alterar' turma.id %}">X</a></th>
+                            <th><a href="{% url 'turma_deletar' turma.id %}">X</a></th>
+                        {% else %}
+                            <th>X</th>
+                            <th>X</th>
+                        {% endif %}
                         <th><a href="{% url 'turma_consultar' turma.id %}">{{ turma.Serie.Numero }}-{{ turma.Nome }}</a></th>
                         {% if turma.Periodo == 'M' %}
                             <th>Manhã</th>

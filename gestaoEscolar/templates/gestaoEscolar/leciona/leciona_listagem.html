@@ -24,8 +24,12 @@
 
                         {% if lecionas is not None and disciplina.id == leciona.Matriz_Item.Disciplina.id %}
                             <tr>
-                                <th><a href="{% url 'leciona_alterar' idT leciona.id %}">X</a></th>
-                                <th><a href="{% url 'leciona_consultar' idT leciona.id %}">{{ leciona.Matriz_Item.Disciplina.Nome }}</a></th>
+                                {% if turma.AnoLetivo.Situacao == 'A' %}
+                                    <th><a href="{% url 'leciona_alterar' turma.id leciona.id %}">X</a></th>
+                                {% else %}
+                                    <th>X</th>
+                                {% endif %}
+                                <th><a href="{% url 'leciona_consultar' turma.id leciona.id %}">{{ leciona.Matriz_Item.Disciplina.Nome }}</a></th>
                                 <th>{{ leciona.Professor.Nome }}</th>
                                 {% if leciona.Aulas_Previstas is not None %}
                                     <th>{{ leciona.Aulas_Previstas }}</th>
@@ -48,5 +52,5 @@
             {% endfor %}
         </tbody>
     </table>
-    <a href="{% url 'gerenciamento_turma_listagem' idT %}"> Voltar</a>
+    <a href="{% url 'gerenciamento_turma_listagem' turma.id %}"> Voltar</a>
 {% endblock  %}
