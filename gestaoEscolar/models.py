@@ -416,8 +416,15 @@ class Leciona(models.Model):
                     lecionas = Leciona.objects.filter(Matriz_Item=item.id, Turma=turma.id)
                     if len(lecionas) > 0:
                         lecionas[0].delete()
-                    
 
+    @property
+    def nome_editado(self):
+        if self.Professor is not None:
+            return self.Matriz_Item.Disciplina.Nome + ' - ' + self.Professor.Nome
+        else:
+            return self.Matriz_Item.Disciplina.Nome + ' - Não há professor associado à essa disciplina.'        
+
+            
 class Turma(models.Model):
     Nome = models.CharField('Nome',max_length=1)
     MANHA = 'M'
@@ -502,6 +509,7 @@ class Matricula_Turma(models.Model):
 
 class Aula(models.Model):
     Data = models.DateField(verbose_name='Data')
+    Tema = models.CharField('Tema',max_length=40)
     Turma = models.ForeignKey('Turma', on_delete=models.PROTECT, verbose_name='Turma')
     Leciona = models.ForeignKey('Leciona', on_delete=models.PROTECT, verbose_name='Leciona')
     Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')

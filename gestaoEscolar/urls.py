@@ -82,6 +82,14 @@ urlpatterns = [
     path('turma/<int:idT>/gestao/leciona/alterar/<int:idL>', leciona.leciona_alterar, name='leciona_alterar'),
     path('turma/<int:idT>/gestao/leciona/<int:idL>', leciona.leciona_consultar, name='leciona_consultar'),
 
+    path('turma/<int:idT>/aulas/', aula.aula_listagem, name='aula_listagem'),
+    # path('ajax/aulas/', aula.aula_listagem_ajax, name='aula_listagem_ajax'),
+    path('turma/<int:idT>/aula/novo/', aula.aula_novo, name='aula_novo'),
+    path('turma/<int:idT>/aula/alterar/<int:idA>', aula.aula_alterar, name='aula_alterar'),
+    path('turma/<int:idT>/aula/<int:idA>', aula.aula_consultar, name='aula_consultar'),
+    path('turma/<int:idT>/aula/deletar/<int:idA>', aula.aula_deletar, name='aula_deletar'),
+
+
     path('series/', serie.serie_listagem, name='serie_listagem'),
     path('serie/<int:id>/matriz/', matriz.matriz_item_listagem, name='matriz_item_listagem'),
     path('serie/<int:idS>/matriz/novo/', matriz.matriz_item_novo, name='matriz_item_novo'),
@@ -89,11 +97,6 @@ urlpatterns = [
     path('serie/<int:idS>/matriz/<int:idM>', matriz.matriz_item_consultar, name='matriz_item_consultar'),
     path('serie/<int:idS>/matriz/deletar/<int:idM>', matriz.matriz_item_deletar, name='matriz_item_deletar'),
     
-    path('aulas/', aula.aula_listagem, name='aula_listagem'),
-    path('ajax/aulas/', aula.aula_listagem_ajax, name='aula_listagem_ajax'),
-    # path('turma/novo/', turma.turma_novo, name='turma_novo'),
-    # path('turma/alterar/<int:id>', turma.turma_alterar, name='turma_alterar'),
-    # path('turma/<int:id>', turma.turma_consultar, name='turma_consultar'),
-    # path('turma/deletar/<int:id>', turma.turma_deletar, name='turma_deletar'),
+
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

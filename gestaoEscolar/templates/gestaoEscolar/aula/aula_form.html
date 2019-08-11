@@ -1,0 +1,143 @@
+{% extends 'projeto/base/base.html' %}
+
+{% block title %}
+    {% if Tipo_Transacao == 'INS' %}
+        Cadastrar novo aula | GEscolar 
+    {% elif Tipo_Transacao == 'UPD' %}
+        Alterar aula | GEscolar 
+    {% elif Tipo_Transacao == 'CON' %}
+        Consultar aula | GEscolar
+    {% elif Tipo_Transacao == 'DEL' %}
+        Apagar aula | GEscolar
+    {% endif %}
+{% endblock  %}
+
+
+{% block main %}
+
+    {% if Tipo_Transacao == 'INS' %}
+        <h2>Cadastrar aula</h2> 
+    {% elif Tipo_Transacao == 'UPD' %}
+        <h2>Atualizar dados do aula</h2> 
+    {% elif Tipo_Transacao == 'CON' %}
+        <h2>Consultar aula</h2> 
+    {% elif Tipo_Transacao == 'DEL' %}
+        <h2>Apagar aula</h2>
+    {% endif %}
+
+    {% for erro in erros %}
+        {{ erro }}
+    {% endfor %}
+
+    <form action="
+            {% if Tipo_Transacao == 'INS' %}
+                {% url 'aula_novo' turma.id %}
+            {% elif Tipo_Transacao == 'UPD' %}
+                {% url 'aula_alterar' turma.id idA %}
+            {% elif Tipo_Transacao == 'CON' %}
+                {% url 'aula_consultar' turma.id idA %}
+            {% elif Tipo_Transacao == 'DEL' %}
+                {% url 'aula_deletar' turma.id idA %}
+            {% endif %}
+        " method="POST">
+        {% csrf_token %}
+
+        {% if Tipo_Transacao == 'INS' or Tipo_Transacao == 'UPD' %}
+            <fieldset>
+                <div>
+                    <label for="id_Data">Data:</label> 
+                    <input type="date" name="Data" required id="id_Data" value='{{ aula_dados.Data|date:"Y-m-d" }}'>
+                </div>
+
+                <div>
+                    <label for="id_Tema">Tema:</label>
+                    <input type="text" name="Tema" maxlength="40" size="40" required id="id_Tema" value='{{ aula_dados.Tema }}'>
+                </div>
+                {% if Tipo_Transacao == 'INS' %}
+                    <div>
+                        <label for="id_Leciona">Disciplina / Professor:</label> 
+                        <select name="Leciona" id="id_Leciona" required>
+                            {% for leciona in lecionas %}
+                                {% if aula_dados.Leciona.id == leciona.id %}
+                                    <option value="{{ leciona.id }}" selected>{{ leciona.nome_editado }}</option>
+                                {% else %}
+                                    <option value="{{ leciona.id }}" >{{ leciona.nome_editado }}</option>
+                                {% endif %}
+                            {% empty %}
+                                <option value="" ></option>
+                            {% endfor %}       
+                        </select>
+                    </div>
+                
+                {% else %}
+                    <div>
+                        <label for="id_Leciona">Disciplina / Professor:</label> 
+                        <select name="Leciona" id="id_Leciona" disabled>
+                            {% for leciona in lecionas %}
+                                {% if aula_dados.Leciona.id == leciona.id %}
+                                    <option value="{{ leciona.id }}" selected>{{ leciona.nome_editado }}</option>
+                                {% else %}
+                                    <option value="{{ leciona.id }}" >{{ leciona.nome_editado }}</option>
+                                {% endif %}
+                            {% empty %}
+                                <option value="" ></option>
+                            {% endfor %}       
+                        </select>
+                    </div>
+                {% endif %}
+
+                <div>
+                    <label for="id_Turma">Turma:</label>
+                    <input type="text" name="Turma" maxlength="20" disabled id="id_Turma" value='{{ turma.nome_editado }}'>
+                </div>
+
+            </fieldset>
+
+        {% else %}
+            <fieldset>
+                <div>
+                    <label for="id_Data">Data:</label> 
+                    <input type="date" name="Data" disabled id="id_Data" value='{{ aula_dados.Data|date:"Y-m-d" }}'>
+                </div>
+
+                <div>
+                    <label for="id_Tema">Tema:</label>
+                    <input type="text" name="Tema" maxlength="40" size="40" disabled id="id_Tema" value='{{ aula_dados.Tema }}'>
+                </div>
+    
+                <div>
+                    <label for="id_Leciona">Disciplina / Professor:</label> 
+                    <select name="Leciona" id="id_Leciona" disabled>
+                        {% for leciona in lecionas %}
+                            {% if aula_dados.Leciona.id == leciona.id %}
+                                <option value="{{ leciona.id }}" selected>{{ leciona.nome_editado }}</option>
+                            {% else %}
+                                <option value="{{ leciona.id }}" >{{ leciona.nome_editado }}</option>
+                            {% endif %}
+                        {% empty %}
+                            <option value="" ></option>
+                        {% endfor %}       
+                    </select>
+                </div>
+
+                <div>
+                    <label for="id_Turma">Turma:</label>
+                    <input type="text" name="Turma" maxlength="20" disabled id="id_Turma" value='{{ turma.nome_editado }}'>
+                </div>
+
+            </fieldset>
+
+        {% endif %}
+
+        {% if bloqueio == False %}
+            {% if Tipo_Transacao == 'INS' or Tipo_Transacao == 'UPD' %}
+                <button type="submit">Salvar</button>
+            {% elif Tipo_Transacao == 'DEL' %}
+                <button type="submit">Deletar</button>
+            {% endif %}
+        {% endif %}
+
+        <a href="{% url 'aula_listagem' turma.id %}"> Voltar</a>
+    </form>
+
+{% endblock  %}

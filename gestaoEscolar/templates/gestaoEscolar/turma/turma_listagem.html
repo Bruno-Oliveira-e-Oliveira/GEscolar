@@ -16,7 +16,8 @@
                 <th>Período</th>
                 <th>Série</th>
                 <th>Ano letivo</th>
-                <th>Gerenciamento</th>
+                <th>Gestão</th>
+                <th>Aulas</th>
             </tr>
             <a href="{% url 'turma_novo' %}">Novo</a>
         </thead>
@@ -45,17 +46,7 @@
                         {% endif %}
                         <th>{{ turma.AnoLetivo.Ano }}</th>
                         <th><a href="{% url 'gerenciamento_turma_listagem' turma.id %}">X</a></th>
-                    </tr>
-                {% else %}
-                    <tr>
-                        <th>X</th>
-                        <th>X</th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th>X</th>
+                        <th><a href="{% url 'aula_listagem' turma.id %}">X</a></th>
                     </tr>
                 {% endif %}
             {% endfor %}

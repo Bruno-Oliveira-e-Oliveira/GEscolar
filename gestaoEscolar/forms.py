@@ -12,7 +12,7 @@ from .models import (
     Disciplina,
     Leciona,
     Turma,
-    # Aula,
+    Aula,
     # Avaliacao,
     # Frequencia,
     # Aplicacao,
@@ -194,5 +194,11 @@ class Matricula_Turma_Form(ModelForm):
     class Meta:
         model = Matricula_Turma
         fields = '__all__'
-    
+
+
+class AulaForm(ModelForm):
+    class Meta:
+        model = Aula
+        fields = '__all__'
+
 
