@@ -472,6 +472,7 @@ def matricula_turma_deletar(request,idT,idM):
         try:
             with transaction.atomic():
                 matricula_turma_obj.delete()
+                Frequencia.apagar_frequencias_aluno(matricula_turma_obj.Aluno, escola)
                 return redirect('gerenciamento_turma_listagem',idT)
         except Exception as Error:
             #Erros de servidor (500)

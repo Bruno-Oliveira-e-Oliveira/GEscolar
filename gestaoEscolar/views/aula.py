@@ -45,12 +45,16 @@ def aula_novo(request,idT):
     escola = Escola.objects.get(id=request.session['Escola'])
     checarPermEscola(turma, escola.id)
     lecionas = Leciona.objects.filter(Escola=escola.id, Turma=turma.id)
+    alunos = Matricula_Turma.retornar_alunos_matriculados(turma, escola)
     erros = []
     bloqueio = False
 
     if len(lecionas) == 0:
         erros.append('Não há registros na tabela de disciplinas x professores.')
-    
+
+    if len(alunos) == 0:
+        erros.append('Não há nenhum aluno matriculado nessa turma.')
+
     if len(erros) > 0:
         bloqueio = True
 
@@ -93,7 +97,8 @@ def aula_novo(request,idT):
         else:
             try:
                 with transaction.atomic():
-                    aula_form.save()
+                    aula = aula_form.save()
+                    Frequencia.gerar_frequencias(aula, escola)
                     return redirect('aula_listagem',turma.id)
             except Exception as Error:
                 #Erros de servidor (500)
@@ -228,6 +233,7 @@ def aula_deletar(request,idT,idA):
     else:
         try:
             with transaction.atomic():
+                Frequencia.apagar_frequencias(aula_obj, escola)
                 aula_obj.delete()
                 return redirect('aula_listagem',turma.id)
         except Exception as Error:
@@ -247,6 +253,83 @@ def aula_deletar(request,idT,idA):
             return render(request,'gestaoEscolar/aula/aula_form.html', context)
 
             
+@login_required
+def lista_chamada(request,idT,idA):
+    turma = get_object_or_404(Turma, id=idT)
+    aula_obj = get_object_or_404(Aula, id=idA)
+    escola = Escola.objects.get(id=request.session['Escola'])
+    checarPermEscola(turma, escola.id)
+    checarPermEscola(aula_obj, escola.id)
+    frequencias = Frequencia.objects.filter(Escola=escola.id, Aula=aula_obj.id)
+
+    if request.method == 'GET':
+        context = {
+            'turma': turma, 
+            'aula': aula_obj,
+            'frequencias': frequencias 
+        }
+        return render(request,'gestaoEscolar/aula/chamada_form.html', context)
+    else:
+        dados = request.POST
+        erros = []
+        print(dados)
+
+        for frequencia in frequencias:
+            chave = 'Presenca-'
+            chave += str(frequencia.Aluno.id)
+            presenca = dados[chave]
+
+            if presenca != 'Presente':
+                presenca = 'Ausente'
+
+            chamada_dados = {
+                'Presenca': presenca,
+                'Aula': aula_obj.id,
+                'Aluno': frequencia.Aluno.id,
+                'Escola': escola.id
+            }
+            chamada_form = FrequenciaForm(chamada_dados)
+            erros_chamada = {}
+
+            if not chamada_form.is_valid():
+                erros_chamada = chamada_form.errors
+    
+            if erros_chamada:
+                for erro in erros_chamada.values():
+                    erros.append(erro)
+
+        if erros:        
+            context = {
+                'turma': turma, 
+                'aula': aula_obj,
+                'frequencias': frequencias,
+                'erros': erros
+            }
+            return render(request,'gestaoEscolar/aula/chamada_form.html', context)
+        else:
+            try:
+                with transaction.atomic():
+                    chamada_form.save()
+                    return redirect('aula_listagem',turma.id)
+            except Exception as Error:
+                #Erros de servidor (500)
+                print('Erro no servidor: ' + str(Error))
+                Error = 'Erro no servidor'
+                erros = [Error]
+                context = {
+                    'turma': turma, 
+                    'aula': aula_obj,
+                    'frequencias': frequencias,
+                    'erros': erros
+                }
+                return render(request,'gestaoEscolar/aula/chamada_form.html', context)
+
+            
+            
+        
+     
 
 
+
+        
 

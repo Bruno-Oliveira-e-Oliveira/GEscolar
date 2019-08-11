@@ -39,7 +39,7 @@
                     <th>{{ aula.Leciona.Matriz_Item.Disciplina.Nome }}</th>
                     <th>{{ aula.Leciona.Professor.Nome }}</th>
                     <th>{{ aula.Turma.nome_editado }}</th>
-                    <th><a href=" url 'chamada_listagem' aula.id ">X</a></th>
+                    <th><a href="{% url 'lista_chamada' turma.id aula.id %}">X</a></th>
                 </tr>
             {% endfor %}           
         </tbody>

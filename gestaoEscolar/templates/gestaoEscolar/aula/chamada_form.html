@@ -1,0 +1,46 @@
+{% extends 'projeto/base/base.html' %}
+
+{% block title %}
+    Lista de chamada | GEscolar 
+{% endblock  %}
+
+
+{% block main %}
+
+    <h2>Lista de chamada</h2> 
+
+    {% for erro in erros %}
+        {{ erro }}
+    {% endfor %}
+
+    <form action="" method="POST">
+        {% csrf_token %}
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Aluno</th>
+                    <th>Presença</Th>
+                </tr>
+            </thead>
+
+            <tbody id="tbody">
+                {% for frequencia in frequencias %}
+                    <tr>   
+                        <td>{{ frequencia.Aluno.Nome }}</td>
+                        {% if frequencia.Presenca == 'Presente' %}
+                            <td><input type="checkbox" name="Presenca-{{ frequencia.Aluno.id }}" value="Presente" checked></td>
+                        {% else %} 
+                            <td><input type="checkbox" name="Presenca-{{ frequencia.Aluno.id }}" value="Presente" ></td>
+                        {% endif %} 
+                    </tr>
+                {% endfor %}           
+            </tbody>
+        </table>
+
+        <button type="submit">Salvar</button>
+
+        <a href="{% url 'aula_listagem' turma.id %}"> Voltar</a>
+    </form>
+
+{% endblock  %}

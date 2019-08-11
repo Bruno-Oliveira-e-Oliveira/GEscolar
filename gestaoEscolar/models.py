@@ -424,7 +424,7 @@ class Leciona(models.Model):
         else:
             return self.Matriz_Item.Disciplina.Nome + ' - Não há professor associado à essa disciplina.'        
 
-            
+
 class Turma(models.Model):
     Nome = models.CharField('Nome',max_length=1)
     MANHA = 'M'
@@ -506,6 +506,14 @@ class Matricula_Turma(models.Model):
     def __str__(self):
         return self.Turma.Nome + ' - ' + self.Aluno.Nome
 
+    def retornar_alunos_matriculados(turma, escola):
+        matriculas = Matricula_Turma.objects.filter(Escola=escola.id, Turma=turma.id)
+        alunos = []
+        if len(matriculas) > 0:
+            for matricula in matriculas:
+                alunos.append(matricula.Aluno)
+        return alunos
+
 
 class Aula(models.Model):
     Data = models.DateField(verbose_name='Data')
@@ -517,6 +525,46 @@ class Aula(models.Model):
     def __str__(self):
         return self.Turma.Nome + ' - ' + self.Leciona.Matriz_Item.Disciplina.Nome + ' - ' + str(self.Data)
 
+
+class Frequencia(models.Model):
+    PRESENTE = 'Presente'
+    AUSENTE = 'Ausente'
+    SITUACAO = (
+        (PRESENTE, 'Presente'),
+        (AUSENTE, 'Ausente')
+    )
+    Presenca = models.CharField('Tema',max_length=10, choices=SITUACAO, default=PRESENTE)
+    Aula = models.ForeignKey('Aula', on_delete = models.PROTECT, verbose_name = 'Aula')
+    Aluno = models.ForeignKey('Aluno', on_delete = models.PROTECT, verbose_name = 'Aluno')
+    Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['Aula','Aluno'], 
+                name='unique_Aula_Aluno'
+            )
+        ]
+    
+    def __str__(self):
+        return self.Aula.Turma.Nome + ' - '+ self.Aluno.Nome + ' - ' + str(self.Aula.Data)
+
+    def gerar_frequencias(aula, escola):
+        alunos = Matricula_Turma.retornar_alunos_matriculados(aula.Turma, escola)
+        for aluno in alunos:
+            frequencia = Frequencia(Aula=aula, Aluno=aluno, Escola=escola)
+            frequencia.save()
+
+    def apagar_frequencias(aula, escola):
+        frequencias = Frequencia.objects.filter(Escola=escola.id, Aula=aula.id)
+        for frequencia in frequencias:
+            frequencia.delete()
+
+    def apagar_frequencias_aluno(aluno, escola):
+        frequencias = Frequencia.objects.filter(Escola=escola.id, Aluno=aluno.id)
+        for frequencia in frequencias:
+            frequencia.delete()
+    
 
 
 # class Avaliacao(models.Model):
@@ -530,23 +578,7 @@ class Aula(models.Model):
 #         return self.Aula.Turma.Nome + ' - '+ self.Tema + ' - ' + str(self.Aula.Data)
 
 
-# class Frequencia(models.Model):
-#     #Campo Frequencia adicionado
-#     Presenca = models.BooleanField(verbose_name='Presença', default=True)
-#     Aula = models.ForeignKey('Aula', on_delete = models.PROTECT, verbose_name = 'Aula')
-#     Aluno = models.ForeignKey('Aluno', on_delete = models.PROTECT, verbose_name = 'Aluno')
-#     Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
 
-#     class Meta:
-#         constraints = [
-#             models.UniqueConstraint(
-#                 fields=['Aula','Aluno'], 
-#                 name='unique_Aula_Aluno'
-#             )
-#         ]
-    
-#     def __str__(self):
-#         return self.Aula.Turma.Nome + ' - '+ self.Aluno.Nome + ' - ' + str(self.Aula.Data)
 
 
 # class Aplicacao(models.Model):
