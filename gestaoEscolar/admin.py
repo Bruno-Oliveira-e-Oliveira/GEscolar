@@ -10,7 +10,7 @@ from .models import (
     Disciplina,
     Leciona,
     Turma,
-    # Aula,
+    Aula,
     # Avaliacao,
     # Frequencia,
     # Aplicacao,
@@ -35,7 +35,7 @@ admin.site.register(Aluno)
 admin.site.register(Disciplina)
 admin.site.register(Leciona)
 admin.site.register(Turma)
-# admin.site.register(Aula)
+admin.site.register(Aula)
 # admin.site.register(Avaliacao)
 # admin.site.register(Frequencia)
 # admin.site.register(Aplicacao)

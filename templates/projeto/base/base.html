@@ -7,7 +7,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>{% block title %} {% endblock %}</title>
 
-    {% block estaticos %} {% endblock %}
+    {% block linksEstaticos %} {% endblock %}
+    {% block javascript %} {% endblock %}
 </head>
 <body>
     {% block cabecalho %}
@@ -20,6 +21,7 @@
             <a href="{% url 'disciplina_listagem' %}">Disciplina</a>
             <a href="{% url 'serie_listagem' %}">Série</a>
             <a href="{% url 'turma_listagem' %}">Turma</a>
+            <a href="{% url 'aula_listagem' %}">Aula</a>
             <a href="{% url 'logout' %}">Encessar Sessão</a>
             {{ user.username }}
         {% endif %}

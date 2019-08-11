@@ -1,8 +1,11 @@
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 from .views import (
     inicio, 
     aluno,
     ano,
+    aula,
     bimestre,
     disciplina,
     escola,
@@ -86,4 +89,11 @@ urlpatterns = [
     path('serie/<int:idS>/matriz/<int:idM>', matriz.matriz_item_consultar, name='matriz_item_consultar'),
     path('serie/<int:idS>/matriz/deletar/<int:idM>', matriz.matriz_item_deletar, name='matriz_item_deletar'),
     
-]
+    path('aulas/', aula.aula_listagem, name='aula_listagem'),
+    path('ajax/aulas/', aula.aula_listagem_ajax, name='aula_listagem_ajax'),
+    # path('turma/novo/', turma.turma_novo, name='turma_novo'),
+    # path('turma/alterar/<int:id>', turma.turma_alterar, name='turma_alterar'),
+    # path('turma/<int:id>', turma.turma_consultar, name='turma_consultar'),
+    # path('turma/deletar/<int:id>', turma.turma_deletar, name='turma_deletar'),
+
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

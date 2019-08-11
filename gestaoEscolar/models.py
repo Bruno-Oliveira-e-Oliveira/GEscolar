@@ -451,13 +451,23 @@ class Turma(models.Model):
                 name='unique_Turma_Serie_Ano'
             ),
             models.UniqueConstraint(
-                fields=['Sala', 'Periodo', 'Escola'], 
+                fields=['Sala', 'Periodo', 'AnoLetivo', 'Escola'], 
                 name='unique_Sala_Turma_Periodo'
             )
         ]
 
+    @property
+    def nome_editado(self):
+        if self.Serie.Nivel_Escolaridade == 'F':
+            return str(self.Serie.Numero) +''+ self.Nome +' - Ensino Fundamental'
+        else:
+            return str(self.Serie.Numero) +''+ self.Nome +' - Ensino Médio'
+
     def __str__(self):
-        return self.Nome
+        if self.Serie.Nivel_Escolaridade == 'F':
+            return str(self.Serie.Numero) +''+ self.Nome +' - Ensino Fundamental'
+        else:
+            return str(self.Serie.Numero) +''+ self.Nome +' - Ensino Médio'
 
     def checarMaxAlunos(self):
         matriculas = Matricula_Turma.objects.filter(Turma=self.id)
@@ -490,17 +500,15 @@ class Matricula_Turma(models.Model):
         return self.Turma.Nome + ' - ' + self.Aluno.Nome
 
 
-# class Aula(models.Model):
-#     Data = models.DateField(verbose_name='Data')
-#     Turma = models.ForeignKey('Turma', on_delete=models.PROTECT, verbose_name='Turma')
-#     Leciona = models.ForeignKey('Leciona', on_delete=models.PROTECT, verbose_name='Leciona')
-#     Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
+class Aula(models.Model):
+    Data = models.DateField(verbose_name='Data')
+    Turma = models.ForeignKey('Turma', on_delete=models.PROTECT, verbose_name='Turma')
+    Leciona = models.ForeignKey('Leciona', on_delete=models.PROTECT, verbose_name='Leciona')
+    Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
 
-#     def __str__(self):
-#         return self.Turma.Nome + ' - ' + self.Leciona.Disciplina.Nome + ' - ' + str(self.Data)
+    def __str__(self):
+        return self.Turma.Nome + ' - ' + self.Leciona.Matriz_Item.Disciplina.Nome + ' - ' + str(self.Data)
 
-#     def checarData(self):
-#         pass
 
 
 # class Avaliacao(models.Model):

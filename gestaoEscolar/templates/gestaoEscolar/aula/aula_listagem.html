@@ -1,0 +1,99 @@
+{% extends 'projeto/base/base.html' %}
+{% load static %}
+
+{% block title %}Listagem de Turmas | GEscolar{% endblock  %}
+
+{% block javascript %} 
+    <script src="{% static 'jquery-3.4.1.min.js' %}"></script>
+    <script>
+        $(document).on('submit','#form_filtros',function (e) {
+            e.preventDefault()
+            var turma_filtro = $("#id_Turma_Filtro").val();
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'aula_listagem_ajax' %}",
+                data: {
+                    'turma_filtro': turma_filtro,
+                    'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+                },
+                dataType: 'json',
+                success: function (aulas) {  
+                    carregar_tabela(aulas);
+                }
+            });
+        });
+
+        function carregar_tabela(aulas){ 
+            document.getElementById('tbody').innerHTML = '';
+            for (var i in aulas) {
+                var tr = document.createElement("tr");
+                var alterar = document.createElement("td");
+                var excluir = document.createElement("td");
+                var data = document.createElement("td");
+                var disciplina = document.createElement("td");
+                var professor = document.createElement("td");
+                var turma = document.createElement("td");
+                var lista = document.createElement("td");
+
+                tr.className = 'tr'
+                alterar.innerHTML = 'X'
+                excluir.innerHTML = 'X'
+                data.innerHTML = aulas[i]['Data']
+                disciplina.innerHTML = aulas[i]['Disciplina']
+                professor.innerHTML = aulas[i]['Professor']
+                turma.innerHTML = aulas[i]['Turma']
+                lista.innerHTML = 'X'
+                tr.appendChild(alterar)
+                tr.appendChild(excluir)
+                tr.appendChild(data)
+                tr.appendChild(disciplina)
+                tr.appendChild(professor)
+                tr.appendChild(turma)
+                tr.appendChild(lista)
+                $("#tbody").append(tr)
+            }   
+        }
+        
+    </script>
+{% endblock %}
+
+
+{% block main %}
+
+    <h2>Listagem de Turmas</h2>
+
+    <form method="POST" id="form_filtros">
+        {% csrf_token %}
+        <fieldset>
+            <div>
+                <label for="id_Turma_Filtro">Turma:</label> 
+                <select name="Turma_Filtro" id="id_Turma_Filtro">
+                    <option value="" selected></option>
+                    {% for turma in turmas %}
+                        <option value="{{ turma.id }}" >{{ turma.nome_editado }}</option>
+                    {% endfor %}       
+                </select>
+            </div>
+            <button type="submit" id="Pesquisar" >Pesquisar</button>
+        </fieldset>
+    </form>
+    
+    <table id="Tabela">
+        <thead>
+            <tr>
+                <th>Alt</th>
+                <th>Exc</Th>
+                <th>Data</th>
+                <th>Disciplina</th>
+                <th>Professor</th>
+                <th>Turma</th>
+                <th>Lista de chamada</th>
+            </tr>
+            
+        </thead>
+        <tbody id="tbody">
+            
+        </tbody>
+    </table>
+
+{% endblock  %}
