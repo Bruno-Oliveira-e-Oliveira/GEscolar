@@ -357,11 +357,6 @@ class Matricula(models.Model):
         return str(self.Rm) + ' - ' + self.Aluno.Nome + ' - ' + self.Situacao
 
 
-#Tirar a funcionalidade de log de transferência?
-# class Transferencia(models.Model):
-#     SALA = 'sala'
-
-
 class Disciplina(models.Model):
     Nome = models.CharField('Nome',max_length=20)
     Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
@@ -564,39 +559,6 @@ class Frequencia(models.Model):
         frequencias = Frequencia.objects.filter(Escola=escola.id, Aluno=aluno.id)
         for frequencia in frequencias:
             frequencia.delete()
-    
-
-
-# class Avaliacao(models.Model):
-#     Tema = models.CharField('Tema', max_length=30)
-#     #Tirado o campo Nota máxima
-#     Peso = models.PositiveSmallIntegerField(verbose_name='Peso')
-#     Aula = models.ForeignKey('Aula', on_delete = models.PROTECT, verbose_name = 'Aula')
-#     Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
-
-#     def __str__(self):
-#         return self.Aula.Turma.Nome + ' - '+ self.Tema + ' - ' + str(self.Aula.Data)
-
-
-
-
-
-# class Aplicacao(models.Model):
-#     Nota = models.DecimalField(verbose_name='Nota', max_digits=4, decimal_places=2)
-#     Avaliacao = models.ForeignKey('Avaliacao', on_delete = models.PROTECT, verbose_name = 'Avaliação')
-#     Aluno = models.ForeignKey('Aluno', on_delete = models.PROTECT, verbose_name = 'Aluno')
-#     Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
-
-#     class Meta:
-#         constraints = [
-#             models.UniqueConstraint(
-#                 fields=['Avaliacao','Aluno'], 
-#                 name='unique_Avaliacao_Aluno'
-#             )
-#         ]
-
-#     def __str__(self):
-#         return self.Avaliacao.Tema + ' - ' + str(self.Avaliacao.Aula.Data)
 
     
 class AnoLetivo(models.Model):
@@ -638,9 +600,9 @@ class AnoLetivo(models.Model):
 class Bimestre(models.Model):
     AnoLetivo = models.ForeignKey('AnoLetivo', on_delete=models.PROTECT, verbose_name='Ano')
     Bimestre = models.DecimalField(max_digits=1, decimal_places=0, verbose_name='Bimestre')
-    Data_Inicio = models.DateField(verbose_name='Abertura do bimestre')
-    Data_Limite_Notas = models.DateField(verbose_name='Limite do lançamento das Notas')
-    Data_Fim = models.DateField(verbose_name='Fechamento do bimestre')
+    Data_Inicio = models.DateField(verbose_name='Abertura do bimestre', blank=True, null=True)
+    Data_Limite_Notas = models.DateField(verbose_name='Limite do lançamento das Notas',blank=True,null=True)
+    Data_Fim = models.DateField(verbose_name='Fechamento do bimestre',blank=True, null=True)
     ABERTO = 'A'
     FECHADO = 'F'
     TIPOS_SITUACAO = (
@@ -673,43 +635,72 @@ class Bimestre(models.Model):
                 numero = bimestre.Bimestre
             numero += 1
         return int(numero)
+
+    def retornar_ativo(escolaid):
+        bimestre = Bimestre.objects.filter(Escola=escolaid, Situacao='A')
+        if len(bimestre) == 0:
+            return None
+        else:
+            return bimestre[0]
                 
 
-# class Nota(models.Model):
-#     BIMESTRAL = 'B'
-#     FINAL = 'F'
-#     TIPOS_NOTA = (
-#         (BIMESTRAL, 'Bimestral'),
-#         (FINAL, 'Final')
-#     ) 
-#     Tipo = models.CharField('Tipo', max_length=20, choices=TIPOS_NOTA, default=BIMESTRAL)
-#     Valor = models.DecimalField(verbose_name='Nota', max_digits=4, decimal_places=2)
-#     Aluno = models.ForeignKey('Aluno', on_delete = models.PROTECT, verbose_name = 'Aluno')
-#     Leciona = models.ForeignKey('Leciona', on_delete=models.PROTECT, verbose_name='Leciona')
-#     AnoLetivo = models.ForeignKey('AnoLetivo',on_delete=models.PROTECT,verbose_name='Ano')
-#     Bimestre = models.ForeignKey(
-#         'Bimestre', 
-#         on_delete = models.PROTECT,
-#         verbose_name = 'Bimestre',
-#         blank = True, 
-#         null = True
-#     )
-#     Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
+class Avaliacao(models.Model):
+    Nome = models.CharField('Nome',max_length=20)
+    Valor = models.DecimalField(max_digits=3, decimal_places=1, verbose_name='Valor')
+    Peso = models.DecimalField(max_digits=2, decimal_places=1, verbose_name='Peso')
+    Nota_Bimestral = models.ForeignKey(
+        'Nota_Bimestral', 
+        on_delete = models.PROTECT, 
+        verbose_name = 'Nota_Bimestral'
+    ) 
+    Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola') 
 
-#     class Meta:
-#         constraints = [
-#         models.UniqueConstraint(
-#             fields=['AnoLetivo','Bimestre','Aluno','Leciona','Escola'], 
-#             name='unique_Ano_Bimestre_Aluno_Leciona'
-#         ),
-#         models.UniqueConstraint(
-#             fields=['AnoLetivo','Aluno','Leciona','Escola'], 
-#             name='unique_Ano_Aluno_Leciona'
-#         )
-#     ]
 
-#     def __str__(self):
-#         return self.Leciona.Disciplina.Nome + ' - ' + self.Tipo + ' - ' + self.Aluno.Nome
+class Nota_Bimestral(models.Model):
+    Media = models.DecimalField(
+        max_digits=3, 
+        decimal_places=1, 
+        verbose_name='Media',
+        blank=True, 
+        null=True
+    )
+    Bimestre = models.ForeignKey('Bimestre', on_delete = models.PROTECT, verbose_name = 'Bimestre') 
+    Nota_Final = models.ForeignKey('Nota_Final', on_delete = models.PROTECT, verbose_name = 'Nota_Final')
+    Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola') 
+
+    def gerar_nota_Bimestral(bimestre, nota_final, escola):
+        nota_bimestral = Nota_Bimestral(Bimestre=bimestre, Nota_Final=nota_final, Escola=escola)
+        nota_bimestral.save()
+
+
+class Nota_Final(models.Model):
+    Media_Final = models.DecimalField(
+        max_digits=3, 
+        decimal_places=1, 
+        verbose_name='Media_Final',
+        blank=True, 
+        null=True
+    )
+    Matricula_Turma = models.ForeignKey('Matricula_Turma', on_delete = models.PROTECT, verbose_name = 'Matricula_Turma')
+    Leciona = models.ForeignKey('Leciona', on_delete = models.PROTECT, verbose_name = 'Leciona')
+    AnoLetivo = models.ForeignKey('AnoLetivo', on_delete = models.PROTECT, verbose_name = 'AnoLetivo')
+    Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola') 
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['AnoLetivo','Matricula_Turma','Leciona','Escola'], 
+                name='unique_Nota_Final'
+            )
+        ]
+
+    def criar_nota_final(matricula, leciona, ano, escola):
+        nota_final = Nota_Final(Matricula_Turma=matricula, Leciona=leciona, AnoLetivo=ano, Escola=escola)
+        nota_final.save()
+        nota_final = Nota_Final.objects.get(Matricula_Turma=matricula.id, Leciona=leciona.id, AnoLetivo=ano.id, Escola=escola.id)
+        bimestre = Bimestre.retornar_ativo(escola.id)
+        if bimestre is not None:
+            Nota_Bimestral.gerar_nota_Bimestral(bimestre, nota_final, escola)
 
 
 class Serie(models.Model):

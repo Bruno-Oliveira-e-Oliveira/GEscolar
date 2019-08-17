@@ -314,7 +314,11 @@ def matricula_turma_novo(request,idT):
         else:
             try:
                 with transaction.atomic():
-                    matricula_turma_form.save()
+                    matricula = matricula_turma_form.save()
+                    ano = turma.AnoLetivo
+                    lecionas = Leciona.objects.filter(Turma=turma)
+                    for leciona in lecionas:
+                        Nota_Final.criar_nota_final(matricula, leciona, ano, escola)
                     return redirect('gerenciamento_turma_listagem',idT)
             except Exception as Error:
                 #Erros de servidor (500)

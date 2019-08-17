@@ -39,7 +39,12 @@
                     <th>{{ aula.Leciona.Matriz_Item.Disciplina.Nome }}</th>
                     <th>{{ aula.Leciona.Professor.Nome }}</th>
                     <th>{{ aula.Turma.nome_editado }}</th>
-                    <th><a href="{% url 'lista_chamada' turma.id aula.id %}">X</a></th>
+                    {% if turma.AnoLetivo.Situacao == 'A' %}
+                        <th><a href="{% url 'lista_chamada' turma.id aula.id %}">X</a></th> 
+                    {% else %}
+                        <th>X</th>
+                    {% endif %}
+                    
                 </tr>
             {% endfor %}           
         </tbody>

@@ -272,14 +272,11 @@ def lista_chamada(request,idT,idA):
     else:
         dados = request.POST
         erros = []
-        print(dados)
-
         forms = []
 
         for frequencia in frequencias:
             chave = 'Presenca'
             chave += str(frequencia.Aluno.id)
-            print(chave)
 
             if chave in dados:
                 presenca = dados[chave]

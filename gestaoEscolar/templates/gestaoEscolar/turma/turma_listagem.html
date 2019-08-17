@@ -25,7 +25,6 @@
             {% for turma in turmas %}
                 {% if turmas is not None %}
                     <tr>
-                            
                         {% if turma.AnoLetivo.Situacao == 'A' %}
                             <th><a href="{% url 'turma_alterar' turma.id %}">X</a></th>
                             <th><a href="{% url 'turma_deletar' turma.id %}">X</a></th>

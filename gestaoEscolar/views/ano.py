@@ -60,7 +60,10 @@ def ano_novo(request):
         else:
             try:
                 with transaction.atomic():
-                    ano_form.save()
+                    anoL = ano_form.save()
+                    numero = Bimestre.gerar_bimestre(anoL,escola.id)
+                    bimestre = Bimestre(AnoLetivo=anoL,Bimestre=numero,Escola=escola)
+                    bimestre.save()
                     return redirect('ano_listagem')
             except Exception as Error:
                 #Erros de servidor (500)

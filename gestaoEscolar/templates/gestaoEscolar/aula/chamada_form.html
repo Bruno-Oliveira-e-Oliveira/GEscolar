@@ -37,8 +37,10 @@
                 {% endfor %}           
             </tbody>
         </table>
-
-        <button type="submit">Salvar</button>
+        {% if turma.AnoLetivo.Situacao == 'A' %}
+            <button type="submit">Salvar</button>   
+        {% endif %}
+        
 
         <a href="{% url 'aula_listagem' turma.id %}"> Voltar</a>
     </form>

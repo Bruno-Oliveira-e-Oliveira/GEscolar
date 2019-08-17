@@ -14,17 +14,18 @@
                 <th>Exc</Th>
                 <th>Nome do Aluno</th>
                 <th>Situação</th>
-
+                <th>Notas</th>
             </tr>
             {% if turma.AnoLetivo.Situacao == 'A' %}
                 <a href="{% url 'matricula_turma_novo' idT %}">Matricular um aluno</a>
                 &NonBreakingSpace;
             {% endif%}
             <a href="{% url 'leciona_listagem' idT %}">Disciplina x Professor</a>
+            &NonBreakingSpace;
+            <a href="% url 'leciona_listagem' idT %">Avaliações</a>
         </thead>
         <tbody>
             {% for matricula in matriculas %}
-                {% if matriculas is not None %}
                     <tr>
                         {% if turma.AnoLetivo.Situacao == 'A' %}
                             <th><a href="{% url 'matricula_turma_alterar' idT matricula.id %}">X</a></th>
@@ -45,16 +46,9 @@
                         {% elif matricula.Situacao == 'reprovado' %}
                             <th>Reprovado</th>
                         {% endif %}
+                        <th>X</th>
                             
                     </tr>
-                {% else %}
-                    <tr>
-                        <th>X</th>
-                        <th>X</th>
-                        <th></th>
-                        <th></th>
-                    </tr>
-                {% endif %}
             {% endfor %}
         </tbody>
     </table>

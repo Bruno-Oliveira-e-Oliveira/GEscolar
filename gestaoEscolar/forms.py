@@ -1,28 +1,7 @@
 from django.forms import ModelForm
 from django import forms
 from django.utils import timezone
-from .models import (
-    Escola,
-    Telefone,
-    Endereco,
-    Gestor,
-    Secretaria,
-    Professor,
-    Aluno,
-    Disciplina,
-    Leciona,
-    Turma,
-    Aula,
-    # Avaliacao,
-    Frequencia,
-    # Aplicacao,
-    Matricula,
-    AnoLetivo,
-    Bimestre,
-    # Nota,
-    Matriz_Item,
-    Matricula_Turma
-)
+from .models import *
 from django.contrib.auth.models import User
 
 
