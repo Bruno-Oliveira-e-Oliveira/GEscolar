@@ -274,12 +274,16 @@ def lista_chamada(request,idT,idA):
         erros = []
         print(dados)
 
-        for frequencia in frequencias:
-            chave = 'Presenca-'
-            chave += str(frequencia.Aluno.id)
-            presenca = dados[chave]
+        forms = []
 
-            if presenca != 'Presente':
+        for frequencia in frequencias:
+            chave = 'Presenca'
+            chave += str(frequencia.Aluno.id)
+            print(chave)
+
+            if chave in dados:
+                presenca = dados[chave]
+            else:
                 presenca = 'Ausente'
 
             chamada_dados = {
@@ -288,7 +292,7 @@ def lista_chamada(request,idT,idA):
                 'Aluno': frequencia.Aluno.id,
                 'Escola': escola.id
             }
-            chamada_form = FrequenciaForm(chamada_dados)
+            chamada_form = FrequenciaForm(chamada_dados, instance=frequencia)
             erros_chamada = {}
 
             if not chamada_form.is_valid():
@@ -297,7 +301,9 @@ def lista_chamada(request,idT,idA):
             if erros_chamada:
                 for erro in erros_chamada.values():
                     erros.append(erro)
-
+            
+            forms.append(chamada_form)
+            
         if erros:        
             context = {
                 'turma': turma, 
@@ -309,7 +315,8 @@ def lista_chamada(request,idT,idA):
         else:
             try:
                 with transaction.atomic():
-                    chamada_form.save()
+                    for form_chamada in forms:
+                        form_chamada.save()
                     return redirect('aula_listagem',turma.id)
             except Exception as Error:
                 #Erros de servidor (500)

@@ -29,9 +29,9 @@
                     <tr>   
                         <td>{{ frequencia.Aluno.Nome }}</td>
                         {% if frequencia.Presenca == 'Presente' %}
-                            <td><input type="checkbox" name="Presenca-{{ frequencia.Aluno.id }}" value="Presente" checked></td>
+                            <td><input type="checkbox" name="Presenca{{ frequencia.Aluno.id }}" value="Presente" checked></td>
                         {% else %} 
-                            <td><input type="checkbox" name="Presenca-{{ frequencia.Aluno.id }}" value="Presente" ></td>
+                            <td><input type="checkbox" name="Presenca{{ frequencia.Aluno.id }}" value="Presente" ></td>
                         {% endif %} 
                     </tr>
                 {% endfor %}           
