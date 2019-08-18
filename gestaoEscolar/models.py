@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from decimal import Decimal
 
 
 class Escola(models.Model):
@@ -479,6 +480,14 @@ class Turma(models.Model):
         else:
             return False
 
+    def retorna_turmas_ativas(escola):
+        ano = AnoLetivo.retornar_ativo(escola.id)
+        if ano is not None:
+            turmas = Turma.objects.filter(AnoLetivo=ano.id, Escola=escola.id)
+            return turmas
+        else:
+            return None
+
     
 class Matricula_Turma(models.Model):
     Turma = models.ForeignKey('Turma', on_delete=models.PROTECT, verbose_name='Turma')
@@ -502,12 +511,27 @@ class Matricula_Turma(models.Model):
         return self.Turma.Nome + ' - ' + self.Aluno.Nome
 
     def retornar_alunos_matriculados(turma, escola):
-        matriculas = Matricula_Turma.objects.filter(Escola=escola.id, Turma=turma.id)
+        matriculas = Matricula_Turma.objects.filter(
+            Escola=escola.id, 
+            Turma=turma.id, 
+            Situacao='matriculado'
+        )
         alunos = []
         if len(matriculas) > 0:
             for matricula in matriculas:
                 alunos.append(matricula.Aluno)
         return alunos
+
+    def retornar_matriculas_ativas_por_turma(turma, escola):
+        matriculas = Matricula_Turma.objects.filter(
+            Escola=escola.id, 
+            Turma=turma.id, 
+            Situacao='matriculado'
+        )
+        if len(matriculas) == 0:
+            return None
+        else:
+            return matriculas
 
 
 class Aula(models.Model):
@@ -651,7 +675,7 @@ class Avaliacao(models.Model):
 
 class Nota(models.Model):
     Valor = models.DecimalField(max_digits=3, decimal_places=1, verbose_name='Valor')
-    Peso = models.DecimalField(max_digits=2, decimal_places=1, verbose_name='Peso')
+    Peso = models.DecimalField(max_digits=2, decimal_places=1, verbose_name='Peso', default=Decimal('1.0'))
     Nota_Bimestral = models.ForeignKey(
         'Nota_Bimestral', 
         on_delete = models.PROTECT, 
@@ -677,7 +701,44 @@ class Nota_Bimestral(models.Model):
         nota_bimestral = Nota_Bimestral(Bimestre=bimestre, Nota_Final=nota_final, Escola=escola)
         nota_bimestral.save()
 
+    def gerar_nota_bimestral_por_bimestre(bimestre, escola):
+        turmas = Turma.retorna_turmas_ativas(escola)
+        if turmas is None:
+            return None
+        for turma in turmas:
+            lecionas = Leciona.objects.filter(Turma=turma.id, Escola=escola.id)
+            matriculas = Matricula_Turma.retornar_matriculas_ativas_por_turma(turma, escola)
+            if len(lecionas) == 0 or matriculas is None:
+                return None
+            for matricula in matriculas:
+                for leciona in lecionas:
+                    nota_final = Nota_Final.objects.filter(
+                        Matricula_Turma=matricula.id, 
+                        Leciona=leciona.id,
+                        Escola=escola.id
+                    )
+                    Nota_Bimestral.gerar_nota_Bimestral(bimestre, nota_final[0], escola)
 
+    #Testar depois de criar as avaliações
+    def calcular_nota_bimestral(self):
+        notas = Nota.objects.filter(Nota_Bimestral=self.id, Escola=self.Escola.id)
+        if len(notas) == 0:
+            self.Media = 0
+        else:
+            simples = True
+            numerador = 0
+            denominador = 0
+            for nota in notas:
+                numerador += nota.Valor * nota.Peso
+                denominador += nota.Peso
+                if nota.Peso != 1:
+                    simples = False
+            if simples:
+                denominador = len(notas)
+            self.Media = round(numerador/denominador, 1)
+        self.save()
+            
+               
 class Nota_Final(models.Model):
     Media_Final = models.DecimalField(
         max_digits=3, 
@@ -706,6 +767,19 @@ class Nota_Final(models.Model):
         bimestre = Bimestre.retornar_ativo(escola.id)
         if bimestre is not None:
             Nota_Bimestral.gerar_nota_Bimestral(bimestre, nota_final, escola)
+
+    #Testar depois de criar as avaliações
+    def calcular_nota_final(self):
+        notas_bimestrais = Nota_Bimestral.objects.filter(Nota_Final=self.id, Escola=self.Escola.id)
+        if len(notas_bimestrais) == 0:
+            self.Media_Final = 0
+        else:
+            numerador = 0
+            denominador = len(notas_bimestrais)
+            for nota in notas_bimestrais:
+                numerador += nota.Media
+            self.Media_Final = round(numerador/denominador, 1)
+        self.save()
 
 
 class Serie(models.Model):

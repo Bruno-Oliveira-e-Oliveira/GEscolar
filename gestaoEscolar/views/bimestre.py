@@ -97,7 +97,9 @@ def bimestre_novo(request,idA):
         else:
             try:
                 with transaction.atomic():
-                    bimestre_form.save()
+                    bimestre = bimestre_form.save()
+                    escola = Escola.objects.get(id=request.session['Escola'])
+                    valor = Nota_Bimestral.gerar_nota_bimestral_por_bimestre(bimestre, escola)
                     return redirect('bimestre_listagem',idA)
             except Exception as Error:
                 #Erros de servidor (500)
