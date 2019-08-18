@@ -114,7 +114,6 @@ class PessoaAbstract(models.Model):
     Cpf = models.CharField('CPF',max_length=11,blank=True, null=True, unique=True)
     Rg = models.CharField('RG',max_length=9, blank=True, null=True, unique=True)
     Usuario = models.OneToOneField(User, on_delete=models.PROTECT, blank=True, null=True)
-    #Adicionar o campo Tipo Pessoa
     GESTOR = 'G'
     DIRETOR = 'D'
     SECRETARIO = 'S'
@@ -670,6 +669,9 @@ class Bimestre(models.Model):
 
 class Avaliacao(models.Model):
     Nome = models.CharField('Nome',max_length=20)
+    Data = models.DateField(verbose_name='Data')
+    Leciona = models.ForeignKey('Leciona', on_delete = models.PROTECT, verbose_name = 'Leciona')
+    Turma = models.ForeignKey('Turma', on_delete = models.PROTECT, verbose_name = 'Turma')
     Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola') 
 
 

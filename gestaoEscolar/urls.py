@@ -17,7 +17,8 @@ from .views import (
     turma,
     serie,
     matriz,
-    leciona
+    leciona,
+    avaliacao
 )
 
 urlpatterns = [
@@ -81,6 +82,10 @@ urlpatterns = [
     path('turma/<int:idT>/gestao/lecionas/',leciona.leciona_listagem,name='leciona_listagem'),
     path('turma/<int:idT>/gestao/leciona/alterar/<int:idL>', leciona.leciona_alterar, name='leciona_alterar'),
     path('turma/<int:idT>/gestao/leciona/<int:idL>', leciona.leciona_consultar, name='leciona_consultar'),
+
+    path('turma/<int:idT>/gestao/avaliacoes/',avaliacao.avaliacao_listagem,name='avaliacao_listagem'),
+
+
 
     path('turma/<int:idT>/aulas/', aula.aula_listagem, name='aula_listagem'),
     # path('ajax/aulas/', aula.aula_listagem_ajax, name='aula_listagem_ajax'),

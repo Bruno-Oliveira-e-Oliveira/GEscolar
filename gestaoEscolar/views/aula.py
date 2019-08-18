@@ -16,7 +16,28 @@ def aula_listagem(request,idT):
     turma = get_object_or_404(Turma, id=idT)
     escola = request.session['Escola']
     checarPermEscola(turma, escola)
-    aulas = Aula.objects.filter(Escola=escola, Turma=idT)
+
+    pessoa = Pessoa.obter_pessoa(request.user.username, '')
+    if pessoa.Tipo_Pessoa == 'P':
+        lecionas = Leciona.objects.filter(Escola=escola, Turma=turma.id, Professor=pessoa.id)
+        if len(lecionas) >= 1:
+            aulas = []
+            for leciona in lecionas:
+                aulas_filtradas = Aula.objects.filter(
+                    Escola=escola, 
+                    Turma=turma.id,
+                    Leciona=leciona.id
+                ).order_by('Data') 
+                for aula_filtrada in aulas_filtradas:
+                    aulas.append(aula_filtrada)
+        else:
+            aulas = {}
+    else:
+        aulas = Aula.objects.filter(Escola=escola, Turma=idT)
+
+
+    
+    
     context = {'turma': turma, 'aulas': aulas}
     return render(request, 'gestaoEscolar/aula/aula_listagem.html', context)
     

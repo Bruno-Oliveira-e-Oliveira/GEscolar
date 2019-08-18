@@ -1,0 +1,46 @@
+{% extends 'projeto/base/base.html' %}
+{% load static %}
+
+{% block title %}Listagem de avaliações | GEscolar{% endblock  %}
+
+{% block main %}
+
+    <h2>Listagem de avaliações</h2>
+    
+    <table id="Tabela">
+        <thead>
+            <tr>
+                <th>Alt</th>
+                <th>Exc</Th>
+                <th>Nome</th>
+                <th>Data</th>
+                <th>Professor</th>
+                <th>Disciplina</th>
+            </tr>
+            {% if turma.AnoLetivo.Situacao == 'A' %}
+                <a href="% url 'avaliacao_novo' turma.id %">Novo</a>
+            {% endif%}
+            
+        </thead>
+        <tbody id="tbody">
+            {% for avaliacao in avaliacoes %}
+                <tr>   
+                    <!-- {% if turma.AnoLetivo.Situacao == 'A' %}
+                        <th><a href="% url 'avaliacao_alterar' turma.id avaliacao.id %">X</a></th>
+                        <th><a href="% url 'avaliacao_deletar' turma.id avaliacao.id %">X</a></th>
+                    {% else %}
+                        <th>X</th>
+                        <th>X</th>
+                    {% endif %} -->
+                    <th>X</th>
+                    <th>X</th>
+                    <th><a href="% url 'avaliacao_consultar' turma.id avaliacao.id %">{{ avaliacao.Nome }} </a></th>
+                    <th> {{ avaliacao.Data }} </th>
+                    <th>{{ avaliacao.Leciona.Professor.Nome }}</th>
+                    <th>{{ avaliacao.Leciona.Matriz_Item.Disciplina.Nome }}</th>
+                </tr>
+            {% endfor %}           
+        </tbody>
+    </table>
+    <a href="{% url 'gerenciamento_turma_listagem' turma.id %}">Voltar</a>
+{% endblock  %}
