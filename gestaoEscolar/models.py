@@ -646,6 +646,10 @@ class Bimestre(models.Model):
 
 class Avaliacao(models.Model):
     Nome = models.CharField('Nome',max_length=20)
+    Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola') 
+
+
+class Nota(models.Model):
     Valor = models.DecimalField(max_digits=3, decimal_places=1, verbose_name='Valor')
     Peso = models.DecimalField(max_digits=2, decimal_places=1, verbose_name='Peso')
     Nota_Bimestral = models.ForeignKey(
@@ -653,6 +657,7 @@ class Avaliacao(models.Model):
         on_delete = models.PROTECT, 
         verbose_name = 'Nota_Bimestral'
     ) 
+    Avaliacao = models.ForeignKey('Avaliacao', on_delete = models.PROTECT, verbose_name = 'Avaliacao') 
     Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola') 
 
 
