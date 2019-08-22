@@ -187,3 +187,17 @@ class FrequenciaForm(ModelForm):
         fields = '__all__'
 
 
+class AvaliacaoForm(ModelForm):
+    class Meta:
+        model = Avaliacao
+        fields = '__all__'
+
+
+class NotaForm(ModelForm):
+    class Meta:
+        model = Nota
+        fields = '__all__'
+
+
+
+

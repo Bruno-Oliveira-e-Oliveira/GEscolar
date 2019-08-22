@@ -84,7 +84,7 @@ urlpatterns = [
     path('turma/<int:idT>/gestao/leciona/<int:idL>', leciona.leciona_consultar, name='leciona_consultar'),
 
     path('turma/<int:idT>/gestao/avaliacoes/',avaliacao.avaliacao_listagem,name='avaliacao_listagem'),
-
+    path('turma/<int:idT>/gestao/avaliacao/novo/',avaliacao.avaliacao_novo,name='avaliacao_novo'),
 
 
     path('turma/<int:idT>/aulas/', aula.aula_listagem, name='aula_listagem'),

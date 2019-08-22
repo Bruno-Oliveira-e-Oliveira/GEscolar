@@ -2,13 +2,13 @@
 
 {% block title %}
     {% if Tipo_Transacao == 'INS' %}
-        Cadastrar nova aula | GEscolar 
+        Cadastrar nova avaliação | GEscolar 
     {% elif Tipo_Transacao == 'UPD' %}
-        Alterar aula | GEscolar 
+        Alterar avaliação | GEscolar 
     {% elif Tipo_Transacao == 'CON' %}
-        Consultar aula | GEscolar
+        Consultar avaliação | GEscolar
     {% elif Tipo_Transacao == 'DEL' %}
-        Apagar aula | GEscolar
+        Apagar avaliação | GEscolar
     {% endif %}
 {% endblock  %}
 
@@ -16,13 +16,13 @@
 {% block main %}
 
     {% if Tipo_Transacao == 'INS' %}
-        <h2>Cadastrar aula</h2> 
+        <h2>Cadastrar avaliação</h2> 
     {% elif Tipo_Transacao == 'UPD' %}
-        <h2>Atualizar dados do aula</h2> 
+        <h2>Atualizar dados do avaliação</h2> 
     {% elif Tipo_Transacao == 'CON' %}
-        <h2>Consultar aula</h2> 
+        <h2>Consultar avaliação</h2> 
     {% elif Tipo_Transacao == 'DEL' %}
-        <h2>Apagar aula</h2>
+        <h2>Apagar avaliação</h2>
     {% endif %}
 
     {% for erro in erros %}
@@ -31,13 +31,13 @@
 
     <form action="
             {% if Tipo_Transacao == 'INS' %}
-                {% url 'aula_novo' turma.id %}
+                {% url 'avaliacao_novo' turma.id %}
             {% elif Tipo_Transacao == 'UPD' %}
-                {% url 'aula_alterar' turma.id idA %}
+                {% url 'avaliacao_alterar' turma.id idAv %}
             {% elif Tipo_Transacao == 'CON' %}
-                {% url 'aula_consultar' turma.id idA %}
+                {% url 'avaliacao_consultar' turma.id idAv %}
             {% elif Tipo_Transacao == 'DEL' %}
-                {% url 'aula_deletar' turma.id idA %}
+                {% url 'avaliacao_deletar' turma.id idAv %}
             {% endif %}
         " method="POST">
         {% csrf_token %}
@@ -45,20 +45,21 @@
         {% if Tipo_Transacao == 'INS' or Tipo_Transacao == 'UPD' %}
             <fieldset>
                 <div>
-                    <label for="id_Data">Data:</label> 
-                    <input type="date" name="Data" required id="id_Data" value='{{ aula_dados.Data|date:"Y-m-d" }}'>
+                    <label for="id_Nome">Nome:</label>
+                    <input type="text" name="Nome" maxlength="20" size="20" required id="id_Nome" value='{{ avaliacao_dados.Tema }}'>
                 </div>
 
                 <div>
-                    <label for="id_Tema">Tema:</label>
-                    <input type="text" name="Tema" maxlength="40" size="40" required id="id_Tema" value='{{ aula_dados.Tema }}'>
+                    <label for="id_Data">Data:</label> 
+                    <input type="date" name="Data" required id="id_Data" value='{{ avaliacao_dados.Data|date:"Y-m-d" }}'>
                 </div>
+
                 {% if Tipo_Transacao == 'INS' %}
                     <div>
                         <label for="id_Leciona">Disciplina / Professor:</label> 
                         <select name="Leciona" id="id_Leciona" required>
                             {% for leciona in lecionas %}
-                                {% if aula_dados.Leciona.id == leciona.id %}
+                                {% if avaliacao_dados.Leciona.id == leciona.id %}
                                     <option value="{{ leciona.id }}" selected>{{ leciona.nome_editado }}</option>
                                 {% else %}
                                     <option value="{{ leciona.id }}" >{{ leciona.nome_editado }}</option>
@@ -74,7 +75,7 @@
                         <label for="id_Leciona">Disciplina / Professor:</label> 
                         <select name="Leciona" id="id_Leciona" disabled>
                             {% for leciona in lecionas %}
-                                {% if aula_dados.Leciona.id == leciona.id %}
+                                {% if avaliacao_dados.Leciona.id == leciona.id %}
                                     <option value="{{ leciona.id }}" selected>{{ leciona.nome_editado }}</option>
                                 {% else %}
                                     <option value="{{ leciona.id }}" >{{ leciona.nome_editado }}</option>
@@ -84,11 +85,12 @@
                             {% endfor %}       
                         </select>
                     </div>
+
                 {% endif %}
 
                 <div>
                     <label for="id_Turma">Turma:</label>
-                    <input type="text" name="Turma" maxlength="20" disabled id="id_Turma" value='{{ turma.nome_editado }}'>
+                    <input type="text" name="Turma" maxlength="20" size="20" disabled id="id_Turma" value='{{ turma.nome_editado }}'>
                 </div>
 
             </fieldset>
@@ -96,20 +98,20 @@
         {% else %}
             <fieldset>
                 <div>
-                    <label for="id_Data">Data:</label> 
-                    <input type="date" name="Data" disabled id="id_Data" value='{{ aula_dados.Data|date:"Y-m-d" }}'>
+                    <label for="id_Nome">Nome:</label>
+                    <input type="text" name="Nome" maxlength="20" size="20" disabled id="id_Nome" value='{{ avaliacao_dados.Tema }}'>
                 </div>
 
                 <div>
-                    <label for="id_Tema">Tema:</label>
-                    <input type="text" name="Tema" maxlength="40" size="40" disabled id="id_Tema" value='{{ aula_dados.Tema }}'>
+                    <label for="id_Data">Data:</label> 
+                    <input type="date" name="Data" disabled id="id_Data" value='{{ avaliacao_dados.Data|date:"Y-m-d" }}'>
                 </div>
-    
+
                 <div>
                     <label for="id_Leciona">Disciplina / Professor:</label> 
                     <select name="Leciona" id="id_Leciona" disabled>
                         {% for leciona in lecionas %}
-                            {% if aula_dados.Leciona.id == leciona.id %}
+                            {% if avaliacao_dados.Leciona.id == leciona.id %}
                                 <option value="{{ leciona.id }}" selected>{{ leciona.nome_editado }}</option>
                             {% else %}
                                 <option value="{{ leciona.id }}" >{{ leciona.nome_editado }}</option>
@@ -122,11 +124,40 @@
 
                 <div>
                     <label for="id_Turma">Turma:</label>
-                    <input type="text" name="Turma" maxlength="20" disabled id="id_Turma" value='{{ turma.nome_editado }}'>
+                    <input type="text" name="Turma" maxlength="20" size="20" disabled id="id_Turma" value='{{ turma.nome_editado }}'>
                 </div>
 
             </fieldset>
+        {% endif %}
 
+        {% if Tipo_Transacao != 'INS' %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aluno</th>
+                        <th>Nota</Th>
+                    </tr>
+                </thead>
+
+                <tbody id="tbody">
+                    {% for aluno in alunos %}
+                        {% for nota in notas %}
+                            {% if aluno.id == nota.Nota_Bimestral.Nota_Final.Matricula_Turma.Aluno.id %}
+                                <tr>   
+                                    <td>{{ aluno.Nome }}</td>
+                                    {% if Tipo_Transacao == 'UPD' %}
+                                        <td><input type="number" name="Nota-{{ aluno.id }}" required max="10" min="0" value="{{ nota.Valor }}"></td>
+                                        <td><input type="number" name="Peso-{{ aluno.id }}" required max="10" min="0" value="{{ nota.Peso }}"></td>
+                                    {% endif %}
+                                        <td><input type="number" name="Nota-{{ aluno.id }}" disabled max="10" min="0" value="{{ nota.Valor }}"></td>
+                                        <td><input type="number" name="Peso-{{ aluno.id }}" disabled max="10" min="0" value="{{ nota.Peso }}"></td>
+                                    {% else %}
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}           
+                </tbody>
+            </table>
         {% endif %}
 
         {% if bloqueio == False %}
@@ -137,7 +168,7 @@
             {% endif %}
         {% endif %}
 
-        <a href="{% url 'aula_listagem' turma.id %}"> Voltar</a>
+        <a href="{% url 'gerenciamento_turma_listagem' turma.id %}"> Voltar</a>
     </form>
 
 {% endblock  %}

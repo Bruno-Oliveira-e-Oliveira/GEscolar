@@ -674,6 +674,9 @@ class Avaliacao(models.Model):
     Turma = models.ForeignKey('Turma', on_delete = models.PROTECT, verbose_name = 'Turma')
     Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola') 
 
+    def __str__(self):
+        return self.Nome + ' | ' + self.Turma.nome_editado + ' | ' + self.Leciona.Matriz_Item.Disciplina.Nome
+
 
 class Nota(models.Model):
     Valor = models.DecimalField(max_digits=3, decimal_places=1, verbose_name='Valor')
@@ -683,7 +686,13 @@ class Nota(models.Model):
         on_delete = models.PROTECT, 
         verbose_name = 'Nota_Bimestral'
     ) 
-    Avaliacao = models.ForeignKey('Avaliacao', on_delete = models.PROTECT, verbose_name = 'Avaliacao') 
+    Avaliacao = models.ForeignKey(
+        'Avaliacao', 
+        on_delete = models.PROTECT, 
+        verbose_name = 'Avaliacao',
+        blank=True, 
+        null=True
+        ) 
     Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola') 
 
 
