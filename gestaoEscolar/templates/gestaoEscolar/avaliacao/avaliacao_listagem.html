@@ -25,15 +25,13 @@
         <tbody id="tbody">
             {% for avaliacao in avaliacoes %}
                 <tr>   
-                    <!-- {% if turma.AnoLetivo.Situacao == 'A' %}
-                        <th><a href="% url 'avaliacao_alterar' turma.id avaliacao.id %">X</a></th>
+                    {% if turma.AnoLetivo.Situacao == 'A' %}
+                        <th><a href="{% url 'avaliacao_alterar' turma.id avaliacao.id %}">X</a></th>
                         <th><a href="% url 'avaliacao_deletar' turma.id avaliacao.id %">X</a></th>
                     {% else %}
                         <th>X</th>
                         <th>X</th>
-                    {% endif %} -->
-                    <th>X</th>
-                    <th>X</th>
+                    {% endif %}
                     <th><a href="% url 'avaliacao_consultar' turma.id avaliacao.id %">{{ avaliacao.Nome }} </a></th>
                     <th> {{ avaliacao.Data }} </th>
                     <th>{{ avaliacao.Leciona.Professor.Nome }}</th>

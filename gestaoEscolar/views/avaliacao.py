@@ -8,6 +8,7 @@ from datetime import datetime
 from gestaoEscolar.forms import *
 from gestaoEscolar.models import *
 from .permissoes import checarPermEscola
+from decimal import Decimal
 
 
 @login_required
@@ -76,6 +77,7 @@ def avaliacao_novo(request,idT):
     if request.method == 'GET':
         context = {
             'erros': erros,
+            'Peso': 1,
             'Tipo_Transacao': 'INS', 
             'alunos': alunos,
             'lecionas': lecionas,
@@ -93,6 +95,8 @@ def avaliacao_novo(request,idT):
             'Turma': turma.id,
             'Escola': escola.id
         }
+
+        peso = dados['Peso']
 
         avaliacao_form = AvaliacaoForm(avaliacao_dados)
         erros_avaliacao = {}
@@ -124,7 +128,7 @@ def avaliacao_novo(request,idT):
 
             nota_dados = {
                 'Valor': 0,
-                'Peso': 1,
+                'Peso': peso,
                 'Nota_Bimestral': nota_bimestral[0].id,
                 'Escola': escola.id
             }
@@ -149,6 +153,7 @@ def avaliacao_novo(request,idT):
                 'Tipo_Transacao': 'INS', 
                 'avaliacao': avaliacao_dados,
                 'alunos': alunos,
+                'Peso': str(peso).replace(',','.'),
                 'lecionas': lecionas,
                 'turma': turma,
                 'bloqueio': bloqueio
@@ -173,6 +178,7 @@ def avaliacao_novo(request,idT):
                     'Tipo_Transacao': 'INS', 
                     'avaliacao': avaliacao_dados,
                     'alunos': alunos,
+                    'Peso': str(peso).replace(',','.'),
                     'lecionas': lecionas,
                     'turma': turma,
                     'bloqueio': bloqueio
@@ -187,6 +193,14 @@ def avaliacao_alterar(request,idT,idAv):
     avaliacao = get_object_or_404(Avaliacao, id=idAv)
     checarPermEscola(turma, escola.id)
     checarPermEscola(avaliacao, escola.id)
+    pessoa = Pessoa.obter_pessoa(request.user.username, '')
+    alunos = Matricula_Turma.retornar_alunos_matriculados(turma, escola)
+    bimestre = Bimestre.retornar_ativo(escola.id)
+
+    if pessoa.Tipo_Pessoa == 'P':
+        lecionas = Leciona.objects.filter(Escola=escola.id, Turma=turma.id, Professor=pessoa.id)
+    else:
+        lecionas = Leciona.objects.filter(Escola=escola.id, Turma=turma.id)
 
     erros = []
     bloqueio = False
@@ -200,49 +214,10 @@ def avaliacao_alterar(request,idT,idAv):
     if len(erros) > 0:
         bloqueio = True
 
-    # RETORNAR AQUI AS NOTAS PARA PASSAR PARA PÁGINA
-
-
-
- 
     if request.method == 'GET':
-        context = {
-            'erros': erros,
-            'Tipo_Transacao': 'UPD', 
-
-            # 'notas': notas,
-
-            
-            'lecionas': lecionas,
-            'turma': turma,
-            'bloqueio': bloqueio
-        }
-        return render(request,'gestaoEscolar/avaliacao/avaliacao_form.html', context)
-    else:
-        dados = request.POST
-
-        avaliacao_dados = {
-            'Nome': dados['Nome'],
-            'Data': datetime.strptime(dados['Data'], '%Y-%m-%d').date(),
-            'Leciona': avaliacao.Leciona.id,
-            'Turma': avaliacao.Turma.id,
-            'Escola': escola.id
-        }
-
-        avaliacao_form = AvaliacaoForm(avaliacao_dados , instance=avaliacao)
-        erros_avaliacao = {}
-
-        if not avaliacao_form.is_valid():
-            erros_avaliacao = avaliacao_form.errors
-
-        bimestre = Bimestre.retornar_ativo(escola.id)
-
-        if avaliacao_dados['Data'] < bimestre.Data_Inicio or avaliacao_dados['Data'] > bimestre.Data_Fim:
-            erros.append('Data da avaliação fora do período do bimestre atual.')
-
-        forms = []
-        notas = []
+        notas_alunos = []
         for aluno in alunos:
+            nota_aluno = {}
             matricula = Matricula_Turma.objects.filter(
                 Turma=turma.id, 
                 Aluno=aluno.id, Escola=escola.id
@@ -260,18 +235,80 @@ def avaliacao_alterar(request,idT,idAv):
             nota = Nota.objects.filter(
                 Escola=escola.id, 
                 Avaliacao=avaliacao.id, 
-                Nota_Bimestral=nota_bimestral.id
+                Nota_Bimestral=nota_bimestral[0].id
+            )                
+
+            if len(nota) > 0:
+                nota_aluno['Aluno'] = aluno
+                nota_aluno['Nota'] = nota[0]
+                notas_alunos.append(nota_aluno)
+        
+        peso = notas_alunos[0]['Nota'].Peso
+
+        context = {
+            'erros': erros,
+            'Tipo_Transacao': 'UPD', 
+            'avaliacao_dados': avaliacao,
+            'notas_alunos': notas_alunos,
+            'Peso': str(peso).replace(',','.'),
+            'lecionas': lecionas,
+            'turma': turma,
+            'bloqueio': bloqueio,
+            'idAv': idAv
+        }
+        return render(request,'gestaoEscolar/avaliacao/avaliacao_form.html', context)
+    else:
+        dados = request.POST
+
+        avaliacao_dados = {
+            'Nome': dados['Nome'],
+            'Data': datetime.strptime(dados['Data'], '%Y-%m-%d').date(),
+            'Leciona': avaliacao.Leciona.id,
+            'Turma': avaliacao.Turma.id,
+            'Escola': escola.id
+        }
+
+        peso = dados['Peso']
+
+        avaliacao_form = AvaliacaoForm(avaliacao_dados , instance=avaliacao)
+        erros_avaliacao = {}
+
+        if not avaliacao_form.is_valid():
+            erros_avaliacao = avaliacao_form.errors
+
+        if avaliacao_dados['Data'] < bimestre.Data_Inicio or avaliacao_dados['Data'] > bimestre.Data_Fim:
+            erros.append('Data da avaliação fora do período do bimestre atual.')
+
+        forms = []
+        notas_alunos = []
+        for aluno in alunos:
+            nota_aluno = {}
+            matricula = Matricula_Turma.objects.filter(
+                Turma=turma.id, 
+                Aluno=aluno.id, Escola=escola.id
+            )
+            nota_final = Nota_Final.objects.filter(
+                AnoLetivo=bimestre.AnoLetivo.id,
+                Matricula_Turma=matricula[0].id,
+                Escola=escola.id
+            )
+            nota_bimestral = Nota_Bimestral.objects.filter(
+                Nota_Final=nota_final[0].id,
+                Bimestre=bimestre.id, 
+                Escola=escola.id
+            )
+            nota = Nota.objects.filter(
+                Escola=escola.id, 
+                Avaliacao=avaliacao.id, 
+                Nota_Bimestral=nota_bimestral[0].id
             )
 
             chave_nota = 'Nota-'
-            chave_peso = 'Peso-'
             chave_nota += str(aluno.id)
-            chave_peso += str(aluno.id)
             valor = dados[chave_nota]
-            peso = dados[chave_peso]
 
             nota_dados = {
-                'Valor': valor,
+                'Valor': str(valor).replace(',','.'),
                 'Peso': peso,
                 'Avaliacao': nota[0].Avaliacao.id,
                 'Nota_Bimestral': nota[0].Nota_Bimestral.id,
@@ -287,7 +324,9 @@ def avaliacao_alterar(request,idT,idAv):
                 for erro in erros_nota.values():
                     erros.append(erro)
             
-            notas.append(nota_dados)
+            nota_aluno['Aluno'] = aluno
+            nota_aluno['Nota'] = nota_dados
+            notas_alunos.append(nota_aluno)
             forms.append(nota_form)
 
         if erros_avaliacao:
@@ -296,11 +335,13 @@ def avaliacao_alterar(request,idT,idAv):
             context = {
                 'erros': erros,
                 'Tipo_Transacao': 'UPD', 
-                'avaliacao': avaliacao_dados,
-                'notas':notas,
+                'avaliacao_dados': avaliacao_dados,
+                'notas_alunos': notas_alunos,
+                'Peso': str(peso).replace(',','.'),
                 'lecionas': lecionas,
                 'turma': turma,
-                'bloqueio': bloqueio
+                'bloqueio': bloqueio,
+                'idAv': idAv
             }
             return render(request,'gestaoEscolar/avaliacao/avaliacao_form.html', context)
         else:
@@ -309,29 +350,24 @@ def avaliacao_alterar(request,idT,idAv):
                     avaliacao = avaliacao_form.save()
                     for form in forms:
                         form.save()                    
-                    return redirect('gerenciamento_turma_listagem',idT)
-
-
-
-
-            #NAO fiz essa parte ainda        
+                    return redirect('avaliacao_listagem',idT)
             except Exception as Error:
                 #Erros de servidor (500)
                 print('Erro no servidor: ' + str(Error))
                 Error = 'Erro no servidor'
                 erros = [Error]
                 context = {
-                    'matricula_turma_dados': matricula_turma_dados,
-                    'erros':erros,  
-                    'alunos': alunos,
-                    'Tipo_Situacao': TIPOS_SITUACAO,
-                    'Tipo_Transacao': 'UPD',
-                    'idT': idT,
-                    'idM': idM,
-                    'turma': turma_obj,
-                    'bloqueio': bloqueio
+                    'erros': erros,
+                    'Tipo_Transacao': 'UPD', 
+                    'avaliacao_dados': avaliacao_dados,
+                    'notas_alunos': notas_alunos,
+                    'Peso': str(peso).replace(',','.'),
+                    'lecionas': lecionas,
+                    'turma': turma,
+                    'bloqueio': bloqueio,
+                    'idAv': idAv
                 }
-                return render(request,'gestaoEscolar/turma/matricula_turma_form.html', context)
+                return render(request,'gestaoEscolar/avaliacao/avaliacao_form.html', context)
 
 
 

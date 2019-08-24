@@ -1,4 +1,5 @@
 {% extends 'projeto/base/base.html' %}
+{% load filters %}
 
 {% block title %}
     {% if Tipo_Transacao == 'INS' %}
@@ -18,7 +19,7 @@
     {% if Tipo_Transacao == 'INS' %}
         <h2>Cadastrar avaliação</h2> 
     {% elif Tipo_Transacao == 'UPD' %}
-        <h2>Atualizar dados do avaliação</h2> 
+        <h2>Atualizar dados da avaliação</h2> 
     {% elif Tipo_Transacao == 'CON' %}
         <h2>Consultar avaliação</h2> 
     {% elif Tipo_Transacao == 'DEL' %}
@@ -46,12 +47,17 @@
             <fieldset>
                 <div>
                     <label for="id_Nome">Nome:</label>
-                    <input type="text" name="Nome" maxlength="20" size="20" required id="id_Nome" value='{{ avaliacao_dados.Tema }}'>
+                    <input type="text" name="Nome" maxlength="20" size="20" required id="id_Nome" value='{{ avaliacao_dados.Nome }}'>
                 </div>
 
                 <div>
                     <label for="id_Data">Data:</label> 
                     <input type="date" name="Data" required id="id_Data" value='{{ avaliacao_dados.Data|date:"Y-m-d" }}'>
+                </div>
+
+                <div>
+                    <label for="id_Peso">Peso:</label>
+                    <input type="number" name="Peso" id="id_Peso" required max="10" min="1" step=".1" value='{{ Peso }}'>
                 </div>
 
                 {% if Tipo_Transacao == 'INS' %}
@@ -108,6 +114,11 @@
                 </div>
 
                 <div>
+                    <label for="id_Peso">Peso:</label>
+                    <input type="number" name="Peso" id="id_Peso" disabled max="10" min="1" value='{{ Peso }}'>
+                </div>
+
+                <div>
                     <label for="id_Leciona">Disciplina / Professor:</label> 
                     <select name="Leciona" id="id_Leciona" disabled>
                         {% for leciona in lecionas %}
@@ -140,21 +151,15 @@
                 </thead>
 
                 <tbody id="tbody">
-                    {% for aluno in alunos %}
-                        {% for nota in notas %}
-                            {% if aluno.id == nota.Nota_Bimestral.Nota_Final.Matricula_Turma.Aluno.id %}
-                                <tr>   
-                                    <td>{{ aluno.Nome }}</td>
-                                    {% if Tipo_Transacao == 'UPD' %}
-                                        <td><input type="number" name="Nota-{{ aluno.id }}" required max="10" min="0" value="{{ nota.Valor }}"></td>
-                                        <td><input type="number" name="Peso-{{ aluno.id }}" required max="10" min="0" value="{{ nota.Peso }}"></td>
-                                    {% endif %}
-                                        <td><input type="number" name="Nota-{{ aluno.id }}" disabled max="10" min="0" value="{{ nota.Valor }}"></td>
-                                        <td><input type="number" name="Peso-{{ aluno.id }}" disabled max="10" min="0" value="{{ nota.Peso }}"></td>
-                                    {% else %}
-                                </tr>
+                    {% for item in notas_alunos %}
+                        <tr>   
+                            <td>{{ item.Aluno.Nome }}</td>
+                            {% if Tipo_Transacao == 'UPD' %}
+                                <td><input type="number" name="Nota-{{ item.Aluno.id }}" required max="10" min="0" step="0.1" value="{{ item.Nota.Valor|numero_decimal }}"></td>
+                            {% else %}
+                                <td><input type="number" name="Nota-{{ item.Aluno.id }}" disabled max="10" min="0" step="0.1" value="{{ item.Nota.Valor|numero_decimal }}"></td>
                             {% endif %}
-                        {% endfor %}
+                        </tr>
                     {% endfor %}           
                 </tbody>
             </table>
@@ -168,7 +173,7 @@
             {% endif %}
         {% endif %}
 
-        <a href="{% url 'gerenciamento_turma_listagem' turma.id %}"> Voltar</a>
+        <a href="{% url 'avaliacao_listagem' turma.id %}"> Voltar</a>
     </form>
 
 {% endblock  %}
