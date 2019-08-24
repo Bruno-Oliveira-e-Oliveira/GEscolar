@@ -111,9 +111,12 @@ def avaliacao_novo(request,idT):
 
         if avaliacao_dados['Data'] < bimestre.Data_Inicio or avaliacao_dados['Data'] > bimestre.Data_Fim:
             erros.append('Data da avaliação fora do período do bimestre atual.')
-
+      
+        notas_alunos = []
         notas = []
+        notas_bimestrais = []
         for aluno in alunos:
+            nota_aluno = {}
             matricula = Matricula_Turma.objects.filter(Turma=turma.id, Aluno=aluno.id, Escola=escola.id)
             nota_final = Nota_Final.objects.filter(
                 AnoLetivo=bimestre.AnoLetivo.id,
@@ -125,7 +128,6 @@ def avaliacao_novo(request,idT):
                 Bimestre=bimestre.id, 
                 Escola=escola.id
             )
-
             nota_dados = {
                 'Valor': 0,
                 'Peso': peso,
@@ -144,8 +146,12 @@ def avaliacao_novo(request,idT):
 
             if len(nota_bimestral) == 0:
                 erros.append('Nota bimestral do aluno '+ aluno.Nome + ' não existe.')
-            
+
+            nota_aluno['Aluno'] = aluno
+            nota_aluno['Nota'] = nota_dados
+            notas_alunos.append(nota_aluno)
             notas.append(nota_dados)
+            notas_bimestrais.append(nota_bimestral[0])
 
         if erros:
             context = {
@@ -167,7 +173,20 @@ def avaliacao_novo(request,idT):
                         nota['Avaliacao'] = avaliacao.id
                         form = NotaForm(nota)
                         form.save()
-                    return redirect('avaliacao_listagem',idT)
+                    for item in notas_bimestrais:
+                        item.calcular_nota_bimestral()
+                    context = {
+                        'erros': [],
+                        'Tipo_Transacao': 'UPD', 
+                        'avaliacao_dados': avaliacao,
+                        'notas_alunos': notas_alunos,
+                        'Peso': peso,
+                        'lecionas': lecionas,
+                        'turma': turma,
+                        'bloqueio': False,
+                        'idAv': avaliacao.id
+                    }
+                    return render(request,'gestaoEscolar/avaliacao/avaliacao_form.html', context)
             except Exception as Error:
                 #Erros de servidor (500)
                 print('Erro no servidor: ' + str(Error))
@@ -280,6 +299,7 @@ def avaliacao_alterar(request,idT,idAv):
             erros.append('Data da avaliação fora do período do bimestre atual.')
 
         forms = []
+        notas_bimestrais = []
         notas_alunos = []
         for aluno in alunos:
             nota_aluno = {}
@@ -328,6 +348,7 @@ def avaliacao_alterar(request,idT,idAv):
             nota_aluno['Nota'] = nota_dados
             notas_alunos.append(nota_aluno)
             forms.append(nota_form)
+            notas_bimestrais.append(nota_bimestral[0])
 
         if erros_avaliacao:
             for erro in erros_avaliacao.values():
@@ -349,7 +370,9 @@ def avaliacao_alterar(request,idT,idAv):
                 with transaction.atomic():
                     avaliacao = avaliacao_form.save()
                     for form in forms:
-                        form.save()                    
+                        form.save()  
+                    for item in notas_bimestrais:
+                        item.calcular_nota_bimestral()                
                     return redirect('avaliacao_listagem',idT)
             except Exception as Error:
                 #Erros de servidor (500)

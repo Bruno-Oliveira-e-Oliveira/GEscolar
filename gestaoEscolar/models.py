@@ -417,7 +417,7 @@ class Leciona(models.Model):
         if self.Professor is not None:
             return self.Matriz_Item.Disciplina.Nome + ' - ' + self.Professor.Nome
         else:
-            return self.Matriz_Item.Disciplina.Nome + ' - Não há professor associado à essa disciplina.'        
+            return self.Matriz_Item.Disciplina.Nome + ' - Sem professor.'        
 
 
 class Turma(models.Model):
@@ -695,6 +695,9 @@ class Nota(models.Model):
         ) 
     Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola') 
 
+    def __str__(self):
+        return self.Avaliacao.Nome + ' | ' + self.Nota_Bimestral.Nota_Final.Matricula_Turma.Aluno.Nome
+
 
 class Nota_Bimestral(models.Model):
     Media = models.DecimalField(
@@ -748,6 +751,9 @@ class Nota_Bimestral(models.Model):
                 denominador = len(notas)
             self.Media = round(numerador/denominador, 1)
         self.save()
+
+    def __str__(self):
+        return self.Nota_Final.Matricula_Turma.Aluno.Nome + ' | ' + self.Nota_Final.Leciona.nome_editado + ' | ' +  str(self.Bimestre.Bimestre) + ' - ' + str(self.Bimestre.AnoLetivo.Ano)
             
                
 class Nota_Final(models.Model):
@@ -791,6 +797,9 @@ class Nota_Final(models.Model):
                 numerador += nota.Media
             self.Media_Final = round(numerador/denominador, 1)
         self.save()
+
+    def __str__(self):
+        return self.Matricula_Turma.Aluno.Nome + ' | ' + self.Leciona.nome_editado + ' | ' +  str(self.AnoLetivo.Ano)
 
 
 class Serie(models.Model):
