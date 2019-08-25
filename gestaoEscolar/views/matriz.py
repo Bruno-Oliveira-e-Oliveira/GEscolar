@@ -169,13 +169,32 @@ def matriz_item_deletar(request,idS,idM):
     checarPermEscola(serie, escola)
     checarPermEscola(matriz_item_obj, escola)
     disciplinas = Disciplina.objects.filter(Escola=escola).order_by('Nome')
+
+    erros = []
+    bloqueio = False
+
+    turmas = Turma.objects.filter(Escola=escola, Serie=serie.id)
+    for turma in turmas:
+        if turma.AnoLetivo.Situacao == 'F':
+            achou = Leciona.objects.filter(
+                Matriz_Item=matriz_item_obj.id, 
+                Turma=turma.id
+            ).exists()
+    if achou:
+        erros.append(
+            'Não é possível apagar o item da matriz pois ele tem referência em turmas fechadas.'
+        )
+        bloqueio = True
+    
     if request.method == 'GET':
         context = {
             'matriz_item_dados':matriz_item_obj,
             'disciplinas': disciplinas, 
             'Tipo_Transacao': 'DEL',
             'idMatriz_Item': idM,
-            'idSerie': idS
+            'idSerie': idS,
+            'erros': erros,
+            'bloqueio': bloqueio
         }
         return render(request,'gestaoEscolar/serie/matriz_item_form.html', context)
     else:
@@ -194,7 +213,9 @@ def matriz_item_deletar(request,idS,idM):
                 'disciplinas': disciplinas, 
                 'Tipo_Transacao': 'DEL',
                 'idMatriz_Item': idM,
-                'idSerie': idS
+                'idSerie': idS,
+                'erros':erros,
+                'bloqueio': bloqueio
                 }
             return render(request,'gestaoEscolar/serie/matriz_item_form.html', context)
 

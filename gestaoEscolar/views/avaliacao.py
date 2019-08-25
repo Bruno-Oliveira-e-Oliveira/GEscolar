@@ -121,6 +121,7 @@ def avaliacao_novo(request,idT):
             nota_final = Nota_Final.objects.filter(
                 AnoLetivo=bimestre.AnoLetivo.id,
                 Matricula_Turma=matricula[0].id,
+                Leciona=avaliacao_dados['Leciona'],
                 Escola=escola.id
             )
             nota_bimestral = Nota_Bimestral.objects.filter(
@@ -244,6 +245,7 @@ def avaliacao_alterar(request,idT,idAv):
             nota_final = Nota_Final.objects.filter(
                 AnoLetivo=bimestre.AnoLetivo.id,
                 Matricula_Turma=matricula[0].id,
+                Leciona=avaliacao.Leciona.id,
                 Escola=escola.id
             )
             nota_bimestral = Nota_Bimestral.objects.filter(
@@ -310,6 +312,7 @@ def avaliacao_alterar(request,idT,idAv):
             nota_final = Nota_Final.objects.filter(
                 AnoLetivo=bimestre.AnoLetivo.id,
                 Matricula_Turma=matricula[0].id,
+                Leciona=avaliacao.Leciona.id,
                 Escola=escola.id
             )
             nota_bimestral = Nota_Bimestral.objects.filter(

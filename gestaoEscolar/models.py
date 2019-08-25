@@ -398,19 +398,30 @@ class Leciona(models.Model):
             leciona.save()
     
     def atualizar_lecionas_turma(tipo_transacao, item, escolaid):
-        achou = Turma.objects.filter(Escola=escolaid).exists()
         escola = Escola.objects.get(id=escolaid)
-        if achou:
-            turmas = Turma.objects.filter(Escola=escolaid, Serie=item.Serie.id)
-            if tipo_transacao == 'INS':
+        ano = AnoLetivo.retornar_ativo(escola.id)
+
+        if ano is not None and tipo_transacao == 'INS':
+            achou = Turma.objects.filter(
+                Escola=escola.id, 
+                AnoLetivo=ano.id,
+                Serie=item.Serie.id
+            ).exists()
+            if achou:
+                turmas = Turma.objects.filter(Escola=escola.id, AnoLetivo=ano.id, Serie=item.Serie.id)
                 for turma in turmas:
                     leciona = Leciona(Matriz_Item=item, Turma=turma, Escola=escola)
                     leciona.save()
-            elif tipo_transacao == 'DEL':
+
+        if tipo_transacao == 'DEL':
+            achou = Turma.objects.filter(Escola=escola.id, Serie=item.Serie.id).exists()
+            if achou:
+                turmas = Turma.objects.filter(Escola=escola.id, Serie=item.Serie.id)
                 for turma in turmas:
                     lecionas = Leciona.objects.filter(Matriz_Item=item.id, Turma=turma.id)
-                    if len(lecionas) > 0:
-                        lecionas[0].delete()
+                if len(lecionas) > 0:
+                    lecionas[0].delete()
+
 
     @property
     def nome_editado(self):
