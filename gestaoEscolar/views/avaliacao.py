@@ -396,7 +396,139 @@ def avaliacao_alterar(request,idT,idAv):
                 return render(request,'gestaoEscolar/avaliacao/avaliacao_form.html', context)
 
 
+@login_required
+def avaliacao_consultar(request,idT,idAv):
+    turma = get_object_or_404(Turma, id=idT)
+    escola = Escola.objects.get(id=request.session['Escola'])
+    avaliacao = get_object_or_404(Avaliacao, id=idAv)
+    checarPermEscola(turma, escola.id)
+    checarPermEscola(avaliacao, escola.id)
+    alunos = Matricula_Turma.retornar_alunos_matriculados(turma, escola)
+    bimestre = Bimestre.retornar_ativo(escola.id)
+    lecionas = Leciona.objects.filter(Escola=escola.id, Turma=turma.id)
+
+    notas_alunos = []
+    for aluno in alunos:
+        nota_aluno = {}
+        matricula = Matricula_Turma.objects.filter(
+            Turma=turma.id, 
+            Aluno=aluno.id, Escola=escola.id
+        )
+        nota_final = Nota_Final.objects.filter(
+            AnoLetivo=bimestre.AnoLetivo.id,
+            Matricula_Turma=matricula[0].id,
+            Leciona=avaliacao.Leciona.id,
+            Escola=escola.id
+        )
+        nota_bimestral = Nota_Bimestral.objects.filter(
+            Nota_Final=nota_final[0].id,
+            Bimestre=bimestre.id, 
+            Escola=escola.id
+        )
+        nota = Nota.objects.filter(
+            Escola=escola.id, 
+            Avaliacao=avaliacao.id, 
+            Nota_Bimestral=nota_bimestral[0].id
+        )                
+
+        nota_aluno['Aluno'] = aluno
+        nota_aluno['Nota'] = nota[0]
+        notas_alunos.append(nota_aluno)
+    
+    peso = notas_alunos[0]['Nota'].Peso
+
+    context = {
+        'erros': [],
+        'Tipo_Transacao': 'CON', 
+        'avaliacao_dados': avaliacao,
+        'notas_alunos': notas_alunos,
+        'Peso': str(peso).replace(',','.'),
+        'lecionas': lecionas,
+        'turma': turma,
+        'bloqueio': False,
+        'idAv': idAv
+    }
+    return render(request,'gestaoEscolar/avaliacao/avaliacao_form.html', context)
 
 
+@login_required
+def avaliacao_deletar(request,idT,idAv):
+    turma = get_object_or_404(Turma, id=idT)
+    escola = Escola.objects.get(id=request.session['Escola'])
+    avaliacao = get_object_or_404(Avaliacao, id=idAv)
+    checarPermEscola(turma, escola.id)
+    checarPermEscola(avaliacao, escola.id)
+    alunos = Matricula_Turma.retornar_alunos_matriculados(turma, escola)
+    bimestre = Bimestre.retornar_ativo(escola.id)
+    lecionas = Leciona.objects.filter(Escola=escola.id, Turma=turma.id)
 
+    notas_bimestrais = []
+    notas_alunos = []
+    for aluno in alunos:
+        nota_aluno = {}
+        matricula = Matricula_Turma.objects.filter(
+            Turma=turma.id, 
+            Aluno=aluno.id, Escola=escola.id
+        )
+        nota_final = Nota_Final.objects.filter(
+            AnoLetivo=bimestre.AnoLetivo.id,
+            Matricula_Turma=matricula[0].id,
+            Leciona=avaliacao.Leciona.id,
+            Escola=escola.id
+        )
+        nota_bimestral = Nota_Bimestral.objects.filter(
+            Nota_Final=nota_final[0].id,
+            Bimestre=bimestre.id, 
+            Escola=escola.id
+        )
+        nota = Nota.objects.filter(
+            Escola=escola.id, 
+            Avaliacao=avaliacao.id, 
+            Nota_Bimestral=nota_bimestral[0].id
+        )                
 
+        nota_aluno['Aluno'] = aluno
+        nota_aluno['Nota'] = nota[0]
+        notas_alunos.append(nota_aluno)
+        notas_bimestrais.append(nota_bimestral[0])
+    
+    peso = notas_alunos[0]['Nota'].Peso
+
+    if request.method == 'GET':
+        context = {
+            'erros': [],
+            'Tipo_Transacao': 'DEL', 
+            'avaliacao_dados': avaliacao,
+            'notas_alunos': notas_alunos,
+            'Peso': str(peso).replace(',','.'),
+            'lecionas': lecionas,
+            'turma': turma,
+            'bloqueio': False,
+            'idAv': idAv
+        }
+        return render(request,'gestaoEscolar/avaliacao/avaliacao_form.html', context)
+    else:
+        try:
+            with transaction.atomic():
+                Nota.apagar_notas(avaliacao)
+                avaliacao.delete()
+                for item in notas_bimestrais:
+                    item.calcular_nota_bimestral() 
+                return redirect('avaliacao_listagem',idT)
+        except Exception as Error:
+            #Erros de servidor (500)
+            print('Erro no servidor: ' + str(Error))
+            Error = 'Erro no servidor'
+            erros = [Error]
+            context = {
+                'erros': erros,
+                'Tipo_Transacao': 'DEL', 
+                'avaliacao_dados': avaliacao,
+                'notas_alunos': notas_alunos,
+                'Peso': str(peso).replace(',','.'),
+                'lecionas': lecionas,
+                'turma': turma,
+                'bloqueio': False,
+                'idAv': idAv
+            }
+            return render(request,'gestaoEscolar/avaliacao/avaliacao_form.html', context)

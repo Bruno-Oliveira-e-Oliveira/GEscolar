@@ -149,9 +149,6 @@ def bimestre_alterar(request,idA,idB):
     else:
         dados = request.POST
 
-        #Verificar se todas as notas dos alunos estão fechadas
-        #Caso não estejam impedir o fechamento do bimestre
-    
         bimestre_dados = {
             'AnoLetivo': bimestre_obj.AnoLetivo.id,
             'Bimestre': bimestre_obj.Bimestre,
@@ -195,7 +192,14 @@ def bimestre_alterar(request,idA,idB):
         else:
             try:
                 with transaction.atomic():
-                    bimestre_form.save()
+                    bimestre = bimestre_form.save()
+                    if dados['Situacao'] == 'F':
+                        notas = Nota_Final.objects.filter(
+                            AnoLetivo=bimestre.AnoLetivo.id, 
+                            Escola=escola
+                        )
+                        for nota in notas:
+                            nota.calcular_nota_final()
                     return redirect('bimestre_listagem',idA)
             except Exception as Error:
                 #Erros de servidor (500)

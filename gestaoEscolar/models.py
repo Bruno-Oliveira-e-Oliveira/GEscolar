@@ -706,6 +706,11 @@ class Nota(models.Model):
         ) 
     Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola') 
 
+    def apagar_notas(avaliacao):
+        notas = Nota.objects.filter(Avaliacao=avaliacao.id, Escola=avaliacao.Escola.id)
+        for nota in notas:
+            nota.delete()
+
     def __str__(self):
         return self.Avaliacao.Nome + ' | ' + self.Nota_Bimestral.Nota_Final.Matricula_Turma.Aluno.Nome
 
@@ -716,7 +721,8 @@ class Nota_Bimestral(models.Model):
         decimal_places=1, 
         verbose_name='Media',
         blank=True, 
-        null=True
+        null=True,
+        default=0
     )
     Bimestre = models.ForeignKey('Bimestre', on_delete = models.PROTECT, verbose_name = 'Bimestre') 
     Nota_Final = models.ForeignKey('Nota_Final', on_delete = models.PROTECT, verbose_name = 'Nota_Final')
@@ -744,7 +750,6 @@ class Nota_Bimestral(models.Model):
                     )
                     Nota_Bimestral.gerar_nota_Bimestral(bimestre, nota_final[0], escola)
 
-    #Testar depois de criar as avaliações
     def calcular_nota_bimestral(self):
         notas = Nota.objects.filter(Nota_Bimestral=self.id, Escola=self.Escola.id)
         if len(notas) == 0:
@@ -773,7 +778,8 @@ class Nota_Final(models.Model):
         decimal_places=1, 
         verbose_name='Media_Final',
         blank=True, 
-        null=True
+        null=True,
+        default=0
     )
     Matricula_Turma = models.ForeignKey('Matricula_Turma', on_delete = models.PROTECT, verbose_name = 'Matricula_Turma')
     Leciona = models.ForeignKey('Leciona', on_delete = models.PROTECT, verbose_name = 'Leciona')
@@ -796,7 +802,6 @@ class Nota_Final(models.Model):
         if bimestre is not None:
             Nota_Bimestral.gerar_nota_Bimestral(bimestre, nota_final, escola)
 
-    #Testar depois de criar as avaliações
     def calcular_nota_final(self):
         notas_bimestrais = Nota_Bimestral.objects.filter(Nota_Final=self.id, Escola=self.Escola.id)
         if len(notas_bimestrais) == 0:

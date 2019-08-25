@@ -27,10 +27,11 @@
                     <tr>
                         {% if bimestre.Situacao == 'A' %}
                             <th><a href="{% url 'bimestre_alterar' idA bimestre.id %}">X</a></th>
+                            <th><a href="{% url 'bimestre_deletar' idA bimestre.id %}">X</a></th>
                         {% else  %}
                             <th>X</th>
+                            <th>X</th>
                         {% endif  %}
-                        <th><a href="{% url 'bimestre_deletar' idA bimestre.id %}">X</a></th>
                         <th><a href="{% url 'bimestre_consultar' idA bimestre.id %}">{{ bimestre.Bimestre }} - {{ bimestre.AnoLetivo }}</a></th>
                         {% if bimestre.Situacao == 'A' %}
                             <th>Aberto</th>
