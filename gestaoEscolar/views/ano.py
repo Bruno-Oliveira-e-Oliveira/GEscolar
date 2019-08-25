@@ -112,8 +112,8 @@ def ano_alterar(request,id):
         ano_dados = {
             'Ano': ano_obj.Ano,
             'Situacao': dados['Situacao'],
-            'Data_Inicio': dados['Data_Inicio'],
-            'Data_Fim': dados['Data_Fim'],
+            'Data_Inicio': ano_obj.Data_Inicio,
+            'Data_Fim': ano_obj.Data_Fim,
             'Escola': ano_obj.Escola.id
         }
         ano_form = AnoLetivoForm(ano_dados , instance=ano_obj)
@@ -141,6 +141,14 @@ def ano_alterar(request,id):
             try:
                 with transaction.atomic():
                     ano = ano_form.save()
+
+
+                    # TESTAR ISSO porque nao deu certo '-'
+                    escola = Escola.objects.get(id=request.session['Escola'])
+                    if dados['Situacao'] == 'F':
+                        Matricula_Turma.mudar_situacao_alunos(ano, escola)
+                    # *******************
+
                     return redirect('ano_listagem')
             except Exception as Error:
                 #Erros de servidor (500)

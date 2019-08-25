@@ -70,8 +70,21 @@ def bimestre_novo(request,idA):
         fim = datetime.strptime(bimestre_dados['Data_Fim'], '%Y-%m-%d')
         if inicio.date() < ano.Data_Inicio or fim.date() > ano.Data_Fim:
             errado = True
+
+        bimestre_anterior = False
+
+        bimestres = Bimestre.objects.filter(
+            Bimestre=(numero_bimestre - 1),
+            AnoLetivo=ano.id, 
+            Escola=ano.Escola.id
+        )
         
-        if erros_bimestre or achou or fechado or errado:
+        if len(bimestres) > 0:
+            for item in bimestres:
+                if item.Data_Fim >= inicio.date():
+                    bimestre_anterior = True
+    
+        if erros_bimestre or achou or fechado or errado or bimestre_anterior:
             erros = []
             for erro in erros_bimestre.values():
                 erros.append(erro)
@@ -85,6 +98,10 @@ def bimestre_novo(request,idA):
                 erro = '''As datas inicial e final do bimestre devem estar dentro do período das datas 
                     de abertura e encerramento do ano letivo ao qual elas pertencem.'''
                 erros.append(erro)
+            if bimestre_anterior:
+                erro = '''As datas desse bimestre devem ser depois do bimestre anterior.'''
+                erros.append(erro)
+
             context = {
                 'bimestre_dados':bimestre_dados, 
                 'erros':erros,  
@@ -161,24 +178,36 @@ def bimestre_alterar(request,idA,idB):
         bimestre_form = BimestreForm(bimestre_dados , instance=bimestre_obj)
         erros_bimestre = {}
 
+        erros = []
+
         if not bimestre_form.is_valid():
             erros_bimestre = bimestre_form.errors
-            print(erros_bimestre)
-        
-        errado = False
-        inicio = datetime.strptime(bimestre_dados['Data_Inicio'], '%Y-%m-%d')
-        fim = datetime.strptime(bimestre_dados['Data_Fim'], '%Y-%m-%d')
-        if inicio.date() < ano.Data_Inicio or fim.date() > ano.Data_Fim:
-            errado = True
-
-        if erros_bimestre or errado:
-            erros = []
             for erro in erros_bimestre.values():
                 erros.append(erro)
-            if errado:
-                erro = '''As datas inicial e final do bimestre devem estar dentro do período das datas 
-                    de abertura e encerramento do ano letivo ao qual elas pertencem.'''
-                erros.append(erro)
+        
+        inicio = datetime.strptime(bimestre_dados['Data_Inicio'], '%Y-%m-%d')
+        fim = datetime.strptime(bimestre_dados['Data_Fim'], '%Y-%m-%d')
+
+        if inicio.date() < ano.Data_Inicio or fim.date() > ano.Data_Fim:
+            erros.append(
+                '''As datas inicial e final do bimestre devem estar dentro do período das datas de 
+                abertura e encerramento do ano letivo ao qual elas pertencem.'''
+            )
+
+        bimestres = Bimestre.objects.filter(
+            Bimestre=(bimestre_obj.Bimestre - 1),
+            AnoLetivo=bimestre_obj.AnoLetivo.id, 
+            Escola=bimestre_obj.AnoLetivo.Escola.id
+        )
+        
+        if len(bimestres) > 0:
+            for item in bimestres:
+                if item.Data_Fim >= inicio.date():
+                    erros.append(
+                        '''As datas desse bimestre devem ser depois do bimestre anterior.'''
+                    )
+
+        if erros:
             context = {
                 'Tipos_Situacao': TIPOS_SITUACAO,
                 'erros':erros, 

@@ -287,7 +287,7 @@ def matricula_turma_novo(request,idT):
         matricula_turma_dados = {
             'Turma': turma.id ,
             'Aluno': dados['Aluno'],
-            'Situacao': 'matriculado',
+            'Situacao': 'cursando',
             'Escola': escola.id
         }
 
@@ -296,6 +296,7 @@ def matricula_turma_novo(request,idT):
 
         if not matricula_turma_form.is_valid():
             erros_matricula_turma = matricula_turma_form.errors
+            print(erros_matricula_turma)
         
         if erros_matricula_turma:
             for erro in erros_matricula_turma.values():

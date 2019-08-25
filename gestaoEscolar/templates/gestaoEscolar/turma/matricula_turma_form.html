@@ -33,11 +33,11 @@
             {% if Tipo_Transacao == 'INS' %}
                 {% url 'matricula_turma_novo' idT %}
             {% elif Tipo_Transacao == 'UPD' %}
-                
+                {% url 'matricula_turma_alterar' idT idM %}
             {% elif Tipo_Transacao == 'CON' %}
-                
+                {% url 'matricula_turma_consultar' idT idM %}
             {% elif Tipo_Transacao == 'DEL' %}
-                
+                {% url 'matricula_turma_deletar' idT idM %}
             {% endif %}
         " method="POST">
         {% csrf_token %}

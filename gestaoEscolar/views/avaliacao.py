@@ -51,6 +51,7 @@ def avaliacao_novo(request,idT):
     checarPermEscola(turma, escola.id)
     pessoa = Pessoa.obter_pessoa(request.user.username, '')
     alunos = Matricula_Turma.retornar_alunos_matriculados(turma, escola)
+    bimestre = Bimestre.retornar_ativo(escola.id)
 
     if pessoa.Tipo_Pessoa == 'P':
         lecionas = Leciona.objects.filter(Escola=escola.id, Turma=turma.id, Professor=pessoa.id)
@@ -65,8 +66,11 @@ def avaliacao_novo(request,idT):
     if turma.AnoLetivo.Situacao == 'F':
         erros.append('O ano letivo dessa turma já foi fechado.')
 
-    if not Bimestre.checarSituacao(escola.id):
-        erros.append('Não há nenhum bimestre aberto.')
+    if bimestre is None:
+       erros.append('Não há nenhum bimestre em aberto.') 
+    else:
+        if bimestre.Data_Inicio is None or bimestre.Data_Fim is None:
+           erros.append('As datas do bimestre atual não foram configuradas.') 
 
     if len(lecionas) == 0:
         erros.append('Não há nenhuma disciplina/professor configurada nessa turma.')
@@ -106,8 +110,6 @@ def avaliacao_novo(request,idT):
         
         for erro in erros_avaliacao.values():
             erros.append(erro)
-
-        bimestre = Bimestre.retornar_ativo(escola.id)
 
         if avaliacao_dados['Data'] < bimestre.Data_Inicio or avaliacao_dados['Data'] > bimestre.Data_Fim:
             erros.append('Data da avaliação fora do período do bimestre atual.')

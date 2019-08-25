@@ -123,11 +123,6 @@
                 </div>
 
                 <div>
-                    <label for="id_Turma">Turma:</label> 
-                    <input type="text" name="Turma" maxlength="20" disabled id="id_Turma" value='{{ aluno_dados.Turma }}'>     
-                </div>
-
-                <div>
                     <label for="id_ativo">Ativo:</label>
                     <select name="is_active" id="id_ativo">
                         {% for status in Tipo_Status %}
@@ -376,11 +371,6 @@
                 <div>
                     <label for="id_email">Email:</label> 
                     <input type="email" name="email" disabled maxlength="254" required id="id_email" value='{{ usuario_dados.email }}'>     
-                </div>
-
-                <div>
-                    <label for="id_Turma">Turma:</label> 
-                    <input type="text" name="Turma" disabled maxlength="20" disabled id="id_Turma" value='{{ aluno_dados.Turma }}'>     
                 </div>
 
                 <div>

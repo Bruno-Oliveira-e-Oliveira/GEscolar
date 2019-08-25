@@ -69,6 +69,16 @@
                             {% endfor %}       
                         </select>
                     </div>
+
+                    <div>
+                        <label for="id_Data_Inicio">Data Inicial:</label> 
+                        <input type="date" name="Data_Inicio" required id="id_Data_Inicio" value='{{ ano_dados.Data_Inicio|date:"Y-m-d" }}'>
+                    </div>
+    
+                    <div>
+                        <label for="id_Data_Fim">Data Final:</label> 
+                        <input type="date" name="Data_Fim" required id="id_Data_Fim" value='{{ ano_dados.Data_Fim|date:"Y-m-d" }}'>
+                    </div>
                 {% else %}
                     <div>
                         <label for="id_Situacao">Situação:</label> 
@@ -82,20 +92,19 @@
                             {% endfor %}       
                         </select>
                     </div>
+
+
+                    <div>
+                        <label for="id_Data_Inicio">Data Inicial:</label> 
+                        <input type="date" name="Data_Inicio" disabled id="id_Data_Inicio" value='{{ ano_dados.Data_Inicio|date:"Y-m-d" }}'>
+                    </div>
+    
+                    <div>
+                        <label for="id_Data_Fim">Data Final:</label> 
+                        <input type="date" name="Data_Fim" disabled id="id_Data_Fim" value='{{ ano_dados.Data_Fim|date:"Y-m-d" }}'>
+                    </div>
                 {% endif %}
 
-
-
-
-                <div>
-                    <label for="id_Data_Inicio">Data Inicial:</label> 
-                    <input type="date" name="Data_Inicio" required id="id_Data_Inicio" value='{{ ano_dados.Data_Inicio|date:"Y-m-d" }}'>
-                </div>
-
-                <div>
-                    <label for="id_Data_Fim">Data Final:</label> 
-                    <input type="date" name="Data_Fim" required id="id_Data_Fim" value='{{ ano_dados.Data_Fim|date:"Y-m-d" }}'>
-                </div>
             </fieldset>
 
         {% else %}
@@ -103,7 +112,7 @@
             <fieldset>
                 <div>
                     <label for="id_Ano">Número:</label>
-                    <input type="number" name="Ano" min="0" disabled required id="id_Ano" value='{{ ano_dados.Ano }}'>
+                    <input type="number" name="Ano" min="0" disabled  id="id_Ano" value='{{ ano_dados.Ano }}'>
                 </div>
 
                 <div>
@@ -121,12 +130,12 @@
             
                 <div>
                     <label for="id_Data_Inicio">Data Inicial:</label> 
-                    <input type="date" name="Data_Inicio" disabled required id="id_Data_Inicio" value='{{ ano_dados.Data_Inicio|date:"Y-m-d" }}'>
+                    <input type="date" name="Data_Inicio" disabled  id="id_Data_Inicio" value='{{ ano_dados.Data_Inicio|date:"Y-m-d" }}'>
                 </div>
 
                 <div>
                     <label for="id_Data_Fim">Data Final:</label> 
-                    <input type="date" name="Data_Fim" disabled required id="id_Data_Fim" value='{{ ano_dados.Data_Fim|date:"Y-m-d" }}'>
+                    <input type="date" name="Data_Fim" disabled  id="id_Data_Fim" value='{{ ano_dados.Data_Fim|date:"Y-m-d" }}'>
                 </div>
             </fieldset>
 

@@ -38,8 +38,21 @@
                         {% else  %}
                             <th>Fechado</th>
                         {% endif  %}
-                        <th>{{ bimestre.Data_Inicio }}</th>
-                        <th>{{ bimestre.Data_Fim }}</th>
+
+                        {% if bimestre.Data_Inicio  %}
+                            <th>{{ bimestre.Data_Inicio }}</th>
+                        {% else  %}
+                            <th></th>
+                        {% endif  %}
+
+                        {% if bimestre.Data_Fim  %}
+                            <th>{{ bimestre.Data_Fim }}</th>
+                        {% else  %}
+                            <th></th>
+                        {% endif  %}
+                        
+
+                        
                     </tr>
                 {% else %}
                     <tr>

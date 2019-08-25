@@ -35,10 +35,10 @@
                             <th>X</th>
                         {% endif %}
                         <th><a href="{% url 'matricula_turma_consultar' idT matricula.id %}">{{ matricula.Aluno.Nome }}</a></th>
-                        {% if matricula.Situacao == 'matriculado' %}
-                            <th>Matriculado</th>
-                        {% elif matricula.Situacao == 'concluido' %}
-                            <th>Concluído</th>
+                        {% if matricula.Situacao == 'cursando' %}
+                            <th>Cursando</th>
+                        {% elif matricula.Situacao == 'aprovado' %}
+                            <th>Aprovado</th>
                         {% elif matricula.Situacao == 'transferido' %}
                             <th>Transferido</th>
                         {% elif matricula.Situacao == 'trancado' %}
@@ -46,8 +46,8 @@
                         {% elif matricula.Situacao == 'reprovado' %}
                             <th>Reprovado</th>
                         {% endif %}
-                        <th>X</th>
-                            
+                        <th><a href="{% url 'relatorio_notas_frequencias' matricula.Turma.id matricula.id %}">X</a></th>
+                    
                     </tr>
             {% endfor %}
         </tbody>

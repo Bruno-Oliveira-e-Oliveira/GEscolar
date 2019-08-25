@@ -20,15 +20,15 @@
             {% for disciplina in disciplinas %}
                 {% if disciplinas is not None %}
                     <tr>
-                        <th><a href="{% url 'disciplina_alterar' disciplina.id %}">X</a></th>
-                        <th><a href="{% url 'disciplina_deletar' disciplina.id %}">X</a></th>
-                        <th><a href="{% url 'disciplina_consultar' disciplina.id %}">{{ disciplina.Nome }}</a></th>
+                        <td><a href="{% url 'disciplina_alterar' disciplina.id %}">X</a></td>
+                        <td><a href="{% url 'disciplina_deletar' disciplina.id %}">X</a></td>
+                        <td><a href="{% url 'disciplina_consultar' disciplina.id %}">{{ disciplina.Nome }}</a></td>
                     </tr>
                 {% else %}
                     <tr>
-                        <th>X</th>
-                        <th>X</th>
-                        <th></th>
+                        <td>X</td>
+                        <td>X</td>
+                        <td></td>
                     </tr>
                 {% endif %}
             {% endfor %}

@@ -18,7 +18,8 @@ from .views import (
     serie,
     matriz,
     leciona,
-    avaliacao
+    avaliacao,
+    relatorios
 )
 
 urlpatterns = [
@@ -103,6 +104,8 @@ urlpatterns = [
     path('serie/<int:idS>/matriz/alterar/<int:idM>', matriz.matriz_item_alterar, name='matriz_item_alterar'),
     path('serie/<int:idS>/matriz/<int:idM>', matriz.matriz_item_consultar, name='matriz_item_consultar'),
     path('serie/<int:idS>/matriz/deletar/<int:idM>', matriz.matriz_item_deletar, name='matriz_item_deletar'),
+
+    path('turma/<int:idT>/gestao/matricula/<int:idM>/relatorio/',relatorios.relatorio_notas_frequencias,name='relatorio_notas_frequencias'),
     
 
 

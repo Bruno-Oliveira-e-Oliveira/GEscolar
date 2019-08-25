@@ -27,7 +27,6 @@ class Escola(models.Model):
         (PRIVADA,'Privada')
     )
     Tipo_Escola = models.CharField('Tipo da Escola',max_length=20, choices=TIPOS, default=PUBLICA)
-    #NOVO CAMPO
     Nota_de_Corte = models.IntegerField(
         verbose_name = 'Nota de corte de aprovação',
         error_messages = {
@@ -502,19 +501,19 @@ class Turma(models.Model):
 class Matricula_Turma(models.Model):
     Turma = models.ForeignKey('Turma', on_delete=models.PROTECT, verbose_name='Turma')
     Aluno = models.ForeignKey('Aluno', on_delete = models.PROTECT, verbose_name = 'Aluno')
-    MATRICULADO = 'matriculado'
-    CONCLUIDO = 'concluido'
+    CURSANDO = 'cursando'
+    APROVADO = 'aprovado'
     TRANSFERIDO = 'transferido'
     TRANCADO = 'trancado'
     REPROVADO = 'reprovado'
     TIPOS_SITUACAO = (
-        (MATRICULADO, 'Matriculado'),
-        (CONCLUIDO, 'Concluído'),
+        (CURSANDO, 'Cursando'),
+        (APROVADO, 'Aprovado'),
         (TRANSFERIDO, 'Transferido'),
         (TRANCADO, 'Trancado'),
         (REPROVADO, 'Reprovado')
     )
-    Situacao = models.CharField('Situação', max_length=20, choices=TIPOS_SITUACAO, default=MATRICULADO)
+    Situacao = models.CharField('Situação', max_length=20, choices=TIPOS_SITUACAO, default=CURSANDO)
     Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
 
     def __str__(self):
@@ -524,7 +523,7 @@ class Matricula_Turma(models.Model):
         matriculas = Matricula_Turma.objects.filter(
             Escola=escola.id, 
             Turma=turma.id, 
-            Situacao='matriculado'
+            Situacao='cursando'
         )
         alunos = []
         if len(matriculas) > 0:
@@ -536,12 +535,42 @@ class Matricula_Turma(models.Model):
         matriculas = Matricula_Turma.objects.filter(
             Escola=escola.id, 
             Turma=turma.id, 
-            Situacao='matriculado'
+            Situacao='cursando'
         )
         if len(matriculas) == 0:
             return None
         else:
             return matriculas
+
+    def mudar_situacao_alunos(ano, escola):
+        turmas = Turma.retorna_turmas_ativas(escola)
+        corte = escola.Nota_de_Corte
+        if turmas is not None:
+            for turma in turmas:
+                lecionas = Leciona.objects.filter(Turma=turma.id, Escola=escola.id)
+                matriculas = Matricula_Turma.objects.filter(
+                    Turma=turma.id, 
+                    Escola=escola.id, 
+                    Situacao='cursando'
+                )
+                if lecionas and matriculas:
+                    for matricula in matriculas:
+                        aprovado = True
+                        for leciona in lecionas:   
+                            notas = Nota_Final.objects.filter(
+                                Leciona=leciona,
+                                Matricula_Turma=matricula.id,
+                                AnoLetivo=ano.id,
+                                Escola=escola.id
+                            )
+                            if notas:
+                                for nota in notas:
+                                    if nota.Media_Final < corte:
+                                        aprovado = False
+                        if aprovado == True:
+                            matricula.Situacao = 'aprovado'
+                        else:
+                            matricula.Situacao = 'reprovado'
 
 
 class Aula(models.Model):
