@@ -91,6 +91,13 @@
                     <input type="text" name="Turma" maxlength="20" disabled id="id_Turma" value='{{ turma.nome_editado }}'>
                 </div>
 
+                {% if Tipo_Transacao != 'INS' %}
+                    <div>
+                        <label for="id_Bimestre">Bimestre:</label>
+                        <input type="text" name="Bimestre" maxlength="20" disabled id="id_Bimestre" value='{{ aula_dados.Bimestre.Bimestre }} - {{ aula_dados.Bimestre.AnoLetivo }}'>
+                    </div>
+                {% endif %}
+
             </fieldset>
 
         {% else %}
@@ -123,6 +130,11 @@
                 <div>
                     <label for="id_Turma">Turma:</label>
                     <input type="text" name="Turma" maxlength="20" disabled id="id_Turma" value='{{ turma.nome_editado }}'>
+                </div>
+
+                <div>
+                    <label for="id_Bimestre">Bimestre:</label>
+                    <input type="text" name="Bimestre" maxlength="20" disabled id="id_Bimestre" value='{{ aula_dados.Bimestre.Bimestre }} - {{ aula_dados.Bimestre.AnoLetivo }}'>
                 </div>
 
             </fieldset>

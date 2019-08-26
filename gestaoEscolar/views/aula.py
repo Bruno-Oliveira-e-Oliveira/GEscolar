@@ -62,8 +62,12 @@ def aula_novo(request,idT):
     checarPermEscola(turma, escola.id)
     lecionas = Leciona.objects.filter(Escola=escola.id, Turma=turma.id)
     alunos = Matricula_Turma.retornar_alunos_matriculados(turma, escola)
+    bimestre = Bimestre.retornar_ativo(escola.id)
     erros = []
     bloqueio = False
+
+    if bimestre is None:
+        erros.append('Não há nenhum bimestre em aberto.')
 
     if len(lecionas) == 0:
         erros.append('Não há registros na tabela de disciplinas x professores.')
@@ -89,6 +93,7 @@ def aula_novo(request,idT):
             'Data': dados['Data'],
             'Tema': dados['Tema'],
             'Turma': turma.id,
+            'Bimestre': bimestre.id,
             'Leciona': dados['Leciona'],
             'Escola': escola.id
         }
@@ -160,6 +165,7 @@ def aula_alterar(request,idT,idA):
             'Data': dados['Data'],
             'Tema': dados['Tema'],
             'Turma': turma.id,
+            'Bimestre': aula_obj.Bimestre.id,
             'Leciona': aula_obj.Leciona.id,
             'Escola': escola.id
         }

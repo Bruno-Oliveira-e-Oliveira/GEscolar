@@ -23,6 +23,8 @@
             <a href="{% url 'leciona_listagem' idT %}">Disciplina x Professor</a>
             &NonBreakingSpace;
             <a href="{% url 'avaliacao_listagem' idT %}">Avaliações</a>
+            &NonBreakingSpace;
+            <a href="{% url 'aula_listagem' turma.id %}">Aulas</a>
         </thead>
         <tbody>
             {% for matricula in matriculas %}

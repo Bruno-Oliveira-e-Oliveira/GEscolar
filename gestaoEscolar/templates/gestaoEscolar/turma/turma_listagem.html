@@ -17,7 +17,6 @@
                 <th>Série</th>
                 <th>Ano letivo</th>
                 <th>Gestão</th>
-                <th>Aulas</th>
             </tr>
             <a href="{% url 'turma_novo' %}">Novo</a>
         </thead>
@@ -45,7 +44,6 @@
                         {% endif %}
                         <th>{{ turma.AnoLetivo.Ano }}</th>
                         <th><a href="{% url 'gerenciamento_turma_listagem' turma.id %}">X</a></th>
-                        <th><a href="{% url 'aula_listagem' turma.id %}">X</a></th>
                     </tr>
                 {% endif %}
             {% endfor %}

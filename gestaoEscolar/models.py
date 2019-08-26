@@ -321,7 +321,11 @@ class Aluno(Pessoa):
                     for aluno in alunos:
                         achou = False
                         for turma in turmas_ativas:
-                            matriculas = Matricula_Turma.objects.filter(Escola=escolaid, Turma=turma.id)
+                            matriculas = Matricula_Turma.objects.filter(
+                                Escola=escolaid, 
+                                Turma=turma.id,
+                                Situacao='cursando'
+                            )
                             for matricula in matriculas:
                                 if matricula.Aluno.id == aluno.id:
                                     achou = True
@@ -482,7 +486,7 @@ class Turma(models.Model):
             return str(self.Serie.Numero) +''+ self.Nome +' - Ensino Médio'
 
     def checarMaxAlunos(self):
-        matriculas = Matricula_Turma.objects.filter(Turma=self.id)
+        matriculas = Matricula_Turma.objects.filter(Turma=self.id,Situacao='cursando')
 
         if len(matriculas) < self.Max_Alunos:
             return True
@@ -496,6 +500,30 @@ class Turma(models.Model):
             return turmas
         else:
             return None
+
+    #TESTAR
+    def apagar_turma(turma, escola):
+        matriculas = Matricula_Turma.objects.filter(Escola=escola.id, Turma=turma.id)
+        avaliacoes = Avaliacao.objects.filter(Escola=escola.id, Turma=turma.id)
+        aulas = Aula.objects.filter(Escola=escola.id, Turma=turma.id)
+        lecionas = Leciona.objects.filter(Escola=escola.id, Turma=turma.id)
+        if len(matriculas) > 0:
+            for matricula in matriculas:
+                Matricula_Turma.apagar_matricula(matricula, escola)
+        if len(avaliacoes) > 0:
+            for avaliacao in avaliacoes:
+                Nota.apagar_notas(avaliacao)
+                avaliacao.delete()
+        if len(aulas) > 0:
+            for aula in aulas:
+                Frequencia.apagar_frequencias(aula, escola)
+                aula.delete()
+        if len(lecionas) > 0:
+            for leciona in lecionas:
+                leciona.delete()
+        turma.delete()
+
+        
 
     
 class Matricula_Turma(models.Model):
@@ -574,10 +602,29 @@ class Matricula_Turma(models.Model):
                         matricula.save()
 
 
+    # TESTAR
+    def apagar_matricula(matricula, escola):
+        notas_finais = Nota_Final.objects.filter(Matricula_Turma=matricula.id, Escola=escola.id)
+        if len(notas_finais) > 0:
+            for nota_final in notas_finais:
+                notas_bimestrais = Nota_Bimestral.objects.filter(Nota_Final=nota_final.id)
+                if len(notas_bimestrais) > 0:
+                    for nota_bimestral in notas_bimestrais:
+                        notas = Nota.objects.filter(Nota_Bimestral=nota_bimestral.id)
+                        if len(notas) > 0:
+                            for nota in notas:
+                                nota.delete()
+                        nota_bimestral.delete()
+                nota_final.delete()
+            
+
+
+
 class Aula(models.Model):
     Data = models.DateField(verbose_name='Data')
     Tema = models.CharField('Tema',max_length=40)
     Turma = models.ForeignKey('Turma', on_delete=models.PROTECT, verbose_name='Turma')
+    Bimestre = models.ForeignKey('Bimestre', on_delete=models.PROTECT, verbose_name='Bimestre')
     Leciona = models.ForeignKey('Leciona', on_delete=models.PROTECT, verbose_name='Leciona')
     Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
 
@@ -619,10 +666,11 @@ class Frequencia(models.Model):
         for frequencia in frequencias:
             frequencia.delete()
 
-    def apagar_frequencias_aluno(aluno, escola):
-        frequencias = Frequencia.objects.filter(Escola=escola.id, Aluno=aluno.id)
-        for frequencia in frequencias:
-            frequencia.delete()
+    #TESTAR
+    # def apagar_frequencias_aluno(aluno, escola):
+    #     frequencias = Frequencia.objects.filter(Escola=escola.id, Aluno=aluno.id)
+    #     for frequencia in frequencias:
+    #         frequencia.delete()
 
     
 class AnoLetivo(models.Model):

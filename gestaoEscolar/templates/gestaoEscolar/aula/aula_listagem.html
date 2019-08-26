@@ -17,6 +17,7 @@
                 <th>Disciplina</th>
                 <th>Professor</th>
                 <th>Turma</th>
+                <th>Bimestre</th>
                 <th>Lista de chamada</th>
             </tr>
             {% if turma.AnoLetivo.Situacao == 'A' %}
@@ -39,6 +40,7 @@
                     <th>{{ aula.Leciona.Matriz_Item.Disciplina.Nome }}</th>
                     <th>{{ aula.Leciona.Professor.Nome }}</th>
                     <th>{{ aula.Turma.nome_editado }}</th>
+                    <th>{{ aula.Bimestre.Bimestre }} - {{ aula.Bimestre.AnoLetivo }}</th>
                     {% if turma.AnoLetivo.Situacao == 'A' %}
                         <th><a href="{% url 'lista_chamada' turma.id aula.id %}">X</a></th> 
                     {% else %}

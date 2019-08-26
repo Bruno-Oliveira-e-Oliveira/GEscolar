@@ -378,14 +378,19 @@ def matricula_turma_alterar(request,idT,idM):
         }
         matricula_turma_form = Matricula_Turma_Form(matricula_turma_dados , instance=matricula_turma_obj)
         erros_matricula_turma = {}
+        erros = []
 
         if not matricula_turma_form.is_valid():
             erros_matricula_turma = matricula_turma_form.errors
-
-        if erros_matricula_turma:
-            erros = []
             for erro in erros_matricula_turma.values():
                 erros.append(erro)
+
+        if not turma_obj.checarMaxAlunos() and dados['Situacao'] == 'cursando' :
+            erros.append('O limite de alunos dessa turma já foi alcançado.')
+
+        if erros:
+            
+
             context = {
                 'matricula_turma_dados': matricula_turma_dados,
                 'erros':erros,  
