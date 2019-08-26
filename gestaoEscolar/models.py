@@ -543,9 +543,9 @@ class Matricula_Turma(models.Model):
             return matriculas
 
     def mudar_situacao_alunos(ano, escola):
-        turmas = Turma.retorna_turmas_ativas(escola)
+        turmas = Turma.objects.filter(AnoLetivo=ano.id, Escola=escola.id)
         corte = escola.Nota_de_Corte
-        if turmas is not None:
+        if turmas:
             for turma in turmas:
                 lecionas = Leciona.objects.filter(Turma=turma.id, Escola=escola.id)
                 matriculas = Matricula_Turma.objects.filter(
@@ -571,6 +571,7 @@ class Matricula_Turma(models.Model):
                             matricula.Situacao = 'aprovado'
                         else:
                             matricula.Situacao = 'reprovado'
+                        matricula.save()
 
 
 class Aula(models.Model):
