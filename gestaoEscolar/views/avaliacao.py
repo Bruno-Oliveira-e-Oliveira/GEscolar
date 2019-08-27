@@ -119,7 +119,12 @@ def avaliacao_novo(request,idT):
         notas_bimestrais = []
         for aluno in alunos:
             nota_aluno = {}
-            matricula = Matricula_Turma.objects.filter(Turma=turma.id, Aluno=aluno.id, Escola=escola.id)
+            matricula = Matricula_Turma.objects.filter(
+                Turma=turma.id, 
+                Aluno=aluno.id, 
+                Situacao='cursando',
+                Escola=escola.id
+            )
             nota_final = Nota_Final.objects.filter(
                 AnoLetivo=bimestre.AnoLetivo.id,
                 Matricula_Turma=matricula[0].id,
@@ -242,31 +247,38 @@ def avaliacao_alterar(request,idT,idAv):
             nota_aluno = {}
             matricula = Matricula_Turma.objects.filter(
                 Turma=turma.id, 
-                Aluno=aluno.id, Escola=escola.id
-            )
-            nota_final = Nota_Final.objects.filter(
-                AnoLetivo=bimestre.AnoLetivo.id,
-                Matricula_Turma=matricula[0].id,
-                Leciona=avaliacao.Leciona.id,
+                Aluno=aluno.id, 
+                Situacao='cursando',
                 Escola=escola.id
             )
-            nota_bimestral = Nota_Bimestral.objects.filter(
-                Nota_Final=nota_final[0].id,
-                Bimestre=bimestre.id, 
-                Escola=escola.id
-            )
-            nota = Nota.objects.filter(
-                Escola=escola.id, 
-                Avaliacao=avaliacao.id, 
-                Nota_Bimestral=nota_bimestral[0].id
-            )                
+            if len(matricula) > 0:
+                nota_final = Nota_Final.objects.filter(
+                    AnoLetivo=bimestre.AnoLetivo.id,
+                    Matricula_Turma=matricula[0].id,
+                    Leciona=avaliacao.Leciona.id,
+                    Escola=escola.id
+                )
+                if len(nota_final) > 0:
+                    nota_bimestral = Nota_Bimestral.objects.filter(
+                        Nota_Final=nota_final[0].id,
+                        Bimestre=bimestre.id, 
+                        Escola=escola.id
+                    )
+                    if len(nota_bimestral) > 0:
+                        nota = Nota.objects.filter(
+                            Escola=escola.id, 
+                            Avaliacao=avaliacao.id, 
+                            Nota_Bimestral=nota_bimestral[0].id
+                        )                
+                        if len(nota) > 0:
+                            nota_aluno['Aluno'] = aluno
+                            nota_aluno['Nota'] = nota[0]
+                            notas_alunos.append(nota_aluno)
 
-            if len(nota) > 0:
-                nota_aluno['Aluno'] = aluno
-                nota_aluno['Nota'] = nota[0]
-                notas_alunos.append(nota_aluno)
-        
-        peso = notas_alunos[0]['Nota'].Peso
+        if len(notas_alunos) > 0:
+            peso = notas_alunos[0]['Nota'].Peso
+        else:
+            peso = 1
 
         context = {
             'erros': erros,
@@ -309,7 +321,9 @@ def avaliacao_alterar(request,idT,idAv):
             nota_aluno = {}
             matricula = Matricula_Turma.objects.filter(
                 Turma=turma.id, 
-                Aluno=aluno.id, Escola=escola.id
+                Aluno=aluno.id, 
+                Situacao='cursando',
+                Escola=escola.id
             )
             nota_final = Nota_Final.objects.filter(
                 AnoLetivo=bimestre.AnoLetivo.id,
@@ -406,7 +420,6 @@ def avaliacao_consultar(request,idT,idAv):
     checarPermEscola(turma, escola.id)
     checarPermEscola(avaliacao, escola.id)
     alunos = Matricula_Turma.retornar_alunos_matriculados(turma, escola)
-    bimestre = Bimestre.retornar_ativo(escola.id)
     lecionas = Leciona.objects.filter(Escola=escola.id, Turma=turma.id)
 
     notas_alunos = []
@@ -414,30 +427,39 @@ def avaliacao_consultar(request,idT,idAv):
         nota_aluno = {}
         matricula = Matricula_Turma.objects.filter(
             Turma=turma.id, 
-            Aluno=aluno.id, Escola=escola.id
-        )
-        nota_final = Nota_Final.objects.filter(
-            AnoLetivo=bimestre.AnoLetivo.id,
-            Matricula_Turma=matricula[0].id,
-            Leciona=avaliacao.Leciona.id,
+            Situacao__in=['cursando','aprovado','reprovado'],
+            Aluno=aluno.id, 
             Escola=escola.id
         )
-        nota_bimestral = Nota_Bimestral.objects.filter(
-            Nota_Final=nota_final[0].id,
-            Bimestre=bimestre.id, 
-            Escola=escola.id
-        )
-        nota = Nota.objects.filter(
-            Escola=escola.id, 
-            Avaliacao=avaliacao.id, 
-            Nota_Bimestral=nota_bimestral[0].id
-        )                
-
-        nota_aluno['Aluno'] = aluno
-        nota_aluno['Nota'] = nota[0]
-        notas_alunos.append(nota_aluno)
-    
-    peso = notas_alunos[0]['Nota'].Peso
+        if len(matricula) > 0:
+            nota_final = Nota_Final.objects.filter(
+                AnoLetivo=turma.AnoLetivo.id,
+                Matricula_Turma=matricula[0].id,
+                Leciona=avaliacao.Leciona.id,
+                Escola=escola.id
+            )
+            if len(nota_final) > 0:
+                notas_bimestrais = Nota_Bimestral.objects.filter(
+                    Nota_Final=nota_final[0].id, 
+                    Escola=escola.id
+                )
+                if len(notas_bimestrais) > 0:
+                    for nota_bimestral in notas_bimestrais:
+                        nota = Nota.objects.filter(
+                            Escola=escola.id, 
+                            Avaliacao=avaliacao.id, 
+                            Nota_Bimestral=nota_bimestral.id
+                        )                
+                        if len(nota) > 0:
+                            nota_aluno['Aluno'] = aluno
+                            nota_aluno['Nota'] = nota[0]
+                            notas_alunos.append(nota_aluno)
+                            break
+                        
+    if len(notas_alunos) > 0:
+        peso = notas_alunos[0]['Nota'].Peso
+    else:
+        peso = 1         
 
     context = {
         'erros': [],
@@ -470,31 +492,39 @@ def avaliacao_deletar(request,idT,idAv):
         nota_aluno = {}
         matricula = Matricula_Turma.objects.filter(
             Turma=turma.id, 
-            Aluno=aluno.id, Escola=escola.id
-        )
-        nota_final = Nota_Final.objects.filter(
-            AnoLetivo=bimestre.AnoLetivo.id,
-            Matricula_Turma=matricula[0].id,
-            Leciona=avaliacao.Leciona.id,
+            Aluno=aluno.id, 
+            Situacao='cursando',
             Escola=escola.id
         )
-        nota_bimestral = Nota_Bimestral.objects.filter(
-            Nota_Final=nota_final[0].id,
-            Bimestre=bimestre.id, 
-            Escola=escola.id
-        )
-        nota = Nota.objects.filter(
-            Escola=escola.id, 
-            Avaliacao=avaliacao.id, 
-            Nota_Bimestral=nota_bimestral[0].id
-        )                
+        if len(matricula) > 0:
+            nota_final = Nota_Final.objects.filter(
+                AnoLetivo=bimestre.AnoLetivo.id,
+                Matricula_Turma=matricula[0].id,
+                Leciona=avaliacao.Leciona.id,
+                Escola=escola.id
+            )
+            if len(nota_final) > 0:
+                nota_bimestral = Nota_Bimestral.objects.filter(
+                    Nota_Final=nota_final[0].id,
+                    Bimestre=bimestre.id, 
+                    Escola=escola.id
+                )
+                if len(nota_bimestral) > 0:
+                    nota = Nota.objects.filter(
+                        Escola=escola.id, 
+                        Avaliacao=avaliacao.id, 
+                        Nota_Bimestral=nota_bimestral[0].id
+                    )                
+                    if len(nota) > 0:
+                        nota_aluno['Aluno'] = aluno
+                        nota_aluno['Nota'] = nota[0]
+                        notas_alunos.append(nota_aluno)
+                        notas_bimestrais.append(nota_bimestral[0])
 
-        nota_aluno['Aluno'] = aluno
-        nota_aluno['Nota'] = nota[0]
-        notas_alunos.append(nota_aluno)
-        notas_bimestrais.append(nota_bimestral[0])
-    
-    peso = notas_alunos[0]['Nota'].Peso
+        if len(notas_alunos) > 0:
+            peso = notas_alunos[0]['Nota'].Peso
+        else:
+            peso = 1
 
     if request.method == 'GET':
         context = {

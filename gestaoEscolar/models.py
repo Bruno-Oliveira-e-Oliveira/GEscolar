@@ -551,7 +551,7 @@ class Matricula_Turma(models.Model):
         matriculas = Matricula_Turma.objects.filter(
             Escola=escola.id, 
             Turma=turma.id, 
-            Situacao='cursando'
+            Situacao__in=['cursando','aprovado','reprovado']
         )
         alunos = []
         if len(matriculas) > 0:
@@ -603,23 +603,11 @@ class Matricula_Turma(models.Model):
 
 
     # TESTAR
-    def apagar_matricula(matricula, escola):
-        notas_finais = Nota_Final.objects.filter(Matricula_Turma=matricula.id, Escola=escola.id)
-        if len(notas_finais) > 0:
-            for nota_final in notas_finais:
-                notas_bimestrais = Nota_Bimestral.objects.filter(Nota_Final=nota_final.id)
-                if len(notas_bimestrais) > 0:
-                    for nota_bimestral in notas_bimestrais:
-                        notas = Nota.objects.filter(Nota_Bimestral=nota_bimestral.id)
-                        if len(notas) > 0:
-                            for nota in notas:
-                                nota.delete()
-                        nota_bimestral.delete()
-                nota_final.delete()
-            
+    def apagar_matricula(self):    
+        Frequencia.apagar_frequencias_aluno(self)
+        Nota_Final.apagar_notas(self)
 
-
-
+        
 class Aula(models.Model):
     Data = models.DateField(verbose_name='Data')
     Tema = models.CharField('Tema',max_length=40)
@@ -639,7 +627,7 @@ class Frequencia(models.Model):
         (PRESENTE, 'Presente'),
         (AUSENTE, 'Ausente')
     )
-    Presenca = models.CharField('Tema',max_length=10, choices=SITUACAO, default=PRESENTE)
+    Presenca = models.CharField('Presenca',max_length=10, choices=SITUACAO, default=PRESENTE)
     Aula = models.ForeignKey('Aula', on_delete = models.PROTECT, verbose_name = 'Aula')
     Aluno = models.ForeignKey('Aluno', on_delete = models.PROTECT, verbose_name = 'Aluno')
     Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')
@@ -667,10 +655,19 @@ class Frequencia(models.Model):
             frequencia.delete()
 
     #TESTAR
-    # def apagar_frequencias_aluno(aluno, escola):
-    #     frequencias = Frequencia.objects.filter(Escola=escola.id, Aluno=aluno.id)
-    #     for frequencia in frequencias:
-    #         frequencia.delete()
+    def apagar_frequencias_aluno(matricula):
+        escola = matricula.Escola
+        aulas = Aula.objects.filter(Escola=escola.id, Turma=matricula.Turma.id)
+        if len(aulas) > 0:
+            for aula in aulas:
+                frequencias = Frequencia.objects.filter(
+                    Escola=escola.id, 
+                    Aluno=matricula.Aluno.id,
+                    Aula=aula.id
+                )
+                if len(frequencias) > 0:
+                    for frequencia in frequencias:
+                        frequencia.delete()
 
     
 class AnoLetivo(models.Model):
@@ -891,6 +888,21 @@ class Nota_Final(models.Model):
                 numerador += nota.Media
             self.Media_Final = round(numerador/denominador, 1)
         self.save()
+
+    def apagar_notas(matricula):
+        escola = matricula.Escola
+        notas_finais = Nota_Final.objects.filter(Matricula_Turma=matricula.id, Escola=escola.id)
+        if len(notas_finais) > 0:
+            for nota_final in notas_finais:
+                notas_bimestrais = Nota_Bimestral.objects.filter(Nota_Final=nota_final.id)
+                if len(notas_bimestrais) > 0:
+                    for nota_bimestral in notas_bimestrais:
+                        notas = Nota.objects.filter(Nota_Bimestral=nota_bimestral.id)
+                        if len(notas) > 0:
+                            for nota in notas:
+                                nota.delete()
+                        nota_bimestral.delete()
+                nota_final.delete()
 
     def __str__(self):
         return self.Matricula_Turma.Aluno.Nome + ' | ' + self.Leciona.nome_editado + ' | ' +  str(self.AnoLetivo.Ano)

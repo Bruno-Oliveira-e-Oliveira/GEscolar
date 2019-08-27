@@ -346,7 +346,11 @@ def matricula_turma_alterar(request,idT,idM):
     escola = Escola.objects.get(id=request.session['Escola'])
     checarPermEscola(turma_obj, escola.id)
     checarPermEscola(matricula_turma_obj, escola.id)
-    TIPOS_SITUACAO = Matricula_Turma.TIPOS_SITUACAO
+    TIPOS_SITUACAO = (
+        ('cursando', 'Cursando'),
+        ('transferido', 'Transferido'),
+        ('trancado', 'Trancado')
+    )
     alunos = Aluno.objects.filter(Escola=escola.id, id=matricula_turma_obj.Aluno.id)
 
     erros = []
@@ -370,12 +374,20 @@ def matricula_turma_alterar(request,idT,idM):
         return render(request,'gestaoEscolar/turma/matricula_turma_form.html', context)
     else:
         dados = request.POST
-        matricula_turma_dados = {
-            'Turma': matricula_turma_obj.Turma.id,
-            'Aluno': matricula_turma_obj.Aluno.id,
-            'Situacao': dados['Situacao'],
-            'Escola': matricula_turma_obj.Escola.id
-        }
+        if matricula_turma_obj == 'cursando':
+            matricula_turma_dados = {
+                'Turma': matricula_turma_obj.Turma.id,
+                'Aluno': matricula_turma_obj.Aluno.id,
+                'Situacao': dados['Situacao'],
+                'Escola': matricula_turma_obj.Escola.id
+            }
+        else:
+            matricula_turma_dados = {
+                'Turma': matricula_turma_obj.Turma.id,
+                'Aluno': matricula_turma_obj.Aluno.id,
+                'Situacao': matricula_turma_obj.Situacao,
+                'Escola': matricula_turma_obj.Escola.id
+            }
         matricula_turma_form = Matricula_Turma_Form(matricula_turma_dados , instance=matricula_turma_obj)
         erros_matricula_turma = {}
         erros = []
@@ -481,8 +493,8 @@ def matricula_turma_deletar(request,idT,idM):
     else:
         try:
             with transaction.atomic():
+                matricula_turma_obj.apagar_matricula()
                 matricula_turma_obj.delete()
-                Frequencia.apagar_frequencias_aluno(matricula_turma_obj.Aluno, escola)
                 return redirect('gerenciamento_turma_listagem',idT)
         except Exception as Error:
             #Erros de servidor (500)

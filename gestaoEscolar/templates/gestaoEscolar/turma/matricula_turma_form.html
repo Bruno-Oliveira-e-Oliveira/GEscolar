@@ -84,18 +84,35 @@
                         </select>
                     </div>
 
-                    <div>
-                        <label for="id_Situacao">Situação:</label>     
-                        <select name="Situacao" id="id_Situacao" required>
-                            {% for situacao in Tipo_Situacao %}
-                                {% if matricula_turma_dados.Situacao == situacao.0 %}
-                                    <option value="{{ situacao.0 }}" selected>{{ situacao.1 }}</option>
-                                {% else %}
-                                    <option value="{{ situacao.0 }}" >{{ situacao.1 }}</option>
-                                {% endif %}
-                            {% endfor %}       
-                        </select>
-                    </div>
+                    {% if matricula_turma_dados.Situacao == 'cursando' %}
+                        <div>
+                            <label for="id_Situacao">Situação:</label>     
+                            <select name="Situacao" id="id_Situacao" required>
+                                {% for situacao in Tipo_Situacao %}
+                                    {% if matricula_turma_dados.Situacao == situacao.0 %}
+                                        <option value="{{ situacao.0 }}" selected>{{ situacao.1 }}</option>
+                                    {% else %}
+                                        <option value="{{ situacao.0 }}" >{{ situacao.1 }}</option>
+                                    {% endif %}
+                                {% endfor %}       
+                            </select>
+                        </div>
+                    {% else %}
+
+                        <div>
+                            <label for="id_Situacao">Situação:</label>     
+                            <select name="Situacao" id="id_Situacao" disabled>
+                                {% for situacao in Tipo_Situacao %}
+                                    {% if matricula_turma_dados.Situacao == situacao.0 %}
+                                        <option value="{{ situacao.0 }}" selected>{{ situacao.1 }}</option>
+                                    {% else %}
+                                        <option value="{{ situacao.0 }}" >{{ situacao.1 }}</option>
+                                    {% endif %}
+                                {% endfor %}       
+                            </select>
+                        </div>
+
+                    {% endif %}
                 {% endif %}
             </fieldset>
 
