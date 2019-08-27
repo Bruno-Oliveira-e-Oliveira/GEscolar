@@ -501,15 +501,16 @@ class Turma(models.Model):
         else:
             return None
 
-    #TESTAR
     def apagar_turma(turma, escola):
         matriculas = Matricula_Turma.objects.filter(Escola=escola.id, Turma=turma.id)
         avaliacoes = Avaliacao.objects.filter(Escola=escola.id, Turma=turma.id)
         aulas = Aula.objects.filter(Escola=escola.id, Turma=turma.id)
         lecionas = Leciona.objects.filter(Escola=escola.id, Turma=turma.id)
+
         if len(matriculas) > 0:
             for matricula in matriculas:
-                Matricula_Turma.apagar_matricula(matricula, escola)
+                matricula.apagar_dados_matricula()
+                matricula.delete()
         if len(avaliacoes) > 0:
             for avaliacao in avaliacoes:
                 Nota.apagar_notas(avaliacao)
@@ -517,15 +518,13 @@ class Turma(models.Model):
         if len(aulas) > 0:
             for aula in aulas:
                 Frequencia.apagar_frequencias(aula, escola)
-                aula.delete()
+                aula.delete()     
         if len(lecionas) > 0:
             for leciona in lecionas:
                 leciona.delete()
         turma.delete()
 
-        
-
-    
+           
 class Matricula_Turma(models.Model):
     Turma = models.ForeignKey('Turma', on_delete=models.PROTECT, verbose_name='Turma')
     Aluno = models.ForeignKey('Aluno', on_delete = models.PROTECT, verbose_name = 'Aluno')
@@ -601,9 +600,7 @@ class Matricula_Turma(models.Model):
                             matricula.Situacao = 'reprovado'
                         matricula.save()
 
-
-    # TESTAR
-    def apagar_matricula(self):    
+    def apagar_dados_matricula(self):    
         Frequencia.apagar_frequencias_aluno(self)
         Nota_Final.apagar_notas(self)
 
@@ -654,7 +651,6 @@ class Frequencia(models.Model):
         for frequencia in frequencias:
             frequencia.delete()
 
-    #TESTAR
     def apagar_frequencias_aluno(matricula):
         escola = matricula.Escola
         aulas = Aula.objects.filter(Escola=escola.id, Turma=matricula.Turma.id)
@@ -668,8 +664,8 @@ class Frequencia(models.Model):
                 if len(frequencias) > 0:
                     for frequencia in frequencias:
                         frequencia.delete()
-
-    
+        
+                
 class AnoLetivo(models.Model):
     Ano = models.PositiveSmallIntegerField(verbose_name='Ano')
     Data_Inicio = models.DateField(verbose_name='Abertura do ano letivo')

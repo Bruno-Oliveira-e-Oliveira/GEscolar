@@ -209,7 +209,7 @@ def turma_deletar(request,id):
     else:
         try:
             with transaction.atomic():
-                turma_obj.delete()
+                Turma.apagar_turma(turma_obj, escola)
                 return redirect('turma_listagem')
         except Exception as Error:
             #Erros de servidor (500)
@@ -374,7 +374,7 @@ def matricula_turma_alterar(request,idT,idM):
         return render(request,'gestaoEscolar/turma/matricula_turma_form.html', context)
     else:
         dados = request.POST
-        if matricula_turma_obj == 'cursando':
+        if matricula_turma_obj.Situacao == 'cursando':
             matricula_turma_dados = {
                 'Turma': matricula_turma_obj.Turma.id,
                 'Aluno': matricula_turma_obj.Aluno.id,
@@ -401,8 +401,7 @@ def matricula_turma_alterar(request,idT,idM):
             erros.append('O limite de alunos dessa turma já foi alcançado.')
 
         if erros:
-            
-
+        
             context = {
                 'matricula_turma_dados': matricula_turma_dados,
                 'erros':erros,  
@@ -493,7 +492,7 @@ def matricula_turma_deletar(request,idT,idM):
     else:
         try:
             with transaction.atomic():
-                matricula_turma_obj.apagar_matricula()
+                matricula_turma_obj.apagar_dados_matricula()
                 matricula_turma_obj.delete()
                 return redirect('gerenciamento_turma_listagem',idT)
         except Exception as Error:

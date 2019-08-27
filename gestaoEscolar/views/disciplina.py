@@ -137,8 +137,20 @@ def disciplina_deletar(request,id):
     disciplina_obj = get_object_or_404(Disciplina, id=id)
     escola = request.session['Escola']
     checarPermEscola(disciplina_obj, escola)
+
+    erros = []
+    bloqueio = False
+    itens = Matriz_Item.objects.filter(Escola=escola, Disciplina=disciplina_obj.id)
+    if len(itens) > 0:
+        erros.append(
+            'Não foi possível apagar a disciplina pois ela tem referência com um item da matriz.'
+        )
+        bloqueio = True
+
     if request.method == 'GET':
         context = {
+            'erros': erros,
+            'bloqueio': bloqueio,
             'disciplina_dados': disciplina_obj,
             'Tipo_Transacao': 'DEL',
             'idDisciplina': id
@@ -155,8 +167,8 @@ def disciplina_deletar(request,id):
             Error = 'Erro no servidor'
             erros = [Error]
             context = {
-                'Tipos_Situacao': TIPOS_SITUACAO,
-                'erros':erros, 
+                'erros': erros,
+                'bloqueio': bloqueio,
                 'disciplina_dados':disciplina_obj, 
                 'Tipo_Transacao': 'DEL',
                 'idDisciplina': id

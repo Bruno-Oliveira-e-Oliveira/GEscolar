@@ -274,8 +274,22 @@ def bimestre_deletar(request,idA,idB):
     checarPermEscola(ano, escola)
     checarPermEscola(bimestre_obj, escola)
     TIPOS_SITUACAO = Bimestre.TIPOS_SITUACAO
+
+
+    erros = []
+    bloqueio = False
+    notas = Nota_Bimestral.objects.filter(Escola=escola, Bimestre=bimestre_obj.id)
+    aulas = Aula.objects.filter(Escola=escola, Bimestre=bimestre_obj.id)
+    if len(notas) > 0 or len(aulas) > 0:
+        erros.append(
+            'Não foi possível apagar o bimestre pois ele tem referência com as matrículas dos alunos.'
+        )
+        bloqueio = True
+
     if request.method == 'GET':
         context = {
+            'erros': erros,
+            'bloqueio': bloqueio,
             'Tipos_Situacao': TIPOS_SITUACAO,
             'bimestre_dados': bimestre_obj,
             'ano':ano, 
@@ -297,7 +311,8 @@ def bimestre_deletar(request,idA,idB):
             context = {
                 'Tipos_Situacao': TIPOS_SITUACAO,
                 'erros':erros, 
-                'bimestre_dados':bimestre_dados, 
+                'bloqueio': bloqueio,
+                'bimestre_dados':bimestre_obj, 
                 'ano':ano, 
                 'Tipo_Transacao': 'DEL',
                 'idBimestre': idB,
