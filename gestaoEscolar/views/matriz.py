@@ -172,7 +172,7 @@ def matriz_item_deletar(request,idS,idM):
 
     erros = []
     bloqueio = False
-
+    achou = False
     turmas = Turma.objects.filter(Escola=escola, Serie=serie.id)
     for turma in turmas:
         if turma.AnoLetivo.Situacao == 'F':

@@ -23,8 +23,19 @@ def turma_novo(request):
     TIPO_PERIODO = Turma.TIPO_PERIODO
     escola = Escola.objects.get(id=request.session['Escola'])
     series = Serie.objects.filter(Escola=escola.id).order_by('Nivel_Escolaridade','Numero')
+    erros = []
+    bloqueio = False
+    itens = Matriz_Item.objects.filter(Escola=escola.id)
+    if len(itens) == 0:
+        erros.append(
+            'A matriz curricular das séries não foi configurada.'
+        )
+        bloqueio = True
+
     if request.method == 'GET':
         context = {
+            'erros': erros,
+            'bloqueio': bloqueio,
             'Tipo_Transacao': 'INS', 
             'series': series,
             'Tipo_Periodo': TIPO_PERIODO
@@ -49,20 +60,28 @@ def turma_novo(request):
 
         turma_form = TurmaForm(turma_dados)
         erros_turma = {}
+        matriz_vazia = False
 
         if not turma_form.is_valid():
             erros_turma = turma_form.errors
+
+        itens = Matriz_Item.objects.filter(Escola=escola.id, Serie=dados['Serie'])
+        if len(itens) == 0:
+            matriz_vazia = True
         
-        if erros_turma or (ano is None):
-            erros = []
+        if erros_turma or (ano is None) or matriz_vazia:
             for erro in erros_turma.values():
                 erros.append(erro)
             if ano is None:
                 erro = 'Não há nenhum ano letivo aberto no momento.'
                 erros.append(erro)
+            if matriz_vazia:
+                erro = 'Não há nenhum item na matriz dessa série.'
+                erros.append(erro)                
             context = {
                 'turma_dados':turma_dados, 
                 'erros':erros,  
+                'bloqueio': bloqueio,
                 'series': series,
                 'Tipo_Periodo': TIPO_PERIODO, 
                 'Tipo_Transacao': 'INS'
@@ -83,6 +102,7 @@ def turma_novo(request):
                 context = {
                     'turma_dados':turma_dados, 
                     'erros':erros, 
+                    'bloqueio': bloqueio,
                     'series': series, 
                     'Tipo_Periodo': TIPO_PERIODO, 
                     'Tipo_Transacao': 'INS'

@@ -26,6 +26,7 @@ def escola_novo(request):
             'Nivel_Escolaridade': dados['Nivel_Escolaridade'], 
             'Tipo_Escola': dados['Tipo_Escola'], 
             'Nota_de_Corte': dados['Nota_de_Corte'], 
+            'Situacao': 'A',
             'Diretor': '',
             'Endereco': '',
             'Telefone': ''
@@ -112,14 +113,16 @@ def escola_novo(request):
 
 @login_required
 def escola_alterar(request,id):
-    escola_obj = Escola.objects.get(id=id)
+    escola_obj = get_object_or_404(Escola, id=id)
     endereco_obj = Endereco.objects.get(id=escola_obj.Endereco.id)
     telefone_obj = Telefone.objects.get(id=escola_obj.Telefone.id)
     NIVEIS = Escola.NIVEIS_DE_ESCOLARIDADE
     TIPOS = Escola.TIPOS
     ZONAS = Endereco.TIPOS_ZONAS
+    STATUS = Escola.STATUS
     if request.method == 'GET':
         context = {
+            'STATUS': STATUS,
             'Niveis': NIVEIS, 
             'Tipos': TIPOS, 
             'zonas': ZONAS, 
@@ -135,9 +138,10 @@ def escola_alterar(request,id):
         escola_dados = {
             'Nome': dados['Nome'], 
             'Email': dados['Email'], 
-            'Nivel_Escolaridade': dados['Nivel_Escolaridade'], 
+            'Nivel_Escolaridade': escola_obj.Nivel_Escolaridade,
             'Tipo_Escola': dados['Tipo_Escola'], 
             'Nota_de_Corte': dados['Nota_de_Corte'], 
+            'Situacao': dados['Situacao'],
             'Diretor': escola_obj.Diretor.id,
             'Endereco': escola_obj.Endereco.id,
             'Telefone': escola_obj.Telefone.id
@@ -180,6 +184,7 @@ def escola_alterar(request,id):
                 erros.append(erro)
 
             context = {
+                'STATUS': STATUS,
                 'Niveis': NIVEIS, 
                 'Tipos': TIPOS, 
                 'zonas': ZONAS,
@@ -197,13 +202,18 @@ def escola_alterar(request,id):
                     endereco = endereco_form.save()
                     telefone = telefone_form.save()
                     escola = escola_form.save()
-                    return redirect('gestao_escolar_inicio')
+                    if escola_dados['Situacao'] == 'I':
+                        logout_auth(request)
+                        return render(request,'gestaoEscolar/autenticacao/logout.html')
+                    else:
+                        return redirect('gestao_escolar_inicio')
             except Exception as Error:
                 #Erros de servidor (500)
                 print('Erro no servidor: ' + str(Error))
                 Error = 'Erro no servidor'
                 erros = [Error]
                 context = {
+                    'STATUS': STATUS,
                     'Niveis': NIVEIS, 
                     'Tipos': TIPOS, 
                     'zonas': ZONAS,

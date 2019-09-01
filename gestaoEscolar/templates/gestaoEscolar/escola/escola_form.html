@@ -42,19 +42,34 @@
                 <input type="email" name="Email" maxlength="254" required id="id_Email" value='{{ escola_dados.Email }}'>            
             </div>
             
-
-            <div>
-                <label for="id_Nivel_Escolaridade">Nível Escolaridade:</label>
-                <select name="Nivel_Escolaridade" id="id_Nivel_Escolaridade">    
-                    {% for nivel in Niveis %}
-                        {% if escola_dados.Nivel_Escolaridade == nivel.0 %}
-                            <option value="{{ nivel.0 }}" selected>{{ nivel.1 }}</option>
-                        {% else %}
-                            <option value="{{ nivel.0 }}" >{{ nivel.1 }}</option>
-                        {% endif %}
-                    {% endfor %}                
-                </select>
-            </div>
+            {% if Tipo_Transacao == 'INS' %}
+                <div>
+                    <label for="id_Nivel_Escolaridade">Nível Escolaridade:</label>
+                    <select name="Nivel_Escolaridade" id="id_Nivel_Escolaridade" required>    
+                        {% for nivel in Niveis %}
+                            {% if escola_dados.Nivel_Escolaridade == nivel.0 %}
+                                <option value="{{ nivel.0 }}" selected>{{ nivel.1 }}</option>
+                            {% else %}
+                                <option value="{{ nivel.0 }}" >{{ nivel.1 }}</option>
+                            {% endif %}
+                        {% endfor %}                
+                    </select>
+                </div>
+            {% else %}
+                <div>
+                    <label for="id_Nivel_Escolaridade">Nível Escolaridade:</label>
+                    <select name="Nivel_Escolaridade" id="id_Nivel_Escolaridade" disabled>    
+                        {% for nivel in Niveis %}
+                            {% if escola_dados.Nivel_Escolaridade == nivel.0 %}
+                                <option value="{{ nivel.0 }}" selected>{{ nivel.1 }}</option>
+                            {% else %}
+                                <option value="{{ nivel.0 }}" >{{ nivel.1 }}</option>
+                            {% endif %}
+                        {% endfor %}                
+                    </select>
+                </div>
+            {% endif %}
+            
             
             <div>
                 <label for="id_Tipo_Escola">Tipo da Escola:</label>
@@ -83,6 +98,21 @@
                 <label for="id_Numero2">Telefone 2:</label>
                 <input type="text" name="Numero2" maxlength="20" required id="id_Numero2" value='{{ telefone_dados.Numero2 }}'>
             </div>
+
+            {% if Tipo_Transacao == 'UPD' %}
+                <div>
+                    <label for="id_ativo">Ativo:</label>
+                    <select name="Situacao" id="id_ativo">
+                        {% for item in STATUS %}
+                            {% if escola_dados.Situacao == item.0 %}
+                                <option value="{{ item.0 }}" selected>{{ item.1 }}</option>
+                            {% else %}
+                                <option value="{{ item.0 }}" >{{ item.1 }}</option>
+                            {% endif %}
+                        {% endfor %}       
+                    </select>
+                </div>
+            {% endif %}
         
         </fieldset>
 

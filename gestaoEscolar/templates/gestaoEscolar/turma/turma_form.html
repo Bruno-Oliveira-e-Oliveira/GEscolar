@@ -202,8 +202,10 @@
                 
             </fieldset>
         {% endif %}
-
-        {% if Tipo_Transacao == 'INS' or Tipo_Transacao == 'UPD' %}
+        
+        {% if Tipo_Transacao == 'INS' and bloqueio == False %}
+            <button type="submit">Salvar</button>
+        {% elif Tipo_Transacao == 'UPD' %}
             <button type="submit">Salvar</button>
         {% elif Tipo_Transacao == 'DEL' %}
             <button type="submit">Deletar</button>

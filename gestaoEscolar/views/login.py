@@ -17,9 +17,23 @@ def login(request):
         password = request.POST['password']
         usuario = authenticate(request, username=username, password=password)
         if usuario is not None:
-            login_auth(request, usuario)
-            request = salvar_escola_pessoa_sessao(request)
-            return redirect('gestao_escolar_inicio')
+            pessoa = Pessoa.obter_pessoa(usuario.username,'Pessoa')
+            if pessoa.Tipo_Pessoa == 'D':
+                login_auth(request, usuario)
+                request = salvar_escola_pessoa_sessao(request)
+                return redirect('gestao_escolar_inicio')
+            else:
+                if pessoa.Escola is not None:
+                    if pessoa.Escola.Situacao == 'A':
+                        login_auth(request, usuario)
+                        request = salvar_escola_pessoa_sessao(request)
+                        return redirect('gestao_escolar_inicio')
+                    else:
+                        erro = 'A escola está com a conta inativa.'
+                        return render(request,'gestaoEscolar/autenticacao/login_form.html', {'erro':erro})    
+                else:
+                    erro = 'Usuário comum sem associação com uma escola, contate o administrador.'
+                    return render(request,'gestaoEscolar/autenticacao/login_form.html', {'erro':erro})
         else:
             erro = 'Usuário ou senha inválidos'
             return render(request,'gestaoEscolar/autenticacao/login_form.html', {'erro':erro})

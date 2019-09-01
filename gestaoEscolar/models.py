@@ -34,6 +34,13 @@ class Escola(models.Model):
             'Certifique-se que o valor do campo "Número" seja menor ou igual a 4294967295.'
         }
     )
+    ATIVO = 'A'
+    INATIVO = 'I'
+    STATUS = (
+        (ATIVO, 'Ativo'),
+        (INATIVO, 'Inativo')
+    )
+    Situacao = models.CharField('Situação',max_length=10, choices=STATUS, default=ATIVO)
     Diretor = models.OneToOneField(
         'Gestor', 
         on_delete = models.PROTECT,
