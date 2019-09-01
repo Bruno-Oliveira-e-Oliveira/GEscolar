@@ -12,15 +12,20 @@ from .permissoes import checarPermEscola
 
 @login_required
 def secretario_listagem(request):
-    pessoa = Pessoa.obter_pessoa(request.user.username,'Pessoa')
-    if (pessoa is not None) and (pessoa.Escola is not None):
-        secretarios = Secretaria.objects.filter(Escola=pessoa.Escola).order_by('Nome')
-        context = {'secretarios': secretarios}
-        return render(request, 'gestaoEscolar/secretario/secretario_listagem.html', context)
-    else:
-        #Pessoa sem escola ou nome de usuario vazio 
-        #Tratar depois
-        return HttpResponse('Não foi encontrada nenhuma associação com uma escola')
+    try:
+        status = request.GET['ativo']
+    except Exception as erro:
+        status = 'Todos'
+    STATUS = (
+        ('Todos', 'Todos'),
+        ('True', 'Ativo'),
+        ('False', 'Inativo')
+    )
+    escola = Escola.objects.get(id=request.session['Escola'])
+    secretarios = Pessoa.obter_pessoa_por_status('Secretaria',status,escola)
+    context = {'secretarios': secretarios, 'Filtro_Status': STATUS, 'status': status}
+    return render(request, 'gestaoEscolar/secretario/secretario_listagem.html', context)
+
 
 
 @login_required

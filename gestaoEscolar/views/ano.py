@@ -12,9 +12,25 @@ from .permissoes import checarPermEscola
 
 @login_required
 def ano_listagem(request):
-    escola = request.session['Escola']
-    anos = AnoLetivo.objects.filter(Escola=escola).order_by('Ano')
-    context = {'anos': anos}
+    TIPOS_SITUACAO = (
+        ('Todos', 'Todos'),
+        ('A','Aberto'),
+        ('F','Fechado')
+    )
+    escola = Escola.objects.get(id=request.session['Escola'])
+    try:
+        situacao = request.GET['situacao']
+        if situacao == 'Todos':
+            anos = AnoLetivo.objects.filter(Escola=escola.id).order_by('Ano','Situacao')
+        else:
+            anos = AnoLetivo.objects.filter(Escola=escola.id, Situacao=situacao).order_by(
+                'Ano','Situacao'
+            )
+    except Exception as erro:
+        situacao = 'Todos'
+    
+
+    context = {'anos': anos, 'Filtro_Situacao': TIPOS_SITUACAO, 'situacao': situacao}
     return render(request, 'gestaoEscolar/ano/ano_listagem.html', context)
 
 

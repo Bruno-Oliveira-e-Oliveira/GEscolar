@@ -12,16 +12,40 @@ from .permissoes import checarPermEscola
 
 @login_required
 def aluno_listagem(request):
-    pessoa = Pessoa.obter_pessoa(request.user.username,'Pessoa')
-    if (pessoa is not None) and (pessoa.Escola is not None):
-        alunos = Aluno.objects.filter(Escola=pessoa.Escola).order_by('Nome')
-        matriculas = Matricula.objects.filter(Escola=pessoa.Escola)
-        context = {'alunos': alunos, 'matriculas': matriculas}
-        return render(request, 'gestaoEscolar/aluno/aluno_listagem.html', context)
-    else:
-        #Pessoa sem escola ou nome de usuario vazio 
-        #Tratar depois
-        return HttpResponse('Não foi encontrada nenhuma associação com uma escola')
+    try:
+        status = request.GET['ativo']
+        matricula = request.GET['matricula']
+    except Exception as erro:
+        status = 'Todos'
+        matricula = 'Todos'
+
+    STATUS = (
+        ('Todos', 'Todos'),
+        ('True', 'Ativo'),
+        ('False', 'Inativo')
+    )
+    TIPOS_SITUACAO = (
+        ('Todos', 'Todos'),
+        ('matriculado', 'Matriculado'),
+        ('concluido', 'Concluído'),
+        ('transferido', 'Transferido'),
+        ('trancado', 'Trancado')
+    )
+    escola = Escola.objects.get(id=request.session['Escola'])
+    alunos = Pessoa.obter_pessoa_por_status('Aluno',status,escola)
+    alunos = Aluno.filtrar_matriculas(alunos, matricula)
+    matriculas = Matricula.objects.filter(Escola=escola.id)
+
+    context = {
+        'alunos': alunos, 
+        'matriculas': matriculas,
+        'Filtro_Status': STATUS, 
+        'status': status,
+        'Filtro_Matricula': TIPOS_SITUACAO,
+        'matricula': matricula
+    }
+    return render(request, 'gestaoEscolar/aluno/aluno_listagem.html', context)
+
 
 
 @login_required
@@ -253,11 +277,6 @@ def aluno_alterar(request,id):
             'Telefone': aluno_obj.Telefone.id,
             'Escola': aluno_obj.Escola.id
         }
-        #Fazer isso em todos os campos que podem ser vazios (ou fazer no template?)
-        if aluno_obj.Turma is None:
-            aluno_dados['Turma'] = ''
-        else:
-            aluno_dados['Turma'] = aluno_obj.Turma.id
         matricula_dados = {
             'Situacao': dados['Situacao']
         }

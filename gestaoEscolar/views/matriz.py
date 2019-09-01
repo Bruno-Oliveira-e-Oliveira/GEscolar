@@ -25,9 +25,26 @@ def matriz_item_novo(request,idS):
     escola = Escola.objects.get(id=request.session['Escola'])
     disciplinas = Disciplina.objects.filter(Escola=escola.id).order_by('Nome')
     serie = get_object_or_404(Serie, id=idS)
-    checarPermEscola(serie, escola.id)
+    checarPermEscola(serie, escola)
+    erros = []
+    bloqueio = False
+
+    if len(disciplinas) == 0:
+        erros.append(
+            'Não há disciplinas cadastradas.'
+        )
+        bloqueio = True
+
+
     if request.method == 'GET':
-        context = {'disciplinas': disciplinas, 'Tipo_Transacao': 'INS', 'serie': serie, 'idSerie': idS}
+        context = {
+            'erros': erros,
+            'bloqueio': bloqueio,
+            'disciplinas': disciplinas, 
+            'Tipo_Transacao': 'INS', 
+            'serie': serie, 
+            'idSerie': idS
+        }
         return render(request,'gestaoEscolar/serie/matriz_item_form.html', context)
     else:
         dados = request.POST
@@ -44,12 +61,12 @@ def matriz_item_novo(request,idS):
             erros_matriz_item = matriz_item_form.errors
 
         if erros_matriz_item:
-            erros = []
             for erro in erros_matriz_item.values():
                 erros.append(erro)
             context = {
                 'matriz_item_dados':matriz_item_dados, 
                 'erros':erros,  
+                'bloqueio': bloqueio,
                 'disciplinas': disciplinas,
                 'serie': serie,
                 'Tipo_Transacao': 'INS',
@@ -69,7 +86,8 @@ def matriz_item_novo(request,idS):
                 erros = [Error]
                 context = {
                     'matriz_item_dados':matriz_item_dados, 
-                    'erros':erros,  
+                    'erros':erros, 
+                    'bloqueio': bloqueio, 
                     'disciplinas': disciplinas,
                     'serie': serie,
                     'Tipo_Transacao': 'INS',
@@ -147,10 +165,10 @@ def matriz_item_alterar(request,idS,idM):
 def matriz_item_consultar(request,idS,idM):
     serie = get_object_or_404(Serie, id=idS)
     matriz_item_obj = get_object_or_404(Matriz_Item, id=idM, Serie=serie.id)
-    escola = request.session['Escola']
+    escola = Escola.objects.get(id=request.session['Escola'])
     checarPermEscola(serie, escola)
     checarPermEscola(matriz_item_obj, escola)
-    disciplinas = Disciplina.objects.filter(Escola=escola).order_by('Nome')
+    disciplinas = Disciplina.objects.filter(Escola=escola.id).order_by('Nome')
     context = {
         'matriz_item_dados':matriz_item_obj,
         'disciplinas': disciplinas, 

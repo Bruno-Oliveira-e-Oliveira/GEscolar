@@ -12,9 +12,39 @@ from .permissoes import checarPermEscola
 
 @login_required
 def turma_listagem(request):
-    escola = request.session['Escola']
-    turmas = Turma.objects.filter(Escola=escola).order_by('Serie','Nome')
-    context = {'turmas': turmas}
+    escola = Escola.objects.get(id=request.session['Escola'])
+    try:
+        periodo = request.GET['periodo']
+        serie = request.GET['serie']
+        ano = request.GET['ano']
+        if serie != 'Todos' and ano != 'Todos':
+            turmas = Turma.objects.filter(Escola=escola, AnoLetivo=ano, Serie=serie).order_by(
+                'Nome'
+            )
+
+    except Exception as erro:
+        periodo = 'Todos'
+        ano = 0
+        serie = 0
+
+        turmas = Turma.objects.filter(Escola=escola).order_by('Nome')
+
+    anos = AnoLetivo.objects.filter(Escola=escola.id).order_by('Ano')
+    series = Serie.objects.filter(Escola=escola.id).order_by('Nivel_Escolaridade','Numero')
+    TIPO_PERIODO = (
+        ('Todos', 'Todos'),
+        ('M', 'Manhã'),
+        ('T', 'Tarde')
+    )
+    context = {
+        'turmas': turmas,
+        'Filtro_Periodo': TIPO_PERIODO,
+        'Filtro_Serie': series,
+        'Filtro_Ano': anos,
+        'ano': ano,
+        'serie': serie,
+        'periodo': periodo
+    }
     return render(request, 'gestaoEscolar/turma/turma_listagem.html', context)
 
 

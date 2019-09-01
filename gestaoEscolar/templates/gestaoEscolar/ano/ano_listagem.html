@@ -6,6 +6,27 @@
 {% block main %}
 
     <h2>Listagem de Anos Letivos</h2> 
+
+    <form>
+        <fieldset>
+            <div>
+                <label for="id_situacao">Situação:</label>
+                <select name="situacao" id="id_situacao">
+                    {% for item in Filtro_Situacao %}
+                        {% if situacao == item.0 %}
+                            <option value="{{ item.0 }}" selected>{{ item.1 }}</option>
+                        {% else %}
+                            <option value="{{ item.0 }}" >{{ item.1 }}</option>
+                        {% endif %}
+                    {% endfor %}    
+                    
+                </select>
+                
+            </div>
+            <button type="submit">Pesquisar</button>
+        </fieldset>
+        
+    </form>
     
     <table>
         <thead>
@@ -25,30 +46,30 @@
                 {% if anos is not None %}
                     <tr>
                         {% if ano.Situacao == 'A' %}
-                            <th><a href="{% url 'ano_alterar' ano.id %}">X</a></th>
+                            <td><a href="{% url 'ano_alterar' ano.id %}">X</a></td>
                         {% else  %}
-                            <th>X</th>
+                            <td>X</td>
                         {% endif  %}
-                        <th><a href="{% url 'ano_deletar' ano.id %}">X</a></th>
-                        <th><a href="{% url 'ano_consultar' ano.id %}">{{ ano.Ano }}</a></th>
+                        <td><a href="{% url 'ano_deletar' ano.id %}">X</a></td>
+                        <td><a href="{% url 'ano_consultar' ano.id %}">{{ ano.Ano }}</a></td>
                         {% if ano.Situacao == 'A' %}
-                            <th>Aberto</th>
+                            <td>Aberto</td>
                         {% else  %}
-                            <th>Fechado</th>
+                            <td>Fechado</td>
                         {% endif  %}
-                        <th>{{ ano.Data_Inicio }}</th>
-                        <th>{{ ano.Data_Fim }}</th>
-                        <th><a href="{% url 'bimestre_listagem' ano.id %}">X</a></th>
+                        <td>{{ ano.Data_Inicio }}</td>
+                        <td>{{ ano.Data_Fim }}</td>
+                        <td><a href="{% url 'bimestre_listagem' ano.id %}">X</a></td>
                     </tr>
                 {% else %}
                     <tr>
-                        <th>X</th>
-                        <th>X</th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th>X</th>
+                        <td>X</td>
+                        <td>X</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>X</td>
                     </tr>
                 {% endif %}
             {% endfor %}

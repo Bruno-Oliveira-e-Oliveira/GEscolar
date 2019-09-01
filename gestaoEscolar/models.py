@@ -186,6 +186,32 @@ class PessoaAbstract(models.Model):
         else:
             return None
 
+    def obter_pessoa_por_status(tipo,status,escola):
+        
+        if tipo == 'Gestor':
+            pessoas = Gestor.objects.filter(Escola=escola.id).order_by('Nome')
+        elif tipo == 'Secretaria':
+            pessoas = Secretaria.objects.filter(Escola=escola.id).order_by('Nome')
+        elif tipo == 'Professor':
+            pessoas = Professor.objects.filter(Escola=escola.id).order_by('Nome')
+        elif tipo == 'Aluno':
+            pessoas = Aluno.objects.filter(Escola=escola.id).order_by('Nome')
+        
+        if status != 'Todos':
+            pessoas_filtradas = []
+
+            if status == 'True':
+                status = True
+            else:
+                status = False
+            if len(pessoas) > 0:
+                for pessoa in pessoas:
+                    if pessoa.Usuario.is_active == status:
+                        pessoas_filtradas.append(pessoa)
+            return pessoas_filtradas
+        else:
+            return pessoas
+
 
 
 class Pessoa(PessoaAbstract):
@@ -230,6 +256,17 @@ class Professor(Pessoa):
         (DOUTOR, 'Doutor')
     )
     Titulo = models.CharField('Título',max_length=20, choices=TIPOS_TITULOS, default=ESPECIALISTA)
+
+    def filtrar_titulos(professores, titulo):
+        professores_filtrados = []
+        if len(professores) > 0:
+            if titulo != 'Todos':
+                for professor in professores:
+                    if professor.Titulo == titulo:
+                        professores_filtrados.append(professor)
+            else:
+                return professores
+        return professores_filtrados
 
 
 class Aluno(Pessoa):
@@ -311,6 +348,18 @@ class Aluno(Pessoa):
 
     def __str__(self):
         return self.Nome
+    
+    def filtrar_matriculas(alunos, status):
+        alunos_filtrados = []
+        if len(alunos) > 0:
+            if status != 'Todos':
+                for aluno in alunos:
+                    matricula = Matricula.objects.filter(Aluno=aluno.id)
+                    if matricula[0].Situacao == status:
+                        alunos_filtrados.append(aluno)
+            else:
+                return alunos
+        return alunos_filtrados
 
     def retornar_alunos_sem_turma(escolaid):
         alunos = Aluno.objects.filter(Escola=escolaid)
@@ -340,6 +389,7 @@ class Aluno(Pessoa):
                     if len(alunos_sem_turma) == 0:
                         return -2
                     else:
+                        alunos_sem_turma = Aluno.filtrar_matriculas(alunos_sem_turma,'matriculado')
                         return alunos_sem_turma
             else:
                 return -1
@@ -486,10 +536,7 @@ class Turma(models.Model):
             return str(self.Serie.Numero) +''+ self.Nome +' - Ensino Médio'
 
     def __str__(self):
-        if self.Serie.Nivel_Escolaridade == 'F':
-            return str(self.Serie.Numero) +''+ self.Nome +' - Ensino Fundamental'
-        else:
-            return str(self.Serie.Numero) +''+ self.Nome +' - Ensino Médio'
+        return self.nome_editado
 
     def checarMaxAlunos(self):
         matriculas = Matricula_Turma.objects.filter(Turma=self.id,Situacao='cursando')
@@ -924,7 +971,14 @@ class Serie(models.Model):
         choices=NIVEIS_DE_ESCOLARIDADE,
         default=FUNDAMENTAL
     )
-    Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')   
+    Escola = models.ForeignKey('Escola', on_delete = models.PROTECT, verbose_name = 'Escola')  
+
+    @property
+    def nome_editado(self):
+        if self.Nivel_Escolaridade == 'F':
+            return str(self.Numero) +'° Ano'+ ' - Ensino Fundamental'
+        else:
+            return str(self.Numero) +'° Ano'+ ' - Ensino Médio' 
 
     class Meta:
         constraints = [

@@ -46,7 +46,7 @@
             <fieldset>
                 <div>
                     <label for="id_Disciplina">Disciplina:</label> 
-                    <select name="Disciplina" id="id_Disciplina" >
+                    <select name="Disciplina" id="id_Disciplina" required>
                         {% for disciplina in disciplinas %}
                             {% if matriz_item_dados.Disciplina.id == disciplina.id %}
                                 <option value="{{ disciplina.id }}" selected>{{ disciplina.Nome }}</option>
@@ -87,8 +87,10 @@
             </fieldset>
 
         {% endif %}
-
-        {% if Tipo_Transacao == 'INS' or Tipo_Transacao == 'UPD' %}
+        
+        {% if Tipo_Transacao == 'INS' and bloqueio == False %}
+            <button type="submit">Salvar</button>
+        {% elif Tipo_Transacao == 'UPD' %}
             <button type="submit">Salvar</button>
         {% elif Tipo_Transacao == 'DEL' and bloqueio == False %}
             <button type="submit">Deletar</button>

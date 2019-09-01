@@ -11,15 +11,35 @@ from .permissoes import checarPermEscola
        
 @login_required
 def professor_listagem(request):
-    pessoa = Pessoa.obter_pessoa(request.user.username,'Pessoa')
-    if (pessoa is not None) and (pessoa.Escola is not None):
-        professores = Professor.objects.filter(Escola=pessoa.Escola).order_by('Nome')
-        context = {'professores': professores}
-        return render(request, 'gestaoEscolar/professor/professor_listagem.html', context)
-    else:
-        #Pessoa sem escola ou nome de usuario vazio 
-        #Tratar depois
-        return HttpResponse('Não foi encontrada nenhuma associação com uma escola')
+    try:
+        status = request.GET['ativo']
+        titulo = request.GET['titulo']
+    except Exception as erro:
+        status = 'Todos'
+        titulo = 'Todos'
+
+    STATUS = (
+        ('Todos', 'Todos'),
+        ('True', 'Ativo'),
+        ('False', 'Inativo')
+    )
+    TIPOS_TITULOS = (
+        ('Todos', 'Todos'),
+        ('E', 'Especialista'),
+        ('M', 'Mestre'),
+        ('D', 'Doutor')
+    )
+    escola = Escola.objects.get(id=request.session['Escola'])
+    professores = Pessoa.obter_pessoa_por_status('Professor',status,escola)
+    professores = Professor.filtrar_titulos(professores, titulo)
+    context = {
+        'professores': professores, 
+        'Filtro_Status': STATUS, 
+        'status': status,
+        'Filtro_Titulos': TIPOS_TITULOS,
+        'titulo': titulo
+    }
+    return render(request, 'gestaoEscolar/professor/professor_listagem.html', context)
 
 
 @login_required

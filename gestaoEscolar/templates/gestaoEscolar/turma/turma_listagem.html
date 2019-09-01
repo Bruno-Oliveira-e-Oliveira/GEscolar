@@ -6,6 +6,53 @@
 {% block main %}
 
     <h2>Listagem de Turmas</h2> 
+
+    <form>
+        <fieldset>
+            <div>
+                <label for="id_periodo">Período:</label>
+                <select name="periodo" id="id_periodo">
+                    {% for item in Filtro_Periodo %}
+                        {% if periodo == item.0 %}
+                            <option value="{{ item.0 }}" selected>{{ item.1 }}</option>
+                        {% else %}
+                            <option value="{{ item.0 }}" >{{ item.1 }}</option>
+                        {% endif %}
+                    {% endfor %}    
+                </select>
+            </div>
+
+            <div>
+                <label for="id_serie">Série:</label>
+                <select name="serie" id="id_serie">
+                    {% for item in Filtro_Serie %}
+                        {% if serie == item.id %}
+                            <option value="{{ item.id }}" selected>{{ item.nome_editado }}</option>
+                        {% else %}
+                            <option value="{{ item.id }}" >{{ item.nome_editado }}</option>
+                        {% endif %}
+                    {% endfor %}    
+                </select>
+            </div>
+
+            <div>
+                <label for="id_ano">Ano:</label> 
+                <select name="ano" id="id_ano">
+                    {% for item in Filtro_Ano %}
+                        {% if ano == item.id %}
+                            <option value="{{ item.id }}" selected>{{ item.Ano }}</option>
+                        {% else %}
+                            <option value="{{ item.id }}" >{{ item.Ano }}</option>
+                        {% endif %}
+                    {% endfor %}       
+                </select>
+            </div>
+
+            <button type="submit">Pesquisar</button>
+        </fieldset>
+        
+    </form>
+        
     
     <table>
         <thead>
