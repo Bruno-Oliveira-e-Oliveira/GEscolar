@@ -275,7 +275,6 @@ def bimestre_deletar(request,idA,idB):
     checarPermEscola(bimestre_obj, escola)
     TIPOS_SITUACAO = Bimestre.TIPOS_SITUACAO
 
-
     erros = []
     bloqueio = False
     notas = Nota_Bimestral.objects.filter(Escola=escola, Bimestre=bimestre_obj.id)

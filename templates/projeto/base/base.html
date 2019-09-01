@@ -12,7 +12,9 @@
 </head>
 <body>
     {% block cabecalho %}
-        {% if user.is_authenticated%}
+        {% if user.is_authenticated %}
+            <a href="{% url 'diretor_alterar' request.session.Pessoa %}">Diretor Alterar</a>
+            <a href="{% url 'trocar_senha' request.session.Pessoa %}">Senha Alterar</a>
             <a href="{% url 'escola_novo' %}">Escola Novo</a>
             <a href="{% url 'secretario_listagem' %}">Secretário</a>
             <a href="{% url 'professor_listagem' %}">Professor</a>

@@ -1,17 +1,36 @@
 {% extends 'projeto/base/base.html' %}
 
-{% block title %}Cadastrar novo Usuário | GEscolar{% endblock  %}
+{% block title %}
+    {% if Tipo_Transacao == 'INS' %}
+        Cadastrar novo Diretor | GEscolar 
+    {% elif Tipo_Transacao == 'UPD' %}
+        Alterar Diretor | GEscolar 
+    {% endif %}
+{% endblock  %}
 
 
 {% block main %}
+
+    {% if Tipo_Transacao == 'INS' %}
+        <h2>Cadastrar Diretor</h2> 
+    {% elif Tipo_Transacao == 'UPD' %}
+        <h2>Atualizar dados do Diretor</h2> 
+    {% endif %}
 
     {% for erro in erros %}
         {{ erro }}
     {% endfor %}
 
 
-    <form action="{% url 'diretor_novo' %}" method="POST">
+    <form action="
+            {% if Tipo_Transacao == 'INS' %}
+                {% url 'diretor_novo' %}
+            {% elif Tipo_Transacao == 'UPD' %}
+                {% url 'diretor_alterar' idGestor %}
+            {% endif %}
+        " method="POST">
         {% csrf_token %}
+
         <fieldset>
             <div>
                 <label for="id_Nome">Nome:</label> 
@@ -44,12 +63,12 @@
             
             <div>
                 <label for="id_Numero1">Telefone 1:</label>
-                <input type="text" name="Numero1" maxlength="20" required id="id_Numero1" value='{{ telefone1_dados.Numero1 }}'>
+                <input type="text" name="Numero1" maxlength="20" required id="id_Numero1" value='{{ telefone_dados.Numero1 }}'>
             </div>
 
             <div>
                 <label for="id_Numero2">Telefone 2:</label>
-                <input type="text" name="Numero2" maxlength="20" required id="id_Numero2" value='{{ telefone2_dados.Numero2 }}'>
+                <input type="text" name="Numero2" maxlength="20" required id="id_Numero2" value='{{ telefone_dados.Numero2 }}'>
             </div>
 
         </fieldset>
@@ -101,20 +120,29 @@
                 <input type="email" name="email" maxlength="254" required id="id_email" value='{{ usuario_dados.email }}'>     
             </div>
 
-            <div>
-                <label for="id_username">Nome de Usuário:</label> 
-                <input type="text" name="username" maxlength="20" required id="id_username" value='{{ usuario_dados.username }}'> 
-            </div>
+            {% if Tipo_Transacao == 'INS' %}
 
-            <div>
-                <label for="id_password">Senha:</label> 
-                <input type="password" name="password" maxlength="16" required id="id_password" value='{{ usuario_dados.password }}'>              
-            </div>
+                <div>
+                    <label for="id_username">Nome de Usuário:</label> 
+                    <input type="text" name="username" maxlength="20" required id="id_username" value='{{ usuario_dados.username }}'> 
+                </div>
 
-            <div>
-                <label for="id_password2">Confirme sua Senha:</label> 
-                <input type="password" name="password2" maxlength="16" required id="id_password2" value='{{ usuario_dados.password2 }}'>              
-            </div>
+                <div>
+                    <label for="id_password">Senha:</label> 
+                    <input type="password" name="password" maxlength="16" required id="id_password" value='{{ usuario_dados.password }}'>              
+                </div>
+
+                <div>
+                    <label for="id_password2">Confirme sua Senha:</label> 
+                    <input type="password" name="password2" maxlength="16" required id="id_password2" value='{{ usuario_dados.password2 }}'>              
+                </div>
+            
+            {% else %}
+                <div>
+                    <label for="id_username">Nome de Usuário:</label> 
+                    <input type="text" name="username" maxlength="20" disabled id="id_username" value='{{ usuario_dados.username }}'> 
+                </div>
+            {% endif %}
         </fieldset>
 
         <button type="submit">Salvar</button>

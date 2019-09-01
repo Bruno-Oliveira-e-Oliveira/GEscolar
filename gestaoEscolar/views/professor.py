@@ -322,8 +322,21 @@ def professor_deletar(request,id):
     TIPOS_TITULOS = Professor.TIPOS_TITULOS
     STATUS = Professor.STATUS
     ZONAS = Endereco.TIPOS_ZONAS
+    escola = Escola.objects.get(id=request.session['Escola'])
+    erros = []
+    bloqueio = False
+    lecionas = Leciona.objects.filter(Professor=professor_obj, Escola=escola.id)
+
+    if len(lecionas) > 0:
+        erros.append(
+            'Não foi possível apagar o professor pois ele tem referência com uma disciplina em turmas.'
+        )
+        bloqueio = True    
+
     if request.method == 'GET':
         context = {
+            'erros': erros,
+            'bloqueio': bloqueio,
             'Tipo_Sexo': TIPO_SEXO,
             'Tipo_Titulos': TIPOS_TITULOS,
             'Tipo_Status': STATUS,
@@ -354,6 +367,7 @@ def professor_deletar(request,id):
                 'Tipo_Titulos': TIPOS_TITULOS,
                 'Tipo_Status': STATUS,
                 'zonas': ZONAS,
+                'bloqueio': bloqueio,
                 'erros':erros, 
                 'professor_dados': professor_obj,
                 'endereco_dados': endereco_obj,       

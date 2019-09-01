@@ -186,8 +186,27 @@ def ano_deletar(request,id):
     TIPOS_SITUACAO = AnoLetivo.TIPOS_SITUACAO
     escola = request.session['Escola']
     checarPermEscola(ano_obj, escola)
+    erros = []
+    bloqueio = False
+    turmas = Turma.objects.filter(AnoLetivo=ano_obj, Escola=escola)
+    bimestres = Bimestre.objects.filter(AnoLetivo=ano_obj, Escola=escola)
+
+    if len(turmas) > 0:
+        erros.append(
+            'Não foi possível apagar o ano letivo pois ele tem referência com turmas.'
+        )
+        bloqueio = True    
+
+    if len(bimestres) > 0:
+        erros.append(
+            'Não foi possível apagar o ano letivo pois ele tem referência com bimestres.'
+        )
+        bloqueio = True         
+
     if request.method == 'GET':
         context = {
+            'erros': erros,
+            'bloqueio': bloqueio,
             'Tipos_Situacao': TIPOS_SITUACAO,
             'ano_dados': ano_obj,
             'Tipo_Transacao': 'DEL',
@@ -206,6 +225,7 @@ def ano_deletar(request,id):
             erros = [Error]
             context = {
                 'Tipos_Situacao': TIPOS_SITUACAO,
+                'bloqueio': bloqueio,
                 'erros':erros, 
                 'ano_dados':ano_obj, 
                 'Tipo_Transacao': 'DEL',

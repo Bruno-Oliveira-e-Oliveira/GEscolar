@@ -209,7 +209,6 @@ class Gestor(Pessoa):
         self.Escola = None
             
 
-#Mudar para secretario
 class Secretaria(Pessoa):
     pass
 

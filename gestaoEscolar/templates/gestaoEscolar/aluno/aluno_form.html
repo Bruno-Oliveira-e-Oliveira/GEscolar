@@ -194,7 +194,7 @@
                 </div>
 
                 <div>
-                    <label for="id_Superdotacao">Superdotacao:</label>
+                    <label for="id_Superdotacao">Superdotação:</label>
                     <select name="Superdotacao" id="id_Superdotacao">
                         {% for op in Sim_Nao %}
                             {% if aluno_dados.Superdotacao == op.0 %}
@@ -207,7 +207,7 @@
                 </div>
 
                 <div>
-                    <label for="id_Deficiencia">Deficiencia:</label>
+                    <label for="id_Deficiencia">Deficiência:</label>
                     <select name="Deficiencia" id="id_Deficiencia">
                         {% for deficiencia in Tipos_Deficiencia %}
                             {% if aluno_dados.Deficiencia == deficiencia.0 %}
@@ -547,7 +547,7 @@
 
         {% if Tipo_Transacao == 'INS' or Tipo_Transacao == 'UPD' %}
             <button type="submit">Salvar</button>
-        {% elif Tipo_Transacao == 'DEL' %}
+        {% elif Tipo_Transacao == 'DEL' and bloqueio ==  False %}
             <button type="submit">Deletar</button>
         {% endif %}
 

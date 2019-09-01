@@ -415,8 +415,21 @@ def aluno_deletar(request,id):
     TIPOS_TRANSTORNO = Aluno.TIPOS_TRANSTORNO
     TIPOS_SITUACAO = Matricula.TIPOS_SITUACAO
     ZONAS = Endereco.TIPOS_ZONAS
+    escola = Escola.objects.get(id=request.session['Escola'])
+    erros = []
+    bloqueio = False
+    matriculas_turma = Matricula_Turma.objects.filter(Aluno=aluno_obj.id, Escola=escola.id)
+
+    if len(matriculas_turma) > 0:
+        erros.append(
+            'Não foi possível apagar o aluno pois ele tem referência com matrículas em turmas.'
+        )
+        bloqueio = True       
+
     if request.method == 'GET':
         context = {
+            'erros': erros,
+            'bloqueio': bloqueio,
             'Tipo_Sexo': TIPO_SEXO, 
             'Tipo_Status': STATUS,
             'Sim_Nao':  SIM_NAO,
@@ -455,6 +468,7 @@ def aluno_deletar(request,id):
                 'Tipos_Transtorno': TIPOS_TRANSTORNO,
                 'Tipos_Situacao': TIPOS_SITUACAO,
                 'zonas': ZONAS, 
+                'bloqueio': bloqueio,
                 'erros':erros, 
                 'aluno_dados': aluno_obj,
                 'matricula_dados': matricula_obj,

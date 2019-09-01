@@ -17,7 +17,7 @@
                 <th>Data Inicial</th>
                 <th>Data Final</th>
             </tr>
-            {% if numero_bimestre < 5 %}
+            {% if numero_bimestre < 5 and bimestre.AnoLetivo.Situacao == 'A'%}
                 <a href="{% url 'bimestre_novo' idA %}">Novo</a>
             {% endif  %}
         </thead>
@@ -26,29 +26,29 @@
                 {% if bimestres is not None %}
                     <tr>
                         {% if bimestre.Situacao == 'A' %}
-                            <th><a href="{% url 'bimestre_alterar' idA bimestre.id %}">X</a></th>
-                            <th><a href="{% url 'bimestre_deletar' idA bimestre.id %}">X</a></th>
+                            <td><a href="{% url 'bimestre_alterar' idA bimestre.id %}">X</a></td>
+                            <td><a href="{% url 'bimestre_deletar' idA bimestre.id %}">X</a></td>
                         {% else  %}
-                            <th>X</th>
-                            <th>X</th>
+                            <td>X</td>
+                            <td>X</td>
                         {% endif  %}
-                        <th><a href="{% url 'bimestre_consultar' idA bimestre.id %}">{{ bimestre.Bimestre }} - {{ bimestre.AnoLetivo }}</a></th>
+                        <td><a href="{% url 'bimestre_consultar' idA bimestre.id %}">{{ bimestre.Bimestre }} - {{ bimestre.AnoLetivo }}</a></td>
                         {% if bimestre.Situacao == 'A' %}
-                            <th>Aberto</th>
+                            <td>Aberto</td>
                         {% else  %}
-                            <th>Fechado</th>
+                            <td>Fechado</td>
                         {% endif  %}
 
                         {% if bimestre.Data_Inicio  %}
-                            <th>{{ bimestre.Data_Inicio }}</th>
+                            <td>{{ bimestre.Data_Inicio }}</td>
                         {% else  %}
-                            <th></th>
+                            <td></td>
                         {% endif  %}
 
                         {% if bimestre.Data_Fim  %}
-                            <th>{{ bimestre.Data_Fim }}</th>
+                            <td>{{ bimestre.Data_Fim }}</td>
                         {% else  %}
-                            <th></th>
+                            <td></td>
                         {% endif  %}
                         
 
@@ -56,12 +56,12 @@
                     </tr>
                 {% else %}
                     <tr>
-                        <th>X</th>
-                        <th>X</th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
+                        <td>X</td>
+                        <td>X</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
                     </tr>
                 {% endif %}
             {% endfor %}

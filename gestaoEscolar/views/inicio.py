@@ -8,11 +8,11 @@ from datetime import datetime
 from gestaoEscolar.forms import *
 from gestaoEscolar.models import *
 from .permissoes import checarPermEscola
-from .login import salvar_escola_sessao
+from .login import salvar_escola_pessoa_sessao
 
 @login_required
 def gestao_escolar_inicio(request):
     if request.session['Escola'] == '':
-        request = salvar_escola_sessao(request)
+        request = salvar_escola_pessoa_sessao(request)
     print(request.session['Escola'])
     return render(request,'gestaoEscolar/inicio/gestaoescolar.html')
