@@ -13,24 +13,37 @@ from .permissoes import checarPermEscola
 @login_required
 def turma_listagem(request):
     escola = Escola.objects.get(id=request.session['Escola'])
+    anos = AnoLetivo.objects.filter(Escola=escola.id).order_by('Ano') 
+    series = Serie.objects.filter(Escola=escola.id).order_by('Nivel_Escolaridade','Numero')
+
     try:
         periodo = request.GET['periodo']
-        serie = request.GET['serie']
-        ano = request.GET['ano']
-        if serie != 'Todos' and ano != 'Todos':
+        serie = int(request.GET['serie'])
+        ano = int(request.GET['ano'])
+        if periodo == 'Todos':
             turmas = Turma.objects.filter(Escola=escola, AnoLetivo=ano, Serie=serie).order_by(
                 'Nome'
             )
+        else:
+            turmas = Turma.objects.filter(Escola=escola, Periodo=periodo, AnoLetivo=ano, Serie=serie).order_by(
+                'Nome'
+            )
+    except:
+        periodo = 'Todos' 
+        try:
+            ano = anos[0].id
+        except:
+            ano = 0
 
-    except Exception as erro:
-        periodo = 'Todos'
-        ano = 0
-        serie = 0
+        try:
+            serie = series[0].id
+        except:
+            serie = 0
 
-        turmas = Turma.objects.filter(Escola=escola).order_by('Nome')
-
-    anos = AnoLetivo.objects.filter(Escola=escola.id).order_by('Ano')
-    series = Serie.objects.filter(Escola=escola.id).order_by('Nivel_Escolaridade','Numero')
+        turmas = Turma.objects.filter(Escola=escola, AnoLetivo=ano, Serie=serie).order_by(
+            'Nome'
+        )
+    
     TIPO_PERIODO = (
         ('Todos', 'Todos'),
         ('M', 'Manhã'),
