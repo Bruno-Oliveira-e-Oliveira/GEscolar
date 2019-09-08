@@ -7,11 +7,12 @@ from django.utils import timezone
 from datetime import datetime
 from gestaoEscolar.forms import *
 from gestaoEscolar.models import *
-from .permissoes import checarPermEscola
+from .permissoes import checarPermEscola, checarPermObj
  
 
 @login_required
 def ano_listagem(request):
+    checarPermObj('gestaoEscolar.view_anoletivo', request.user)
     TIPOS_SITUACAO = (
         ('Todos', 'Todos'),
         ('A','Aberto'),
@@ -28,6 +29,7 @@ def ano_listagem(request):
             )
     except Exception as erro:
         situacao = 'Todos'
+        anos = AnoLetivo.objects.filter(Escola=escola.id).order_by('Ano','Situacao')
     
 
     context = {'anos': anos, 'Filtro_Situacao': TIPOS_SITUACAO, 'situacao': situacao}
@@ -36,6 +38,7 @@ def ano_listagem(request):
 
 @login_required
 def ano_novo(request):
+    checarPermObj('gestaoEscolar.add_anoletivo', request.user)
     TIPOS_SITUACAO = AnoLetivo.TIPOS_SITUACAO
     if request.method == 'GET':
         context = {'Tipo_Transacao': 'INS', 'Tipos_Situacao': TIPOS_SITUACAO}
@@ -97,10 +100,11 @@ def ano_novo(request):
 
 @login_required
 def ano_alterar(request,id):
+    checarPermObj('gestaoEscolar.change_anoletivo', request.user)
     ano_obj = get_object_or_404(AnoLetivo, id=id)
+    checarPermEscola(ano_obj, Escola.objects.get(id=request.session['Escola']))
     TIPOS_SITUACAO = AnoLetivo.TIPOS_SITUACAO
     escola = request.session['Escola']
-    checarPermEscola(ano_obj, escola)
     if ano_obj.Situacao == 'F':
         context = {
             'Tipos_Situacao': TIPOS_SITUACAO,
@@ -183,10 +187,11 @@ def ano_alterar(request,id):
 
 @login_required
 def ano_consultar(request,id):
+    checarPermObj('gestaoEscolar.view_anoletivo', request.user)
     ano_obj = get_object_or_404(AnoLetivo, id=id)
+    checarPermEscola(ano_obj, Escola.objects.get(id=request.session['Escola']))
     TIPOS_SITUACAO = AnoLetivo.TIPOS_SITUACAO
     escola = request.session['Escola']
-    checarPermEscola(ano_obj, escola)
     context = {
         'Tipos_Situacao': TIPOS_SITUACAO,
         'ano_dados': ano_obj,
@@ -198,10 +203,11 @@ def ano_consultar(request,id):
 
 @login_required
 def ano_deletar(request,id):
+    checarPermObj('gestaoEscolar.delete_anoletivo', request.user)
     ano_obj = get_object_or_404(AnoLetivo, id=id)
+    checarPermEscola(ano_obj, Escola.objects.get(id=request.session['Escola']))
     TIPOS_SITUACAO = AnoLetivo.TIPOS_SITUACAO
     escola = request.session['Escola']
-    checarPermEscola(ano_obj, escola)
     erros = []
     bloqueio = False
     turmas = Turma.objects.filter(AnoLetivo=ano_obj, Escola=escola)

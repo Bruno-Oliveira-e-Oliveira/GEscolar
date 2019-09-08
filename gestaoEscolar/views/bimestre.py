@@ -7,26 +7,28 @@ from django.utils import timezone
 from datetime import datetime
 from gestaoEscolar.forms import *
 from gestaoEscolar.models import *
-from .permissoes import checarPermEscola
+from .permissoes import checarPermEscola, checarPermObj
 
 
 @login_required
 def bimestre_listagem(request,idA):
-    escola = request.session['Escola']
+    checarPermObj('gestaoEscolar.view_bimestre', request.user)
     ano = get_object_or_404(AnoLetivo, id=idA)
-    checarPermEscola(ano, escola)
+    checarPermEscola(ano, Escola.objects.get(id=request.session['Escola']))
+    escola = request.session['Escola']
     bimestres = Bimestre.objects.filter(Escola=escola,AnoLetivo=idA).order_by('Bimestre')
     #Gera o número do bimestre em sequência
     numero_bimestre = Bimestre.gerar_bimestre(ano,escola)
-    context = {'bimestres': bimestres, 'numero_bimestre': numero_bimestre, 'idA': idA}
+    context = {'bimestres': bimestres, 'numero_bimestre': numero_bimestre, 'idA': idA, 'ano': ano}
     return render(request, 'gestaoEscolar/bimestre/bimestre_listagem.html', context)
 
 
 @login_required
 def bimestre_novo(request,idA):
-    escola = request.session['Escola']
+    checarPermObj('gestaoEscolar.add_bimestre', request.user)
     ano = get_object_or_404(AnoLetivo, id=idA)
-    checarPermEscola(ano, escola)
+    checarPermEscola(ano, Escola.objects.get(id=request.session['Escola']))
+    escola = request.session['Escola']
     TIPOS_SITUACAO = Bimestre.TIPOS_SITUACAO
     #Gera o número do bimestre em sequência
     numero_bimestre = Bimestre.gerar_bimestre(ano,escola)
@@ -136,11 +138,12 @@ def bimestre_novo(request,idA):
     
 @login_required
 def bimestre_alterar(request,idA,idB):
-    escola = request.session['Escola']
-    bimestre_obj = get_object_or_404(Bimestre, id=idB, Escola=escola)
+    checarPermObj('gestaoEscolar.change_bimestre', request.user)
+    escola = request.session['Escola']    
     ano = get_object_or_404(AnoLetivo, id=idA)
-    checarPermEscola(ano, escola)
-    checarPermEscola(bimestre_obj, escola)
+    bimestre_obj = get_object_or_404(Bimestre, id=idB, Escola=escola)
+    checarPermEscola(ano, Escola.objects.get(id=request.session['Escola']))
+    checarPermEscola(bimestre_obj, Escola.objects.get(id=request.session['Escola']))
     TIPOS_SITUACAO = Bimestre.TIPOS_SITUACAO
     if bimestre_obj.Situacao == 'F':
         context = {
@@ -249,11 +252,12 @@ def bimestre_alterar(request,idA,idB):
 
 @login_required
 def bimestre_consultar(request,idA,idB):
-    escola = request.session['Escola']
-    bimestre_obj = get_object_or_404(Bimestre, id=idB, Escola=escola)
+    checarPermObj('gestaoEscolar.view_bimestre', request.user)
+    escola = request.session['Escola']    
     ano = get_object_or_404(AnoLetivo, id=idA)
-    checarPermEscola(ano, escola)
-    checarPermEscola(bimestre_obj, escola)
+    bimestre_obj = get_object_or_404(Bimestre, id=idB, Escola=escola)
+    checarPermEscola(ano, Escola.objects.get(id=request.session['Escola']))
+    checarPermEscola(bimestre_obj, Escola.objects.get(id=request.session['Escola']))
     TIPOS_SITUACAO = Bimestre.TIPOS_SITUACAO
     context = {
         'Tipos_Situacao': TIPOS_SITUACAO,
@@ -268,11 +272,12 @@ def bimestre_consultar(request,idA,idB):
 
 @login_required
 def bimestre_deletar(request,idA,idB):
-    escola = request.session['Escola']
-    bimestre_obj = get_object_or_404(Bimestre, id=idB, Escola=escola)
+    checarPermObj('gestaoEscolar.delete_bimestre', request.user)
+    escola = request.session['Escola']    
     ano = get_object_or_404(AnoLetivo, id=idA)
-    checarPermEscola(ano, escola)
-    checarPermEscola(bimestre_obj, escola)
+    bimestre_obj = get_object_or_404(Bimestre, id=idB, Escola=escola)
+    checarPermEscola(ano, Escola.objects.get(id=request.session['Escola']))
+    checarPermEscola(bimestre_obj, Escola.objects.get(id=request.session['Escola']))
     TIPOS_SITUACAO = Bimestre.TIPOS_SITUACAO
 
     erros = []

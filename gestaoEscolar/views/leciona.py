@@ -7,14 +7,15 @@ from django.utils import timezone
 from datetime import datetime
 from gestaoEscolar.forms import *
 from gestaoEscolar.models import *
-from .permissoes import checarPermEscola
+from .permissoes import checarPermEscola, checarPermObj
  
 
 @login_required
 def leciona_listagem(request,idT):
+    checarPermObj('gestaoEscolar.view_leciona', request.user)
     turma_obj = get_object_or_404(Turma, id=idT)
+    checarPermEscola(turma_obj, Escola.objects.get(id=request.session['Escola']))
     escola = request.session['Escola']
-    checarPermEscola(turma_obj, escola)
     lecionas = Leciona.objects.filter(Escola=escola, Turma=turma_obj.id)
     professores = Professor.objects.filter(Escola=escola)
     disciplinas = Disciplina.objects.filter(Escola=escola).order_by('Nome')
@@ -29,11 +30,12 @@ def leciona_listagem(request,idT):
 
 @login_required
 def leciona_alterar(request,idT,idL):
+    checarPermObj('gestaoEscolar.change_leciona', request.user)
     turma_obj = get_object_or_404(Turma, id=idT)
     leciona_obj = get_object_or_404(Leciona, id=idL)
+    checarPermEscola(turma_obj, Escola.objects.get(id=request.session['Escola']))
+    checarPermEscola(leciona_obj, Escola.objects.get(id=request.session['Escola']))
     escola = request.session['Escola']
-    checarPermEscola(turma_obj, escola)
-    checarPermEscola(leciona_obj, escola)
     professores = Professor.objects.filter(Escola=escola).order_by('Nome')
 
     if request.method == 'GET':
@@ -97,11 +99,12 @@ def leciona_alterar(request,idT,idL):
 
 @login_required
 def leciona_consultar(request,idT,idL):
+    checarPermObj('gestaoEscolar.view_leciona', request.user)
     turma_obj = get_object_or_404(Turma, id=idT)
     leciona_obj = get_object_or_404(Leciona, id=idL)
+    checarPermEscola(turma_obj, Escola.objects.get(id=request.session['Escola']))
+    checarPermEscola(leciona_obj, Escola.objects.get(id=request.session['Escola']))
     escola = request.session['Escola']
-    checarPermEscola(turma_obj, escola)
-    checarPermEscola(leciona_obj, escola)
     professores = Professor.objects.filter(Escola=escola).order_by('Nome')
     context = {
         'professores': professores,

@@ -7,11 +7,12 @@ from django.utils import timezone
 from datetime import datetime
 from gestaoEscolar.forms import *
 from gestaoEscolar.models import *
-from .permissoes import checarPermEscola
+from .permissoes import checarPermEscola, checarPermObj, checarEscola
 
 
 @login_required
 def escola_novo(request):
+    checarPermObj('gestaoEscolar.add_escola', request.user)
     NIVEIS = Escola.NIVEIS_DE_ESCOLARIDADE
     TIPOS = Escola.TIPOS
     ZONAS = Endereco.TIPOS_ZONAS
@@ -113,7 +114,9 @@ def escola_novo(request):
 
 @login_required
 def escola_alterar(request,id):
+    checarPermObj('gestaoEscolar.change_escola', request.user)
     escola_obj = get_object_or_404(Escola, id=id)
+    checarEscola(request.session['Escola'], id)
     endereco_obj = Endereco.objects.get(id=escola_obj.Endereco.id)
     telefone_obj = Telefone.objects.get(id=escola_obj.Telefone.id)
     NIVEIS = Escola.NIVEIS_DE_ESCOLARIDADE

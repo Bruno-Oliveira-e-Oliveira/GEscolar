@@ -7,15 +7,16 @@ from django.utils import timezone
 from datetime import datetime
 from gestaoEscolar.forms import *
 from gestaoEscolar.models import *
-from .permissoes import checarPermEscola
+from .permissoes import checarPermEscola, checarPermObj
 from decimal import Decimal
 
 
 @login_required
 def avaliacao_listagem(request,idT):
+    checarPermObj('gestaoEscolar.view_avaliacao', request.user)
     turma_obj = get_object_or_404(Turma, id=idT)
+    checarPermEscola(turma_obj, Escola.objects.get(id=request.session['Escola']))
     escolaid = request.session['Escola']
-    checarPermEscola(turma_obj, escolaid)
     pessoa = Pessoa.obter_pessoa(request.user.username, '')
     if pessoa.Tipo_Pessoa == 'P':
         lecionas = Leciona.objects.filter(Escola=escolaid, Turma=turma_obj.id, Professor=pessoa.id)
@@ -46,9 +47,10 @@ def avaliacao_listagem(request,idT):
 
 @login_required
 def avaliacao_novo(request,idT):
+    checarPermObj('gestaoEscolar.add_avaliacao', request.user)
     turma = get_object_or_404(Turma, id=idT)
+    checarPermEscola(turma, Escola.objects.get(id=request.session['Escola']))
     escola = Escola.objects.get(id=request.session['Escola'])
-    checarPermEscola(turma, escola.id)
     pessoa = Pessoa.obter_pessoa(request.user.username, '')
     alunos = Matricula_Turma.retornar_alunos_matriculados(turma, escola)
     bimestre = Bimestre.retornar_ativo(escola.id)
@@ -215,11 +217,12 @@ def avaliacao_novo(request,idT):
 
 @login_required
 def avaliacao_alterar(request,idT,idAv):
+    checarPermObj('gestaoEscolar.change_avaliacao', request.user)
     turma = get_object_or_404(Turma, id=idT)
-    escola = Escola.objects.get(id=request.session['Escola'])
     avaliacao = get_object_or_404(Avaliacao, id=idAv)
-    checarPermEscola(turma, escola.id)
-    checarPermEscola(avaliacao, escola.id)
+    checarPermEscola(turma, Escola.objects.get(id=request.session['Escola']))
+    checarPermEscola(avaliacao, Escola.objects.get(id=request.session['Escola']))
+    escola = Escola.objects.get(id=request.session['Escola'])
     pessoa = Pessoa.obter_pessoa(request.user.username, '')
     alunos = Matricula_Turma.retornar_alunos_matriculados(turma, escola)
     bimestre = Bimestre.retornar_ativo(escola.id)
@@ -414,11 +417,12 @@ def avaliacao_alterar(request,idT,idAv):
 
 @login_required
 def avaliacao_consultar(request,idT,idAv):
+    checarPermObj('gestaoEscolar.view_avaliacao', request.user)
     turma = get_object_or_404(Turma, id=idT)
-    escola = Escola.objects.get(id=request.session['Escola'])
     avaliacao = get_object_or_404(Avaliacao, id=idAv)
-    checarPermEscola(turma, escola.id)
-    checarPermEscola(avaliacao, escola.id)
+    checarPermEscola(turma, Escola.objects.get(id=request.session['Escola']))
+    checarPermEscola(avaliacao, Escola.objects.get(id=request.session['Escola']))
+    escola = Escola.objects.get(id=request.session['Escola'])
     alunos = Matricula_Turma.retornar_alunos_matriculados(turma, escola)
     lecionas = Leciona.objects.filter(Escola=escola.id, Turma=turma.id)
 
@@ -477,11 +481,12 @@ def avaliacao_consultar(request,idT,idAv):
 
 @login_required
 def avaliacao_deletar(request,idT,idAv):
+    checarPermObj('gestaoEscolar.delete_avaliacao', request.user)
     turma = get_object_or_404(Turma, id=idT)
-    escola = Escola.objects.get(id=request.session['Escola'])
     avaliacao = get_object_or_404(Avaliacao, id=idAv)
-    checarPermEscola(turma, escola.id)
-    checarPermEscola(avaliacao, escola.id)
+    checarPermEscola(turma, Escola.objects.get(id=request.session['Escola']))
+    checarPermEscola(avaliacao, Escola.objects.get(id=request.session['Escola']))
+    escola = Escola.objects.get(id=request.session['Escola'])
     alunos = Matricula_Turma.retornar_alunos_matriculados(turma, escola)
     bimestre = Bimestre.retornar_ativo(escola.id)
     lecionas = Leciona.objects.filter(Escola=escola.id, Turma=turma.id)

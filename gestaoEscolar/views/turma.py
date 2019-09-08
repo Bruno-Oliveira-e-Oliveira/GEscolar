@@ -7,11 +7,12 @@ from django.utils import timezone
 from datetime import datetime
 from gestaoEscolar.forms import *
 from gestaoEscolar.models import *
-from .permissoes import checarPermEscola
+from .permissoes import checarPermEscola, checarPermObj
 
 
 @login_required
 def turma_listagem(request):
+    checarPermObj('gestaoEscolar.view_turma', request.user)
     escola = Escola.objects.get(id=request.session['Escola'])
     anos = AnoLetivo.objects.filter(Escola=escola.id).order_by('Ano') 
     series = Serie.objects.filter(Escola=escola.id).order_by('Nivel_Escolaridade','Numero')
@@ -63,6 +64,7 @@ def turma_listagem(request):
 
 @login_required
 def turma_novo(request):
+    checarPermObj('gestaoEscolar.add_turma', request.user)
     TIPO_PERIODO = Turma.TIPO_PERIODO
     escola = Escola.objects.get(id=request.session['Escola'])
     series = Serie.objects.filter(Escola=escola.id).order_by('Nivel_Escolaridade','Numero')
@@ -155,9 +157,10 @@ def turma_novo(request):
 
 @login_required
 def turma_alterar(request,id):
+    checarPermObj('gestaoEscolar.change_turma', request.user)
     turma_obj = get_object_or_404(Turma, id=id)
+    checarPermEscola(turma_obj, Escola.objects.get(id=request.session['Escola']))
     escola = Escola.objects.get(id=request.session['Escola'])
-    checarPermEscola(turma_obj, escola.id)
     TIPO_PERIODO = Turma.TIPO_PERIODO
     series = Serie.objects.filter(Escola=escola.id).order_by('Nivel_Escolaridade','Numero')
     ano = turma_obj.AnoLetivo.Ano
@@ -236,10 +239,11 @@ def turma_alterar(request,id):
 
 @login_required
 def turma_consultar(request,id):
+    checarPermObj('gestaoEscolar.view_turma', request.user)
     turma_obj = get_object_or_404(Turma, id=id)
+    checarPermEscola(turma_obj, Escola.objects.get(id=request.session['Escola']))
     TIPO_PERIODO = Turma.TIPO_PERIODO
     escola = Escola.objects.get(id=request.session['Escola'])
-    checarPermEscola(turma_obj, escola.id)
     series = Serie.objects.filter(Escola=escola.id).order_by('Nivel_Escolaridade','Numero')
 
     context = {
@@ -254,10 +258,11 @@ def turma_consultar(request,id):
 
 @login_required
 def turma_deletar(request,id):
+    checarPermObj('gestaoEscolar.delete_turma', request.user)
     turma_obj = get_object_or_404(Turma, id=id)
+    checarPermEscola(turma_obj, Escola.objects.get(id=request.session['Escola']))
     TIPO_PERIODO = Turma.TIPO_PERIODO
     escola = Escola.objects.get(id=request.session['Escola'])
-    checarPermEscola(turma_obj, escola.id)
     series = Serie.objects.filter(Escola=escola.id).order_by('Nivel_Escolaridade','Numero')
 
     if request.method == 'GET':
@@ -292,9 +297,10 @@ def turma_deletar(request,id):
 
 @login_required
 def gerenciamento_turma_listagem(request,idT):
+    checarPermObj('gestaoEscolar.view_matricula_turma', request.user)
     turma = get_object_or_404(Turma, id=idT)
+    checarPermEscola(turma, Escola.objects.get(id=request.session['Escola']))
     escola = request.session['Escola']
-    checarPermEscola(turma, escola)
     alunos = Aluno.objects.filter(Escola=escola).order_by('Nome')
     matriculas_ordenadas = []
     matriculas = Matricula_Turma.objects.filter(Turma=turma.id,Escola=escola)
@@ -309,9 +315,10 @@ def gerenciamento_turma_listagem(request,idT):
 
 @login_required
 def matricula_turma_novo(request,idT):
+    checarPermObj('gestaoEscolar.add_matricula_turma', request.user)
     turma = get_object_or_404(Turma, id=idT)
+    checarPermEscola(turma, Escola.objects.get(id=request.session['Escola']))
     escola = Escola.objects.get(id=request.session['Escola'])
-    checarPermEscola(turma, escola.id)
     TIPOS_SITUACAO = Matricula_Turma.TIPOS_SITUACAO
     alunos = Aluno.retornar_alunos_sem_turma(escola.id)
     erros = []
@@ -404,11 +411,13 @@ def matricula_turma_novo(request,idT):
 
 @login_required
 def matricula_turma_alterar(request,idT,idM):
+    checarPermObj('gestaoEscolar.change_matricula_turma', request.user)
     turma_obj = get_object_or_404(Turma, id=idT)
     matricula_turma_obj = get_object_or_404(Matricula_Turma, id=idM)
+    checarPermEscola(turma_obj, Escola.objects.get(id=request.session['Escola']))
+    checarPermEscola(matricula_turma_obj, Escola.objects.get(id=request.session['Escola']))
     escola = Escola.objects.get(id=request.session['Escola'])
-    checarPermEscola(turma_obj, escola.id)
-    checarPermEscola(matricula_turma_obj, escola.id)
+    
     TIPOS_SITUACAO = (
         ('cursando', 'Cursando'),
         ('transferido', 'Transferido'),
@@ -503,11 +512,12 @@ def matricula_turma_alterar(request,idT,idM):
 
 @login_required
 def matricula_turma_consultar(request,idT,idM):
+    checarPermObj('gestaoEscolar.view_matricula_turma', request.user)
     turma_obj = get_object_or_404(Turma, id=idT)
     matricula_turma_obj = get_object_or_404(Matricula_Turma, id=idM)
+    checarPermEscola(turma_obj, Escola.objects.get(id=request.session['Escola']))
+    checarPermEscola(matricula_turma_obj, Escola.objects.get(id=request.session['Escola']))
     escola = Escola.objects.get(id=request.session['Escola'])
-    checarPermEscola(turma_obj, escola.id)
-    checarPermEscola(matricula_turma_obj, escola.id)
     TIPOS_SITUACAO = Matricula_Turma.TIPOS_SITUACAO
     alunos = Aluno.objects.filter(Escola=escola.id, id=matricula_turma_obj.Aluno.id)
 
@@ -525,11 +535,12 @@ def matricula_turma_consultar(request,idT,idM):
 
 @login_required
 def matricula_turma_deletar(request,idT,idM):
+    checarPermObj('gestaoEscolar.delete_matricula_turma', request.user)
     turma_obj = get_object_or_404(Turma, id=idT)
     matricula_turma_obj = get_object_or_404(Matricula_Turma, id=idM)
+    checarPermEscola(turma_obj, Escola.objects.get(id=request.session['Escola']))
+    checarPermEscola(matricula_turma_obj, Escola.objects.get(id=request.session['Escola']))
     escola = Escola.objects.get(id=request.session['Escola'])
-    checarPermEscola(turma_obj, escola.id)
-    checarPermEscola(matricula_turma_obj, escola.id)
     TIPOS_SITUACAO = Matricula_Turma.TIPOS_SITUACAO
     alunos = Aluno.objects.filter(Escola=escola.id, id=matricula_turma_obj.Aluno.id)
 

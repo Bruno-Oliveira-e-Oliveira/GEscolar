@@ -7,14 +7,15 @@ from django.utils import timezone
 from datetime import datetime
 from gestaoEscolar.forms import *
 from gestaoEscolar.models import *
-from .permissoes import checarPermEscola
+from .permissoes import checarPermEscola, checarPermObj
 
 
 @login_required
 def matriz_item_listagem(request,id):
+    checarPermObj('gestaoEscolar.change_matriz_item', request.user)
     serie = get_object_or_404(Serie, id=id)
+    checarPermEscola(serie, Escola.objects.get(id=request.session['Escola']))
     escola = request.session['Escola']
-    checarPermEscola(serie, escola)
     matriz_itens = Matriz_Item.objects.filter(Serie=serie.id,Escola=escola).order_by('Disciplina')
     context = {'matriz_itens': matriz_itens, 'serie': serie}
     return render(request, 'gestaoEscolar/serie/matriz_item_listagem.html', context)
@@ -22,10 +23,11 @@ def matriz_item_listagem(request,id):
 
 @login_required
 def matriz_item_novo(request,idS):
+    checarPermObj('gestaoEscolar.add_matriz_item', request.user)
+    serie = get_object_or_404(Serie, id=idS)
+    checarPermEscola(serie, Escola.objects.get(id=request.session['Escola']))
     escola = Escola.objects.get(id=request.session['Escola'])
     disciplinas = Disciplina.objects.filter(Escola=escola.id).order_by('Nome')
-    serie = get_object_or_404(Serie, id=idS)
-    checarPermEscola(serie, escola)
     erros = []
     bloqueio = False
 
@@ -98,11 +100,13 @@ def matriz_item_novo(request,idS):
 
 @login_required
 def matriz_item_alterar(request,idS,idM):
+    checarPermObj('gestaoEscolar.change_matriz_item', request.user)
     serie = get_object_or_404(Serie, id=idS)
     matriz_item_obj = get_object_or_404(Matriz_Item, id=idM, Serie=serie.id)
+    checarPermEscola(serie, Escola.objects.get(id=request.session['Escola']))
+    checarPermEscola(matriz_item_obj, Escola.objects.get(id=request.session['Escola']))
     escola = request.session['Escola']
-    checarPermEscola(serie, escola)
-    checarPermEscola(matriz_item_obj, escola)
+
     disciplinas = Disciplina.objects.filter(Escola=escola).order_by('Nome')
     if request.method == 'GET':
         context = {
@@ -163,11 +167,12 @@ def matriz_item_alterar(request,idS,idM):
 
 @login_required
 def matriz_item_consultar(request,idS,idM):
+    checarPermObj('gestaoEscolar.view_matriz_item', request.user)
     serie = get_object_or_404(Serie, id=idS)
     matriz_item_obj = get_object_or_404(Matriz_Item, id=idM, Serie=serie.id)
+    checarPermEscola(serie, Escola.objects.get(id=request.session['Escola']))
+    checarPermEscola(matriz_item_obj, Escola.objects.get(id=request.session['Escola']))
     escola = Escola.objects.get(id=request.session['Escola'])
-    checarPermEscola(serie, escola)
-    checarPermEscola(matriz_item_obj, escola)
     disciplinas = Disciplina.objects.filter(Escola=escola.id).order_by('Nome')
     context = {
         'matriz_item_dados':matriz_item_obj,
@@ -181,11 +186,12 @@ def matriz_item_consultar(request,idS,idM):
 
 @login_required
 def matriz_item_deletar(request,idS,idM):
+    checarPermObj('gestaoEscolar.delete_matriz_item', request.user)
     serie = get_object_or_404(Serie, id=idS)
     matriz_item_obj = get_object_or_404(Matriz_Item, id=idM, Serie=serie.id)
+    checarPermEscola(serie, Escola.objects.get(id=request.session['Escola']))
+    checarPermEscola(matriz_item_obj, Escola.objects.get(id=request.session['Escola']))
     escola = request.session['Escola']
-    checarPermEscola(serie, escola)
-    checarPermEscola(matriz_item_obj, escola)
     disciplinas = Disciplina.objects.filter(Escola=escola).order_by('Nome')
 
     erros = []

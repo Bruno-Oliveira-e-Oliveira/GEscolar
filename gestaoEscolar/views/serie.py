@@ -7,11 +7,12 @@ from django.utils import timezone
 from datetime import datetime
 from gestaoEscolar.forms import *
 from gestaoEscolar.models import *
-from .permissoes import checarPermEscola
+from .permissoes import checarPermEscola, checarPermObj
 
  
 @login_required
 def serie_listagem(request):
+    checarPermObj('gestaoEscolar.view_serie', request.user)
     escola = request.session['Escola']
     series = Serie.objects.filter(Escola=escola).order_by('Nivel_Escolaridade','Numero')
     context = {'series': series}

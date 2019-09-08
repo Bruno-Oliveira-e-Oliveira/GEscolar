@@ -8,14 +8,15 @@ from django.utils import timezone
 from datetime import datetime
 from gestaoEscolar.forms import *
 from gestaoEscolar.models import *
-from .permissoes import checarPermEscola
+from .permissoes import checarPermEscola, checarPermObj
 
 
 @login_required
 def aula_listagem(request,idT):
+    checarPermObj('gestaoEscolar.view_aula', request.user)
     turma = get_object_or_404(Turma, id=idT)
+    checarPermEscola(turma, Escola.objects.get(id=request.session['Escola']))
     escola = request.session['Escola']
-    checarPermEscola(turma, escola)
     pessoa = Pessoa.obter_pessoa(request.user.username, '')
     if pessoa.Tipo_Pessoa == 'P':
         lecionas = Leciona.objects.filter(Escola=escola, Turma=turma.id, Professor=pessoa.id)
@@ -57,9 +58,10 @@ def aula_listagem(request,idT):
 
 @login_required
 def aula_novo(request,idT):
+    checarPermObj('gestaoEscolar.add_aula', request.user)
     turma = get_object_or_404(Turma, id=idT)
+    checarPermEscola(turma, Escola.objects.get(id=request.session['Escola']))
     escola = Escola.objects.get(id=request.session['Escola'])
-    checarPermEscola(turma, escola.id)
     lecionas = Leciona.objects.filter(Escola=escola.id, Turma=turma.id)
     alunos = Matricula_Turma.retornar_alunos_matriculados(turma, escola)
     bimestre = Bimestre.retornar_ativo(escola.id)
@@ -139,11 +141,12 @@ def aula_novo(request,idT):
 
 @login_required
 def aula_alterar(request,idT,idA):
+    checarPermObj('gestaoEscolar.change_aula', request.user)
     turma = get_object_or_404(Turma, id=idT)
     aula_obj = get_object_or_404(Aula, id=idA)
+    checarPermEscola(turma, Escola.objects.get(id=request.session['Escola']))
+    checarPermEscola(aula_obj, Escola.objects.get(id=request.session['Escola']))
     escola = Escola.objects.get(id=request.session['Escola'])
-    checarPermEscola(turma, escola.id)
-    checarPermEscola(aula_obj, escola.id)
     lecionas = Leciona.objects.filter(Escola=escola.id, Turma=turma.id)
     erros = []
     bloqueio = False
@@ -213,11 +216,12 @@ def aula_alterar(request,idT,idA):
 
 @login_required
 def aula_consultar(request,idT,idA):
+    checarPermObj('gestaoEscolar.view_aula', request.user)
     turma = get_object_or_404(Turma, id=idT)
     aula_obj = get_object_or_404(Aula, id=idA)
+    checarPermEscola(turma, Escola.objects.get(id=request.session['Escola']))
+    checarPermEscola(aula_obj, Escola.objects.get(id=request.session['Escola']))
     escola = Escola.objects.get(id=request.session['Escola'])
-    checarPermEscola(turma, escola.id)
-    checarPermEscola(aula_obj, escola.id)
     lecionas = Leciona.objects.filter(Escola=escola.id, Turma=turma.id)
 
     context = {
@@ -232,11 +236,12 @@ def aula_consultar(request,idT,idA):
 
 @login_required
 def aula_deletar(request,idT,idA):
+    checarPermObj('gestaoEscolar.delete_aula', request.user)
     turma = get_object_or_404(Turma, id=idT)
     aula_obj = get_object_or_404(Aula, id=idA)
+    checarPermEscola(turma, Escola.objects.get(id=request.session['Escola']))
+    checarPermEscola(aula_obj, Escola.objects.get(id=request.session['Escola']))
     escola = Escola.objects.get(id=request.session['Escola'])
-    checarPermEscola(turma, escola.id)
-    checarPermEscola(aula_obj, escola.id)
     lecionas = Leciona.objects.filter(Escola=escola.id, Turma=turma.id)
     erros = []
     bloqueio = False
@@ -277,11 +282,12 @@ def aula_deletar(request,idT,idA):
             
 @login_required
 def lista_chamada(request,idT,idA):
+    checarPermObj('gestaoEscolar.add_aula', request.user)
     turma = get_object_or_404(Turma, id=idT)
     aula_obj = get_object_or_404(Aula, id=idA)
+    checarPermEscola(turma, Escola.objects.get(id=request.session['Escola']))
+    checarPermEscola(aula_obj, Escola.objects.get(id=request.session['Escola']))
     escola = Escola.objects.get(id=request.session['Escola'])
-    checarPermEscola(turma, escola.id)
-    checarPermEscola(aula_obj, escola.id)
     frequencias = Frequencia.objects.filter(Escola=escola.id, Aula=aula_obj.id)
 
     if request.method == 'GET':

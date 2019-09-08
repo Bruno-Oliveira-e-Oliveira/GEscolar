@@ -7,11 +7,12 @@ from django.utils import timezone
 from datetime import datetime
 from gestaoEscolar.forms import *
 from gestaoEscolar.models import *
-from .permissoes import checarPermEscola
+from .permissoes import checarPermEscola, checarPermObj
 
 
 @login_required
 def aluno_listagem(request):
+    checarPermObj('gestaoEscolar.view_aluno', request.user)
     try:
         status = request.GET['ativo']
         matricula = request.GET['matricula']
@@ -50,6 +51,7 @@ def aluno_listagem(request):
 
 @login_required
 def aluno_novo(request):
+    checarPermObj('gestaoEscolar.add_aluno', request.user)
     TIPO_SEXO = Aluno.TIPO_SEXO
     STATUS = Aluno.STATUS
     SIM_NAO = Aluno.SIM_NAO
@@ -217,7 +219,9 @@ def aluno_novo(request):
 
 @login_required
 def aluno_alterar(request,id):
-    aluno_obj = Aluno.objects.get(id=id)
+    checarPermObj('gestaoEscolar.change_aluno', request.user)
+    aluno_obj = get_object_or_404(Aluno, id=id)
+    checarPermEscola(aluno_obj, Escola.objects.get(id=request.session['Escola']))
     endereco_obj = Endereco.objects.get(id=aluno_obj.Endereco.id)
     telefone_obj = Telefone.objects.get(id=aluno_obj.Telefone.id)
     matricula_obj = Matricula.objects.get(Aluno=aluno_obj.id)
@@ -389,7 +393,9 @@ def aluno_alterar(request,id):
 
 @login_required
 def aluno_consultar(request,id):
-    aluno_obj = Aluno.objects.get(id=id)
+    checarPermObj('gestaoEscolar.view_aluno', request.user)
+    aluno_obj = get_object_or_404(Aluno, id=id)
+    checarPermEscola(aluno_obj, Escola.objects.get(id=request.session['Escola']))
     matricula_obj = Matricula.objects.get(Aluno=aluno_obj.id)
     endereco_obj = Endereco.objects.get(id=aluno_obj.Endereco.id)
     telefone_obj = Telefone.objects.get(id=aluno_obj.Telefone.id)
@@ -422,7 +428,9 @@ def aluno_consultar(request,id):
 
 @login_required
 def aluno_deletar(request,id):
-    aluno_obj = Aluno.objects.get(id=id)
+    checarPermObj('gestaoEscolar.delete_aluno', request.user)
+    aluno_obj = get_object_or_404(Aluno, id=id)
+    checarPermEscola(aluno_obj, Escola.objects.get(id=request.session['Escola']))
     endereco_obj = Endereco.objects.get(id=aluno_obj.Endereco.id)
     telefone_obj = Telefone.objects.get(id=aluno_obj.Telefone.id)
     matricula_obj = Matricula.objects.get(Aluno=aluno_obj.id)

@@ -7,11 +7,12 @@ from django.utils import timezone
 from datetime import datetime
 from gestaoEscolar.forms import *
 from gestaoEscolar.models import *
-from .permissoes import checarPermEscola
+from .permissoes import checarPermEscola, checarPermObj
 
 
 @login_required
 def disciplina_listagem(request):
+    checarPermObj('gestaoEscolar.view_disciplina', request.user)
     escola = request.session['Escola']
     disciplinas = Disciplina.objects.filter(Escola=escola).order_by('Nome')
     context = {'disciplinas': disciplinas}
@@ -20,6 +21,7 @@ def disciplina_listagem(request):
 
 @login_required
 def disciplina_novo(request):
+    checarPermObj('gestaoEscolar.add_disciplina', request.user)
     if request.method == 'GET':
         context = {'Tipo_Transacao': 'INS'}
         return render(request,'gestaoEscolar/disciplina/disciplina_form.html', context)
@@ -66,9 +68,10 @@ def disciplina_novo(request):
 
 @login_required
 def disciplina_alterar(request,id):
+    checarPermObj('gestaoEscolar.change_disciplina', request.user)
     disciplina_obj = get_object_or_404(Disciplina, id=id)
+    checarPermEscola(disciplina_obj, Escola.objects.get(id=request.session['Escola']))
     escola = request.session['Escola']
-    checarPermEscola(disciplina_obj, escola)
 
     if request.method == 'GET':
         context = {
@@ -121,9 +124,10 @@ def disciplina_alterar(request,id):
 
 @login_required
 def disciplina_consultar(request,id):
+    checarPermObj('gestaoEscolar.view_disciplina', request.user)
     disciplina_obj = get_object_or_404(Disciplina, id=id)
+    checarPermEscola(disciplina_obj, Escola.objects.get(id=request.session['Escola']))
     escola = request.session['Escola']
-    checarPermEscola(disciplina_obj, escola)
     context = {
         'disciplina_dados': disciplina_obj,
         'Tipo_Transacao': 'CON',
@@ -134,9 +138,10 @@ def disciplina_consultar(request,id):
 
 @login_required
 def disciplina_deletar(request,id):
+    checarPermObj('gestaoEscolar.delete_disciplina', request.user)
     disciplina_obj = get_object_or_404(Disciplina, id=id)
+    checarPermEscola(disciplina_obj, Escola.objects.get(id=request.session['Escola']))
     escola = request.session['Escola']
-    checarPermEscola(disciplina_obj, escola)
 
     erros = []
     bloqueio = False

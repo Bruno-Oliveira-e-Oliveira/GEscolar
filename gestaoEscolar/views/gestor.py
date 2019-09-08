@@ -7,7 +7,7 @@ from django.utils import timezone
 from datetime import datetime
 from gestaoEscolar.forms import *
 from gestaoEscolar.models import *
-from .permissoes import checarPermEscola
+from .permissoes import checarPermEscola, checarPermObj
 
 #gestor e diretor
 def diretor_novo(request):
@@ -126,7 +126,9 @@ def diretor_novo(request):
 
 @login_required
 def diretor_alterar(request,id):
+    checarPermObj('gestaoEscolar.change_gestor', request.user)
     gestor_obj = get_object_or_404(Gestor, id=id)
+    checarPermEscola(gestor_obj, Escola.objects.get(id=request.session['Escola']))
     endereco_obj = Endereco.objects.get(id=gestor_obj.Endereco.id)
     telefone_obj = Telefone.objects.get(id=gestor_obj.Telefone.id)
     usuario_obj = User.objects.get(id=gestor_obj.Usuario.id)
@@ -252,7 +254,9 @@ def diretor_alterar(request,id):
 
 
 def trocar_senha(request,id):
+    checarPermObj('gestaoEscolar.change_gestor', request.user)
     gestor_obj = get_object_or_404(Gestor, id=id)
+    checarPermEscola(gestor_obj, Escola.objects.get(id=request.session['Escola']))
 
     if request.method == 'GET':
         context = {

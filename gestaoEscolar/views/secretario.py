@@ -7,11 +7,12 @@ from django.utils import timezone
 from datetime import datetime
 from gestaoEscolar.forms import *
 from gestaoEscolar.models import *
-from .permissoes import checarPermEscola
+from .permissoes import checarPermEscola, checarPermObj
 
 
 @login_required
 def secretario_listagem(request):
+    checarPermObj('gestaoEscolar.view_secretaria', request.user)
     try:
         status = request.GET['ativo']
     except Exception as erro:
@@ -27,9 +28,9 @@ def secretario_listagem(request):
     return render(request, 'gestaoEscolar/secretario/secretario_listagem.html', context)
 
 
-
 @login_required
 def secretario_novo(request):
+    checarPermObj('gestaoEscolar.add_secretaria', request.user)
     TIPO_SEXO = Secretaria.TIPO_SEXO
     STATUS = Secretaria.STATUS
     ZONAS = Endereco.TIPOS_ZONAS
@@ -155,7 +156,9 @@ def secretario_novo(request):
 
 @login_required
 def secretario_alterar(request,id):
-    secretario_obj = Secretaria.objects.get(id=id)
+    checarPermObj('gestaoEscolar.change_secretaria', request.user)
+    secretario_obj = get_object_or_404(Secretaria, id=id)
+    checarPermEscola(secretario_obj, Escola.objects.get(id=request.session['Escola']))
     endereco_obj = Endereco.objects.get(id=secretario_obj.Endereco.id)
     telefone_obj = Telefone.objects.get(id=secretario_obj.Telefone.id)
     usuario_obj = User.objects.get(id=secretario_obj.Usuario.id)
@@ -280,7 +283,9 @@ def secretario_alterar(request,id):
 
 @login_required
 def secretario_consultar(request,id):
-    secretario_obj = Secretaria.objects.get(id=id)
+    checarPermObj('gestaoEscolar.view_secretaria', request.user)
+    secretario_obj = get_object_or_404(Secretaria, id=id)
+    checarPermEscola(secretario_obj, Escola.objects.get(id=request.session['Escola']))
     endereco_obj = Endereco.objects.get(id=secretario_obj.Endereco.id)
     telefone_obj = Telefone.objects.get(id=secretario_obj.Telefone.id)
     usuario_obj = User.objects.get(id=secretario_obj.Usuario.id)
@@ -303,7 +308,9 @@ def secretario_consultar(request,id):
 
 @login_required
 def secretario_deletar(request,id):
-    secretario_obj = Secretaria.objects.get(id=id)
+    checarPermObj('gestaoEscolar.delete_secretaria', request.user)
+    secretario_obj = get_object_or_404(Secretaria, id=id)
+    checarPermEscola(secretario_obj, Escola.objects.get(id=request.session['Escola']))
     endereco_obj = Endereco.objects.get(id=secretario_obj.Endereco.id)
     telefone_obj = Telefone.objects.get(id=secretario_obj.Telefone.id)
     usuario_obj = User.objects.get(id=secretario_obj.Usuario.id)

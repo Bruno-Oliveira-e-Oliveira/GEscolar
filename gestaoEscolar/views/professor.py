@@ -7,10 +7,11 @@ from django.utils import timezone
 from datetime import datetime
 from gestaoEscolar.forms import *
 from gestaoEscolar.models import *
-from .permissoes import checarPermEscola
+from .permissoes import checarPermEscola, checarPermObj
        
 @login_required
 def professor_listagem(request):
+    checarPermObj('gestaoEscolar.view_professor', request.user)
     try:
         status = request.GET['ativo']
         titulo = request.GET['titulo']
@@ -44,6 +45,7 @@ def professor_listagem(request):
 
 @login_required
 def professor_novo(request):
+    checarPermObj('gestaoEscolar.add_professor', request.user)
     TIPO_SEXO = Professor.TIPO_SEXO
     STATUS = Professor.STATUS
     TIPOS_TITULOS = Professor.TIPOS_TITULOS
@@ -179,7 +181,9 @@ def professor_novo(request):
 
 @login_required
 def professor_alterar(request,id):
-    professor_obj = Professor.objects.get(id=id)
+    checarPermObj('gestaoEscolar.change_professor', request.user)
+    professor_obj = get_object_or_404(Professor, id=id)
+    checarPermEscola(professor_obj, Escola.objects.get(id=request.session['Escola']))
     endereco_obj = Endereco.objects.get(id=professor_obj.Endereco.id)
     telefone_obj = Telefone.objects.get(id=professor_obj.Telefone.id)
     usuario_obj = User.objects.get(id=professor_obj.Usuario.id)
@@ -309,7 +313,9 @@ def professor_alterar(request,id):
 
 @login_required
 def professor_consultar(request,id):
-    professor_obj = Professor.objects.get(id=id)
+    checarPermObj('gestaoEscolar.view_professor', request.user)
+    professor_obj = get_object_or_404(Professor, id=id)
+    checarPermEscola(professor_obj, Escola.objects.get(id=request.session['Escola']))
     endereco_obj = Endereco.objects.get(id=professor_obj.Endereco.id)
     telefone_obj = Telefone.objects.get(id=professor_obj.Telefone.id)
     usuario_obj = User.objects.get(id=professor_obj.Usuario.id)
@@ -334,7 +340,9 @@ def professor_consultar(request,id):
 
 @login_required
 def professor_deletar(request,id):
-    professor_obj = Professor.objects.get(id=id)
+    checarPermObj('gestaoEscolar.delete_professor', request.user)
+    professor_obj = get_object_or_404(Professor, id=id)
+    checarPermEscola(professor_obj, Escola.objects.get(id=request.session['Escola']))
     endereco_obj = Endereco.objects.get(id=professor_obj.Endereco.id)
     telefone_obj = Telefone.objects.get(id=professor_obj.Telefone.id)
     usuario_obj = User.objects.get(id=professor_obj.Usuario.id)

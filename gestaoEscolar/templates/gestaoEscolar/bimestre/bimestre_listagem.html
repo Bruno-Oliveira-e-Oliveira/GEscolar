@@ -17,7 +17,7 @@
                 <th>Data Inicial</th>
                 <th>Data Final</th>
             </tr>
-            {% if numero_bimestre < 5 and bimestre.AnoLetivo.Situacao == 'A'%}
+            {% if numero_bimestre < 5 and ano.Situacao == 'A'%}
                 <a href="{% url 'bimestre_novo' idA %}">Novo</a>
             {% endif  %}
         </thead>
