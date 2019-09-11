@@ -7,12 +7,11 @@ from django.utils import timezone
 from datetime import datetime
 from gestaoEscolar.forms import *
 from gestaoEscolar.models import *
-from .permissoes import checarPermEscola, checarPermObj
+from .permissoes import checarPermEscola, checarPermObj,configurar_grupos, limpar_grupos
 from .login import salvar_escola_pessoa_sessao
 
 @login_required
 def gestao_escolar_inicio(request):
     request = salvar_escola_pessoa_sessao(request)
     print(request.session['Escola'])
-    print(request.user.get_all_permissions())
     return render(request,'gestaoEscolar/inicio/gestaoescolar.html')

@@ -7,7 +7,8 @@ from django.utils import timezone
 from datetime import datetime
 from gestaoEscolar.forms import *
 from gestaoEscolar.models import *
-from .permissoes import checarPermEscola, checarPermObj
+from .permissoes import checarPermEscola, checarPermObj, checarGestor, limpar_grupos, configurar_grupos
+
 
 #gestor e diretor
 def diretor_novo(request):
@@ -105,6 +106,8 @@ def diretor_novo(request):
                     gestor_dados['Endereco'] = endereco.id
                     gestor_form = GestorForm(gestor_dados)
                     gestor = gestor_form.save()
+                    #Configurando o grupo
+                    configurar_grupos('G',usuario)
                     return redirect('gestao_escolar_inicio')
             except Exception as Error:
                 #Erros de servidor (500)
@@ -128,15 +131,13 @@ def diretor_novo(request):
 def diretor_alterar(request,id):
     checarPermObj('gestaoEscolar.change_gestor', request.user)
     gestor_obj = get_object_or_404(Gestor, id=id)
-    checarPermEscola(gestor_obj, Escola.objects.get(id=request.session['Escola']))
+    checarGestor(request.session['Pessoa'], id)
     endereco_obj = Endereco.objects.get(id=gestor_obj.Endereco.id)
     telefone_obj = Telefone.objects.get(id=gestor_obj.Telefone.id)
     usuario_obj = User.objects.get(id=gestor_obj.Usuario.id)
     TIPO_SEXO = Gestor.TIPO_SEXO
     ZONAS = Endereco.TIPOS_ZONAS
     STATUS = Gestor.STATUS
-
-    print(telefone_obj)
 
     if request.method == 'GET':
         context = {
@@ -256,7 +257,7 @@ def diretor_alterar(request,id):
 def trocar_senha(request,id):
     checarPermObj('gestaoEscolar.change_gestor', request.user)
     gestor_obj = get_object_or_404(Gestor, id=id)
-    checarPermEscola(gestor_obj, Escola.objects.get(id=request.session['Escola']))
+    checarGestor(request.session['Pessoa'], id)
 
     if request.method == 'GET':
         context = {

@@ -7,7 +7,7 @@ from django.utils import timezone
 from datetime import datetime
 from gestaoEscolar.forms import *
 from gestaoEscolar.models import *
-from .permissoes import checarPermEscola, checarPermObj
+from .permissoes import checarPermEscola, checarPermObj, limpar_grupos, configurar_grupos
 
 
 @login_required
@@ -193,6 +193,8 @@ def aluno_novo(request):
                         Escola=escola
                     )
                     matricula.save()
+                    #Configurando o grupo
+                    configurar_grupos('A',usuario)
                     return redirect('aluno_listagem')
             except Exception as Error:
                 #Erros de servidor (500)
@@ -476,6 +478,7 @@ def aluno_deletar(request,id):
     else:
         try:
             with transaction.atomic():
+                limpar_grupos(usuario_obj)
                 matricula_obj.delete()
                 aluno_obj.delete()
                 endereco_obj.delete()

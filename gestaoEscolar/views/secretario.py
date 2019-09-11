@@ -7,7 +7,7 @@ from django.utils import timezone
 from datetime import datetime
 from gestaoEscolar.forms import *
 from gestaoEscolar.models import *
-from .permissoes import checarPermEscola, checarPermObj
+from .permissoes import checarPermEscola, checarPermObj, configurar_grupos, limpar_grupos
 
 
 @login_required
@@ -134,6 +134,8 @@ def secretario_novo(request):
                     secretario_dados['Escola'] = escola.id
                     secretario_form = SecretarioForm(secretario_dados)
                     secretario = secretario_form.save()
+                    #Configurando o grupo
+                    configurar_grupos('S',usuario)
                     return redirect('secretario_listagem')
             except Exception as Error:
                 #Erros de servidor (500)
@@ -333,6 +335,7 @@ def secretario_deletar(request,id):
     else:
         try:
             with transaction.atomic():
+                limpar_grupos(usuario_obj)
                 secretario_obj.delete()
                 endereco_obj.delete()
                 telefone_obj.delete()
