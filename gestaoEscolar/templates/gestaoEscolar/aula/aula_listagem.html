@@ -6,6 +6,40 @@
 {% block main %}
 
     <h2>Listagem de aulas</h2>
+
+    <form>
+        <fieldset>
+            <div>
+                <label for="id_leciona">Disciplina / Professor:</label>
+                <select name="leciona" id="id_leciona">
+                    {% for item in Filtro_Leciona %}
+                        {% if leciona == item.id %}
+                            <option value="{{ item.id }}" selected>{{ item.nome_editado }}</option>
+                        {% else %}
+                            <option value="{{ item.id }}" >{{ item.nome_editado }}</option>
+                        {% endif %}
+                    {% endfor %}    
+                </select>
+            </div>
+
+            <div>
+                <label for="id_bimestre">Bimestre:</label> 
+                <select name="bimestre" id="id_bimestre">
+                    {% for item in Filtro_Bimestre %}
+                        {% if bimestre == item.id %}
+                            <option value="{{ item.id }}" selected>{{ item.Bimestre }} - {{ item.AnoLetivo }}</option>
+                        {% else %}
+                            <option value="{{ item.id }}" >{{ item.Bimestre }} - {{ item.AnoLetivo }}</option>
+                        {% endif %}
+                    {% endfor %}       
+                </select>
+            </div>
+
+            <button type="submit">Pesquisar</button>
+        </fieldset>
+        
+    </form>
+    
     
     <table id="Tabela">
         <thead>

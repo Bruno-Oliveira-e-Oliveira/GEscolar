@@ -33,15 +33,32 @@ def avaliacao_listagem(request,idT):
         else:
             avaliacoes = {}
     else:
+        lecionas = Leciona.objects.filter(Escola=escolaid, Turma=turma_obj.id)
         avaliacoes = Avaliacao.objects.filter(
             Escola=escolaid, 
             Turma=turma_obj.id,
         ).order_by('Data') 
 
+    try:
+        leciona_filtro = int(request.GET['leciona'])
+    except:
+        try:
+            leciona_filtro = lecionas[0].id
+        except:
+            leciona_filtro = 0
+
+    avaliacoes_filtradas = []
+    for avaliacao in avaliacoes:
+        if avaliacao.Leciona.id == leciona_filtro:
+            avaliacoes_filtradas.append(avaliacao)
+
     context = {
-        'avaliacoes': avaliacoes,
-        'turma': turma_obj
+        'avaliacoes': avaliacoes_filtradas,
+        'turma': turma_obj,
+        'Filtro_Leciona': lecionas,
+        'leciona': leciona_filtro
         }
+
     return render(request, 'gestaoEscolar/avaliacao/avaliacao_listagem.html', context)
 
 

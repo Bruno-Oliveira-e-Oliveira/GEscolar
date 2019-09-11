@@ -18,6 +18,7 @@ def aula_listagem(request,idT):
     checarPermEscola(turma, Escola.objects.get(id=request.session['Escola']))
     escola = request.session['Escola']
     pessoa = Pessoa.obter_pessoa(request.user.username, '')
+
     if pessoa.Tipo_Pessoa == 'P':
         lecionas = Leciona.objects.filter(Escola=escola, Turma=turma.id, Professor=pessoa.id)
         if len(lecionas) >= 1:
@@ -33,8 +34,37 @@ def aula_listagem(request,idT):
         else:
             aulas = {}
     else:
+        lecionas = Leciona.objects.filter(Escola=escola, Turma=turma.id)
         aulas = Aula.objects.filter(Escola=escola, Turma=idT)
-    context = {'turma': turma, 'aulas': aulas}
+
+    bimestres = Bimestre.objects.filter(Escola=escola, AnoLetivo=turma.AnoLetivo.id)
+    try:
+        leciona_filtro = int(request.GET['leciona'])
+        bimestre = int(request.GET['bimestre'])
+    except:
+        try:
+            leciona_filtro = lecionas[0].id
+        except:
+            leciona_filtro = 0
+
+        try:
+            bimestre = bimestres[0].id
+        except:
+            bimestre = 0
+
+    aulas_filtradas = []
+    for aula in aulas:
+        if aula.Bimestre.id == bimestre and aula.Leciona.id == leciona_filtro:
+            aulas_filtradas.append(aula)
+
+    context = {
+        'turma': turma, 
+        'aulas': aulas_filtradas,
+        'Filtro_Leciona': lecionas,
+        'Filtro_Bimestre': bimestres,
+        'leciona': leciona_filtro,
+        'bimestre': bimestre
+        }
     return render(request, 'gestaoEscolar/aula/aula_listagem.html', context)
     
 
