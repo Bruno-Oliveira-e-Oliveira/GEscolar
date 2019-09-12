@@ -36,6 +36,15 @@ def matriz_item_novo(request,idS):
             'Não há disciplinas cadastradas.'
         )
         bloqueio = True
+    
+    ano = AnoLetivo.retornar_ativo(escola.id)
+    if ano is not None:
+        turmas = Turma.objects.filter(Escola=escola.id, AnoLetivo=ano.id)
+        if len(turmas) > 0:
+            erros.append(
+                'Para adicionar novos itens na matriz, não pode haver turmas em aberto.'
+            )
+            bloqueio = True
 
 
     if request.method == 'GET':

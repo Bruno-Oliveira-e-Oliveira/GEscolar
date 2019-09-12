@@ -44,6 +44,18 @@ def turma_listagem(request):
         turmas = Turma.objects.filter(Escola=escola, AnoLetivo=ano, Serie=serie).order_by(
             'Nome'
         )
+
+    pessoa = Pessoa.obter_pessoa(request.user.username, '')
+    turmas_filtradas = []
+    if pessoa.Tipo_Pessoa == 'P':
+        lecionas = Leciona.objects.filter(Escola=escola.id, Professor=pessoa.id)
+        if len(lecionas) >= 1 and len(turmas) >=1:
+            for turma in turmas:
+                for leciona in lecionas:
+                    if turma.id == leciona.Turma.id:
+                        turmas_filtradas.append(turma)
+    else:
+        turmas_filtradas = turmas
     
     TIPO_PERIODO = (
         ('Todos', 'Todos'),
@@ -51,7 +63,7 @@ def turma_listagem(request):
         ('T', 'Tarde')
     )
     context = {
-        'turmas': turmas,
+        'turmas': turmas_filtradas,
         'Filtro_Periodo': TIPO_PERIODO,
         'Filtro_Serie': series,
         'Filtro_Ano': anos,
