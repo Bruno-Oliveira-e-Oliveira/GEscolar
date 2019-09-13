@@ -1,0 +1,22 @@
+{% extends 'projeto/base/base.html' %}
+
+{% block title %}Esqueceu a senha{% endblock  %}
+
+{% block main %}
+    <h3>Digite seu email:</h3>
+    <span>{{ msg }}<span>
+    
+    <form action="{% url 'esqueceu' %}" method='POST'>
+        {% csrf_token %}
+        <fieldset>
+            <div>
+                <label for="id_email">E-mail:</label> 
+                <input type="text" name="email" maxlength="100" required id="id_email"> 
+            </div>
+        </fieldset>
+
+        <button type="submit">Enviar e-mail</button>
+        <a href="{% url 'login' %}"> Voltar</a>
+    </form>
+    
+{% endblock  %}

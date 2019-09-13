@@ -26,10 +26,12 @@ urlpatterns = [
     path('', inicio.gestao_escolar_inicio , name='gestao_escolar_inicio'),
     path('login/', login.login , name='login'),
     path('logout/', login.logout , name='logout'),
+    path('esqueceu/', login.esqueceu , name='esqueceu'),
 
     path('diretor/novo/', gestor.diretor_novo, name='diretor_novo'),
     path('diretor/alterar/<int:id>', gestor.diretor_alterar, name='diretor_alterar'),
     path('diretor/trocarSenha/<int:id>', gestor.trocar_senha, name='trocar_senha'),
+    path('diretor/novaSenha/<int:id>', gestor.esqueceu_senha, name='esqueceu_senha'),
 
     path('escola/novo/', escola.escola_novo, name='escola_novo'),
     path('escola/alterar/<int:id>', escola.escola_alterar, name='escola_alterar'),

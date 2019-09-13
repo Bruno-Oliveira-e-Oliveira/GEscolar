@@ -126,3 +126,10 @@ LOGIN_URL = '/gestaoEscolar/login/'
 
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'gescolar.contas@gmail.com'
+EMAIL_HOST_PASSWORD = 'naotemsenha'

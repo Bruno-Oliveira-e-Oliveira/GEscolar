@@ -12,7 +12,7 @@
     {% endfor %}
 
 
-    <form action="{% url 'trocar_senha' idGestor %}" method="POST">
+    <form action="{% url 'esqueceu_senha' idGestor %}" method="POST">
         {% csrf_token %}
 
         <fieldset>

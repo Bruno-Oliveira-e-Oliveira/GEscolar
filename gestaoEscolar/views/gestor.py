@@ -308,7 +308,56 @@ def trocar_senha(request,id):
                 return render(request,'gestaoEscolar/gestor/trocar_senha_form.html', context)
 
 
+def esqueceu_senha(request,id):
+    gestor_obj = get_object_or_404(Gestor, id=id)
+    
+    if request.method == 'GET':
+        context = {
+            'idGestor': id
+        }
+        return render(request,'gestaoEscolar/gestor/trocar_esqueceu_senha_form.html', context)
+    else:
+        dados = request.POST
+        usuario_dados = {
+            'email': gestor_obj.Usuario.email, 
+            'username': gestor_obj.Usuario.username, 
+            'password': dados['password'], 
+            'password2': dados['password2']
+        }
+        usuario_form = UsuarioForm(usuario_dados, instance=gestor_obj.Usuario)
+        erros_usuario = {}
 
+        if not usuario_form.is_valid():
+            erros_usuario = usuario_form.errors
+
+        if erros_usuario:
+            erros = []
+            for erro in erros_usuario.values():
+                erros.append(erro)
+
+            context = {
+                'usuario_dados': gestor_obj.Usuario,
+                'erros':erros, 
+                'idGestor': id
+            }
+            return render(request,'gestaoEscolar/gestor/trocar_esqueceu_senha_form.html', context)
+        else:
+            try:
+                with transaction.atomic():
+                    gestor_obj.Usuario.set_password(usuario_dados['password'])
+                    gestor_obj.Usuario.save()
+                    return redirect('login')
+            except Exception as Error:
+                #Erros de servidor (500)
+                print('Erro no servidor: ' + str(Error))
+                Error = 'Erro no servidor'
+                erros = [Error]
+                context = {
+                    'usuario_dados': gestor_obj.Usuario,
+                    'erros':erros, 
+                    'idGestor': id
+                }
+                return render(request,'gestaoEscolar/gestor/trocar_esqueceu_senha_form.html', context)
 
 
 

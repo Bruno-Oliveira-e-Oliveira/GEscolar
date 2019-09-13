@@ -8,6 +8,7 @@ from django.utils import timezone
 from datetime import datetime
 from gestaoEscolar.forms import *
 from gestaoEscolar.models import *
+from django.core.mail import send_mail
 
 def login(request):
     if request.method == 'GET':
@@ -55,3 +56,46 @@ def salvar_escola_pessoa_sessao(request):
         print('Sem relacionamento com uma escola')
 
     return request
+
+
+def esqueceu(request):
+    if request.method == 'GET':
+        return render(request,'gestaoEscolar/autenticacao/esqueceu.html')
+    else:
+        email = request.POST['email']
+        usuario = User.objects.filter(email=email)
+        if len(usuario) > 0:
+            pessoa = Pessoa.obter_pessoa(usuario[0].username,'Pessoa')
+            titulo = 'GEscolar | Esqueceu a senha'
+            email_gescolar = 'gescolar.contas@gmail.com'
+
+            if pessoa.Tipo_Pessoa == 'D':
+                link = 'http://127.0.0.1:8000/gestaoEscolar/diretor/novaSenha/' + str(pessoa.id)
+                assunto = 'Click no link para trocar sua senha: ' +link
+            else:
+                senha = pessoa.Cpf
+                assunto = 'Sua senha é: ' +senha
+
+            try:
+                send_mail(
+                    titulo,
+                    assunto,
+                    email_gescolar,
+                    [email],
+                    fail_silently=False,
+                )
+                enviado = True
+                msg = 'E-mail enviado com sucesso'
+            except Exception as excp:
+                enviado = False
+                msg = 'Não foi possível enviar o email.'
+                print(excp)
+
+        else:
+            enviado = False
+            msg = 'Não há nenhuma conta com esse email.'
+        context = {'enviado': enviado, 'msg':msg}
+        return render(request,'gestaoEscolar/autenticacao/esqueceu.html',context)
+
+
+
