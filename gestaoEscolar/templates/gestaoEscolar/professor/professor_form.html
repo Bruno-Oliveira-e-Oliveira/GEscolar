@@ -1,4 +1,5 @@
 {% extends 'projeto/base/base.html' %}
+{% load filters %}
 
 {% block title %}
     {% if Tipo_Transacao == 'INS' %}
@@ -64,7 +65,7 @@
 
                 <div>
                     <label for="id_Data_Nascimento">Data de Nascimento:</label> 
-                    <input type="date" name="Data_Nascimento" required id="id_Data_Nascimento" value='{{ professor_dados.Data_Nascimento|date:"Y-m-d" }}'>
+                    <input type="date" name="Data_Nascimento" required id="id_Data_Nascimento" value='{{ professor_dados.Data_Nascimento|data_retorno }}'>
                 </div>
 
                 <div>
@@ -186,7 +187,7 @@
 
                 <div>
                     <label for="id_Data_Nascimento">Data de Nascimento:</label> 
-                    <input type="date" name="Data_Nascimento" disabled required id="id_Data_Nascimento" value='{{ professor_dados.Data_Nascimento|date:"Y-m-d" }}'>
+                    <input type="date" name="Data_Nascimento" disabled required id="id_Data_Nascimento" value='{{ professor_dados.Data_Nascimento|data_retorno }}'>
                 </div>
 
                 <div>

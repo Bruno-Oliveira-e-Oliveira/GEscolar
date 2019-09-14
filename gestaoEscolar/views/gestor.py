@@ -168,6 +168,7 @@ def diretor_alterar(request,id):
             'Endereco': gestor_obj.Endereco.id,
             'Tipo_Pessoa': gestor_obj.Tipo_Pessoa,
             'Telefone': gestor_obj.Telefone.id,
+            'Escola': gestor_obj.Escola.id
         }
         endereco_dados = {
             'Rua': dados['Rua'], 

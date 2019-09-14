@@ -47,12 +47,12 @@
             <fieldset>
                 <div>
                     <label for="id_Nome">Nome:</label>
-                    <input type="text" name="Nome" maxlength="20" size="20" required id="id_Nome" value='{{ avaliacao_dados.Nome }}'>
+                    <input type="text" name="Nome" maxlength="20"  required id="id_Nome" value='{{ avaliacao_dados.Nome }}'>
                 </div>
 
                 <div>
                     <label for="id_Data">Data:</label> 
-                    <input type="date" name="Data" required id="id_Data" value='{{ avaliacao_dados.Data|date:"Y-m-d" }}'>
+                    <input type="date" name="Data" required id="id_Data" value='{{ avaliacao_dados.Data|data_retorno }}'>
                 </div>
 
                 <div>
@@ -96,7 +96,7 @@
 
                 <div>
                     <label for="id_Turma">Turma:</label>
-                    <input type="text" name="Turma" maxlength="20" size="20" disabled id="id_Turma" value='{{ turma.nome_editado }}'>
+                    <input type="text" name="Turma" maxlength="20"  disabled id="id_Turma" value='{{ turma.nome_editado }}'>
                 </div>
 
             </fieldset>
@@ -105,12 +105,12 @@
             <fieldset>
                 <div>
                     <label for="id_Nome">Nome:</label>
-                    <input type="text" name="Nome" maxlength="20" size="20" disabled id="id_Nome" value='{{ avaliacao_dados.Nome }}'>
+                    <input type="text" name="Nome" maxlength="20"  disabled id="id_Nome" value='{{ avaliacao_dados.Nome }}'>
                 </div>
 
                 <div>
                     <label for="id_Data">Data:</label> 
-                    <input type="date" name="Data" disabled id="id_Data" value='{{ avaliacao_dados.Data|date:"Y-m-d" }}'>
+                    <input type="date" name="Data" disabled id="id_Data" value='{{ avaliacao_dados.Data|data_retorno }}'>
                 </div>
 
                 <div>
@@ -135,7 +135,7 @@
 
                 <div>
                     <label for="id_Turma">Turma:</label>
-                    <input type="text" name="Turma" maxlength="20" size="20" disabled id="id_Turma" value='{{ turma.nome_editado }}'>
+                    <input type="text" name="Turma" maxlength="20"  disabled id="id_Turma" value='{{ turma.nome_editado }}'>
                 </div>
 
             </fieldset>

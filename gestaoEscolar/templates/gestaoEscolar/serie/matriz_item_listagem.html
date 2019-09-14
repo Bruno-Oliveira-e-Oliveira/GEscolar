@@ -27,21 +27,12 @@
         </thead>
         <tbody>
             {% for matriz_item in matriz_itens %}
-                {% if matriz_itens is not None %}
-                    <tr>
-                        <th><a href="{% url 'matriz_item_alterar' idS=serie.id idM=matriz_item.id %}">X</a></th>
-                        <th><a href="{% url 'matriz_item_deletar' idS=serie.id idM=matriz_item.id %}">X</a></th>
-                        <th><a href="{% url 'matriz_item_consultar' idS=serie.id idM=matriz_item.id %}">{{ matriz_item.Disciplina.Nome }}</a></th>
-                        <th>{{ matriz_item.Carga }}</th>
-                    </tr>
-                {% else %}
-                    <tr>
-                        <th>X</th>
-                        <th>X</th>
-                        <th></th>
-                        <th></th>
-                    </tr>
-                {% endif %}
+                <tr>
+                    <td><a href="{% url 'matriz_item_alterar' idS=serie.id idM=matriz_item.id %}">X</a></td>
+                    <td><a href="{% url 'matriz_item_deletar' idS=serie.id idM=matriz_item.id %}">X</a></td>
+                    <td><a href="{% url 'matriz_item_consultar' idS=serie.id idM=matriz_item.id %}">{{ matriz_item.Disciplina.Nome }}</a></td>
+                    <td>{{ matriz_item.Carga }}</td>
+                </tr>
             {% endfor %}
         </tbody>
     </table>

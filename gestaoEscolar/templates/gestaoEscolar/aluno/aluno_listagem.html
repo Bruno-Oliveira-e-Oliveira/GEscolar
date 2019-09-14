@@ -61,52 +61,38 @@
         </thead>
         <tbody>
             {% for aluno in alunos %}
-                {% if alunos is not None %}
-                    <tr>
-                        <th><a href="{% url 'aluno_alterar' aluno.id %}">X</a></th>
-                        <th><a href="{% url 'aluno_deletar' aluno.id %}">X</a></th>
-                        <th><a href="{% url 'aluno_consultar' aluno.id %}">{{ aluno.Nome }}</a></th>
-                        <th>{{ aluno.Sexo }}</th>
-                        <th>{{ aluno.Cpf }}</th>
-                        <th>{{ aluno.Rg }}</th>
-                        <th>{{ aluno.Ra }}</th>
-                        {% for matricula in matriculas %}
-                            {% if matricula.Aluno.id == aluno.id %}
-                                <th>{{ matricula.Rm }}</th>
-                                {% if matricula.Situacao == 'matriculado' %}
-                                    <th>Matriculado</th>
-                                {% elif matricula.Situacao == 'concluido' %}
-                                    <th>Concluído</th>
-                                {% elif matricula.Situacao == 'transferido' %}
-                                    <th>Transferido</th>
-                                {% elif matricula.Situacao == 'trancado' %}
-                                    <th>Trancado</th>
-                                {% endif %} 
-                            {% endif %}
-                        {% endfor %}    
-                        {% if aluno.Usuario.is_active %}
-                            <th>Ativo</th>
-                        {% else %}
-                            <th>Inativo</th>
+                
+                <tr>
+                    <td><a href="{% url 'aluno_alterar' aluno.id %}">X</a></td>
+                    <td><a href="{% url 'aluno_deletar' aluno.id %}">X</a></td>
+                    <td><a href="{% url 'aluno_consultar' aluno.id %}">{{ aluno.Nome }}</a></td>
+                    <td>{{ aluno.Sexo }}</td>
+                    <td>{{ aluno.Cpf }}</td>
+                    <td>{{ aluno.Rg }}</td>
+                    <td>{{ aluno.Ra }}</td>
+                    {% for matricula in matriculas %}
+                        {% if matricula.Aluno.id == aluno.id %}
+                            <td>{{ matricula.Rm }}</td>
+                            {% if matricula.Situacao == 'matriculado' %}
+                                <td>Matriculado</td>
+                            {% elif matricula.Situacao == 'concluido' %}
+                                <td>Concluído</td>
+                            {% elif matricula.Situacao == 'transferido' %}
+                                <td>Transferido</td>
+                            {% elif matricula.Situacao == 'trancado' %}
+                                <td>Trancado</td>
+                            {% endif %} 
                         {% endif %}
-                        <th>{{ aluno.Usuario.email }}</th>
-                        
-                    </tr>
-                {% else %}
-                    <tr>
-                        <th>X</th>
-                        <th>X</th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                    </tr>
-                {% endif %}
+                    {% endfor %}    
+                    {% if aluno.Usuario.is_active %}
+                        <td>Ativo</td>
+                    {% else %}
+                        <td>Inativo</td>
+                    {% endif %}
+                    <td>{{ aluno.Usuario.email }}</td>
+                    
+                </tr>
+                
             {% endfor %}
         </tbody>
     </table>

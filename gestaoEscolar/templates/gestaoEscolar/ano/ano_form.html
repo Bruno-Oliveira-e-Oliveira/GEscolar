@@ -1,4 +1,5 @@
 {% extends 'projeto/base/base.html' %}
+{% load filters %}
 
 {% block title %}
     {% if Tipo_Transacao == 'INS' %}
@@ -72,12 +73,12 @@
 
                     <div>
                         <label for="id_Data_Inicio">Data Inicial:</label> 
-                        <input type="date" name="Data_Inicio" required id="id_Data_Inicio" value='{{ ano_dados.Data_Inicio|date:"Y-m-d" }}'>
+                        <input type="date" name="Data_Inicio" required id="id_Data_Inicio" value='{{ ano_dados.Data_Inicio|data_retorno }}'>
                     </div>
     
                     <div>
                         <label for="id_Data_Fim">Data Final:</label> 
-                        <input type="date" name="Data_Fim" required id="id_Data_Fim" value='{{ ano_dados.Data_Fim|date:"Y-m-d" }}'>
+                        <input type="date" name="Data_Fim" required id="id_Data_Fim" value='{{ ano_dados.Data_Fim|data_retorno }}'>
                     </div>
                 {% else %}
                     <div>
@@ -96,12 +97,12 @@
 
                     <div>
                         <label for="id_Data_Inicio">Data Inicial:</label> 
-                        <input type="date" name="Data_Inicio" disabled id="id_Data_Inicio" value='{{ ano_dados.Data_Inicio|date:"Y-m-d" }}'>
+                        <input type="date" name="Data_Inicio" disabled id="id_Data_Inicio" value='{{ ano_dados.Data_Inicio|data_retorno }}'>
                     </div>
     
                     <div>
                         <label for="id_Data_Fim">Data Final:</label> 
-                        <input type="date" name="Data_Fim" disabled id="id_Data_Fim" value='{{ ano_dados.Data_Fim|date:"Y-m-d" }}'>
+                        <input type="date" name="Data_Fim" disabled id="id_Data_Fim" value='{{ ano_dados.Data_Fim|data_retorno }}'>
                     </div>
                 {% endif %}
 
@@ -130,12 +131,12 @@
             
                 <div>
                     <label for="id_Data_Inicio">Data Inicial:</label> 
-                    <input type="date" name="Data_Inicio" disabled  id="id_Data_Inicio" value='{{ ano_dados.Data_Inicio|date:"Y-m-d" }}'>
+                    <input type="date" name="Data_Inicio" disabled  id="id_Data_Inicio" value='{{ ano_dados.Data_Inicio|data_retorno}}'>
                 </div>
 
                 <div>
                     <label for="id_Data_Fim">Data Final:</label> 
-                    <input type="date" name="Data_Fim" disabled  id="id_Data_Fim" value='{{ ano_dados.Data_Fim|date:"Y-m-d" }}'>
+                    <input type="date" name="Data_Fim" disabled  id="id_Data_Fim" value='{{ ano_dados.Data_Fim|data_retorno}}'>
                 </div>
             </fieldset>
 

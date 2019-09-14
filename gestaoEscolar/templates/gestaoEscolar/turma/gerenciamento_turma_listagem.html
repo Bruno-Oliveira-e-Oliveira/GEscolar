@@ -30,25 +30,25 @@
             {% for matricula in matriculas %}
                     <tr>
                         {% if turma.AnoLetivo.Situacao == 'A' %}
-                            <th><a href="{% url 'matricula_turma_alterar' idT matricula.id %}">X</a></th>
-                            <th><a href="{% url 'matricula_turma_deletar' idT matricula.id %}">X</a></th>
+                            <td><a href="{% url 'matricula_turma_alterar' idT matricula.id %}">X</a></td>
+                            <td><a href="{% url 'matricula_turma_deletar' idT matricula.id %}">X</a></td>
                         {% else %}
-                            <th>X</th>
-                            <th>X</th>
+                            <td>X</td>
+                            <td>X</td>
                         {% endif %}
-                        <th><a href="{% url 'matricula_turma_consultar' idT matricula.id %}">{{ matricula.Aluno.Nome }}</a></th>
+                        <td><a href="{% url 'matricula_turma_consultar' idT matricula.id %}">{{ matricula.Aluno.Nome }}</a></td>
                         {% if matricula.Situacao == 'cursando' %}
-                            <th>Cursando</th>
+                            <td>Cursando</td>
                         {% elif matricula.Situacao == 'aprovado' %}
-                            <th>Aprovado</th>
+                            <td>Aprovado</td>
                         {% elif matricula.Situacao == 'transferido' %}
-                            <th>Transferido</th>
+                            <td>Transferido</td>
                         {% elif matricula.Situacao == 'trancado' %}
-                            <th>Trancado</th>
+                            <td>Trancado</td>
                         {% elif matricula.Situacao == 'reprovado' %}
-                            <th>Reprovado</th>
+                            <td>Reprovado</td>
                         {% endif %}
-                        <th><a href="{% url 'relatorio_notas_frequencias' matricula.Turma.id matricula.id %}">X</a></th>
+                        <td><a href="{% url 'relatorio_notas_frequencias' matricula.Turma.id matricula.id %}">X</a></td>
                     
                     </tr>
             {% endfor %}

@@ -8,10 +8,12 @@ from datetime import datetime
 from gestaoEscolar.forms import *
 from gestaoEscolar.models import *
 from .permissoes import checarPermEscola, checarPermObj
+from .login import salvar_escola_pessoa_sessao
 
 
 @login_required
 def turma_listagem(request):
+    request = salvar_escola_pessoa_sessao(request)
     checarPermObj('gestaoEscolar.view_turma', request.user)
     escola = Escola.objects.get(id=request.session['Escola'])
     anos = AnoLetivo.objects.filter(Escola=escola.id).order_by('Ano') 

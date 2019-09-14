@@ -63,22 +63,22 @@
             {% for aula in aulas %}
                 <tr>   
                     {% if turma.AnoLetivo.Situacao == 'A' %}
-                        <th><a href="{% url 'aula_alterar' turma.id aula.id %}">X</a></th>
-                        <th><a href="{% url 'aula_deletar' turma.id aula.id %}">X</a></th>
+                        <td><a href="{% url 'aula_alterar' turma.id aula.id %}">X</a></td>
+                        <td><a href="{% url 'aula_deletar' turma.id aula.id %}">X</a></td>
                     {% else %}
-                        <th>X</th>
-                        <th>X</th>
+                        <td>X</td>
+                        <td>X</td>
                     {% endif %}
-                    <th><a href="{% url 'aula_consultar' turma.id aula.id %}">{{ aula.Data }}</a></th>
-                    <th>{{ aula.Tema }}</th>
-                    <th>{{ aula.Leciona.Matriz_Item.Disciplina.Nome }}</th>
-                    <th>{{ aula.Leciona.Professor.Nome }}</th>
-                    <th>{{ aula.Turma.nome_editado }}</th>
-                    <th>{{ aula.Bimestre.Bimestre }} - {{ aula.Bimestre.AnoLetivo }}</th>
+                    <td><a href="{% url 'aula_consultar' turma.id aula.id %}">{{ aula.Data }}</a></td>
+                    <td>{{ aula.Tema }}</td>
+                    <td>{{ aula.Leciona.Matriz_Item.Disciplina.Nome }}</td>
+                    <td>{{ aula.Leciona.Professor.Nome }}</td>
+                    <td>{{ aula.Turma.nome_editado }}</td>
+                    <td>{{ aula.Bimestre.Bimestre }} - {{ aula.Bimestre.AnoLetivo }}</td>
                     {% if turma.AnoLetivo.Situacao == 'A' %}
-                        <th><a href="{% url 'lista_chamada' turma.id aula.id %}">X</a></th> 
+                        <td><a href="{% url 'lista_chamada' turma.id aula.id %}">X</a></td> 
                     {% else %}
-                        <th>X</th>
+                        <td>X</td>
                     {% endif %}
                     
                 </tr>

@@ -18,36 +18,26 @@
         </thead>
         <tbody>
             {% for disciplina in disciplinas %}
+                {% for leciona in lecionas %}
 
-                {% if disciplinas is not None %}
-                    {% for leciona in lecionas %}
+                    {% if lecionas is not None and disciplina.id == leciona.Matriz_Item.Disciplina.id %}
+                        <tr>
+                            {% if turma.AnoLetivo.Situacao == 'A' %}
+                                <td><a href="{% url 'leciona_alterar' turma.id leciona.id %}">X</a></td>
+                            {% else %}
+                                <td>X</td>
+                            {% endif %}
+                            <td><a href="{% url 'leciona_consultar' turma.id leciona.id %}">{{ leciona.Matriz_Item.Disciplina.Nome }}</a></td>
+                            <td>{{ leciona.Professor.Nome }}</td>
+                            {% if leciona.Aulas_Previstas is not None %}
+                                <td>{{ leciona.Aulas_Previstas }}</td>
+                            {% else %}
+                                <td></td>
+                            {% endif %}
+                        </tr>
+                    {% endif %}
 
-                        {% if lecionas is not None and disciplina.id == leciona.Matriz_Item.Disciplina.id %}
-                            <tr>
-                                {% if turma.AnoLetivo.Situacao == 'A' %}
-                                    <th><a href="{% url 'leciona_alterar' turma.id leciona.id %}">X</a></th>
-                                {% else %}
-                                    <th>X</th>
-                                {% endif %}
-                                <th><a href="{% url 'leciona_consultar' turma.id leciona.id %}">{{ leciona.Matriz_Item.Disciplina.Nome }}</a></th>
-                                <th>{{ leciona.Professor.Nome }}</th>
-                                {% if leciona.Aulas_Previstas is not None %}
-                                    <th>{{ leciona.Aulas_Previstas }}</th>
-                                {% else %}
-                                    <th></th>
-                                {% endif %}
-                            </tr>
-                        {% endif %}
-
-                    {% endfor %}
-                {% else %}
-                    <tr>
-                        <th>X</th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                    </tr>
-                {% endif %}
+                {% endfor %}
 
             {% endfor %}
         </tbody>

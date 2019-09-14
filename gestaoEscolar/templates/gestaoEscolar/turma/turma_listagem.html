@@ -68,30 +68,29 @@
         </thead>
         <tbody>
             {% for turma in turmas %}
-                {% if turmas is not None %}
-                    <tr>
-                        {% if turma.AnoLetivo.Situacao == 'A' %}
-                            <th><a href="{% url 'turma_alterar' turma.id %}">X</a></th>
-                            <th><a href="{% url 'turma_deletar' turma.id %}">X</a></th>
-                        {% else %}
-                            <th>X</th>
-                            <th>X</th>
-                        {% endif %}
-                        <th><a href="{% url 'turma_consultar' turma.id %}">{{ turma.Serie.Numero }}-{{ turma.Nome }}</a></th>
-                        {% if turma.Periodo == 'M' %}
-                            <th>Manhã</th>
-                        {% else %}
-                            <th>Tarde</th>
-                        {% endif %}
-                        {% if turma.Serie.Nivel_Escolaridade == 'F' %}
-                            <th>Ensino Fundamental</th>
-                        {% else %}
-                            <th>Ensino Médio</th>
-                        {% endif %}
-                        <th>{{ turma.AnoLetivo.Ano }}</th>
-                        <th><a href="{% url 'gerenciamento_turma_listagem' turma.id %}">X</a></th>
-                    </tr>
-                {% endif %}
+                <tr>
+                    {% if turma.AnoLetivo.Situacao == 'A' %}
+                        <td><a href="{% url 'turma_alterar' turma.id %}">X</a></td>
+                        <td><a href="{% url 'turma_deletar' turma.id %}">X</a></td>
+                    {% else %}
+                        <td>X</td>
+                        <td>X</td>
+                    {% endif %}
+                    <td><a href="{% url 'turma_consultar' turma.id %}">{{ turma.Serie.Numero }}-{{ turma.Nome }}</a></td>
+                    {% if turma.Periodo == 'M' %}
+                        <td>Manhã</td>
+                    {% else %}
+                        <td>Tarde</td>
+                    {% endif %}
+                    {% if turma.Serie.Nivel_Escolaridade == 'F' %}
+                        <td>Ensino Fundamental</td>
+                    {% else %}
+                        <td>Ensino Médio</td>
+                    {% endif %}
+                    <td>{{ turma.AnoLetivo.Ano }}</td>
+                    <td><a href="{% url 'gerenciamento_turma_listagem' turma.id %}">X</a></td>
+                </tr>
+                
             {% endfor %}
         </tbody>
     </table>

@@ -57,43 +57,30 @@
         </thead>
         <tbody>
             {% for professor in professores %}
-                {% if professores is not None %}
-                    <tr>
-                        <th><a href="{% url 'professor_alterar' professor.id %}">X</a></th>
-                        <th><a href="{% url 'professor_deletar' professor.id %}">X</a></th>
-                        <th><a href="{% url 'professor_consultar' professor.id %}">{{ professor.Nome }}</a></th>
-                        <th>{{ professor.Sexo }}</th>
-                        <th>{{ professor.Cpf }}</th>
-                        <th>{{ professor.Rg }}</th>
-                        <th>{{ professor.Usuario.email }}</th>
-                        
-                        {% if professor.Titulo == 'E' %}
-                            <th>Especialista</th>
-                        {% elif professor.Titulo == 'M' %}
-                            <th>Mestre</th>
-                        {% elif professor.Titulo == 'D' %}
-                            <th>Doutor</th>
-                        {% endif %}
+                <tr>
+                    <td><a href="{% url 'professor_alterar' professor.id %}">X</a></td>
+                    <td><a href="{% url 'professor_deletar' professor.id %}">X</a></td>
+                    <td><a href="{% url 'professor_consultar' professor.id %}">{{ professor.Nome }}</a></td>
+                    <td>{{ professor.Sexo }}</td>
+                    <td>{{ professor.Cpf }}</td>
+                    <td>{{ professor.Rg }}</td>
+                    <td>{{ professor.Usuario.email }}</td>
+                    
+                    {% if professor.Titulo == 'E' %}
+                        <td>Especialista</td>
+                    {% elif professor.Titulo == 'M' %}
+                        <td>Mestre</td>
+                    {% elif professor.Titulo == 'D' %}
+                        <td>Doutor</td>
+                    {% endif %}
 
-                        {% if professor.Usuario.is_active %}
-                            <th>Ativo</th>
-                        {% else %}
-                            <th>Inativo</th>
-                        {% endif %}
-                        
-                    </tr>
-                {% else %}
-                    <tr>
-                        <th>X</th>
-                        <th>X</th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                    </tr>
-                {% endif %}
+                    {% if professor.Usuario.is_active %}
+                        <td>Ativo</td>
+                    {% else %}
+                        <td>Inativo</td>
+                    {% endif %}
+                    
+                </tr>
             {% endfor %}
         </tbody>
     </table>

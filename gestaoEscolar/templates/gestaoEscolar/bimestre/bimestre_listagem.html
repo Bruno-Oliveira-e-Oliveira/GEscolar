@@ -23,47 +23,33 @@
         </thead>
         <tbody>
             {% for bimestre in bimestres %}
-                {% if bimestres is not None %}
-                    <tr>
-                        {% if bimestre.Situacao == 'A' %}
-                            <td><a href="{% url 'bimestre_alterar' idA bimestre.id %}">X</a></td>
-                            <td><a href="{% url 'bimestre_deletar' idA bimestre.id %}">X</a></td>
-                        {% else  %}
-                            <td>X</td>
-                            <td>X</td>
-                        {% endif  %}
-                        <td><a href="{% url 'bimestre_consultar' idA bimestre.id %}">{{ bimestre.Bimestre }} - {{ bimestre.AnoLetivo }}</a></td>
-                        {% if bimestre.Situacao == 'A' %}
-                            <td>Aberto</td>
-                        {% else  %}
-                            <td>Fechado</td>
-                        {% endif  %}
-
-                        {% if bimestre.Data_Inicio  %}
-                            <td>{{ bimestre.Data_Inicio }}</td>
-                        {% else  %}
-                            <td></td>
-                        {% endif  %}
-
-                        {% if bimestre.Data_Fim  %}
-                            <td>{{ bimestre.Data_Fim }}</td>
-                        {% else  %}
-                            <td></td>
-                        {% endif  %}
-                        
-
-                        
-                    </tr>
-                {% else %}
-                    <tr>
+                <tr>
+                    {% if bimestre.Situacao == 'A' %}
+                        <td><a href="{% url 'bimestre_alterar' idA bimestre.id %}">X</a></td>
+                        <td><a href="{% url 'bimestre_deletar' idA bimestre.id %}">X</a></td>
+                    {% else  %}
                         <td>X</td>
                         <td>X</td>
+                    {% endif  %}
+                    <td><a href="{% url 'bimestre_consultar' idA bimestre.id %}">{{ bimestre.Bimestre }} - {{ bimestre.AnoLetivo }}</a></td>
+                    {% if bimestre.Situacao == 'A' %}
+                        <td>Aberto</td>
+                    {% else  %}
+                        <td>Fechado</td>
+                    {% endif  %}
+
+                    {% if bimestre.Data_Inicio  %}
+                        <td>{{ bimestre.Data_Inicio }}</td>
+                    {% else  %}
                         <td></td>
+                    {% endif  %}
+
+                    {% if bimestre.Data_Fim  %}
+                        <td>{{ bimestre.Data_Fim }}</td>
+                    {% else  %}
                         <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                {% endif %}
+                    {% endif  %}
+                </tr>
             {% endfor %}
         </tbody>
     </table>

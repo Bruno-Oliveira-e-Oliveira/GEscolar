@@ -43,36 +43,26 @@
         </thead>
         <tbody>
             {% for ano in anos %}
-                {% if anos is not None %}
-                    <tr>
-                        {% if ano.Situacao == 'A' %}
-                            <td><a href="{% url 'ano_alterar' ano.id %}">X</a></td>
-                            <td><a href="{% url 'ano_deletar' ano.id %}">X</a></td>
-                        {% else  %}
-                            <td>X</td>
-                            <td>X</td>
-                        {% endif  %}
-                        <td><a href="{% url 'ano_consultar' ano.id %}">{{ ano.Ano }}</a></td>
-                        {% if ano.Situacao == 'A' %}
-                            <td>Aberto</td>
-                        {% else  %}
-                            <td>Fechado</td>
-                        {% endif  %}
-                        <td>{{ ano.Data_Inicio }}</td>
-                        <td>{{ ano.Data_Fim }}</td>
-                        <td><a href="{% url 'bimestre_listagem' ano.id %}">X</a></td>
-                    </tr>
-                {% else %}
-                    <tr>
+                
+                <tr>
+                    {% if ano.Situacao == 'A' %}
+                        <td><a href="{% url 'ano_alterar' ano.id %}">X</a></td>
+                        <td><a href="{% url 'ano_deletar' ano.id %}">X</a></td>
+                    {% else  %}
                         <td>X</td>
                         <td>X</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td>X</td>
-                    </tr>
-                {% endif %}
+                    {% endif  %}
+                    <td><a href="{% url 'ano_consultar' ano.id %}">{{ ano.Ano }}</a></td>
+                    {% if ano.Situacao == 'A' %}
+                        <td>Aberto</td>
+                    {% else  %}
+                        <td>Fechado</td>
+                    {% endif  %}
+                    <td>{{ ano.Data_Inicio }}</td>
+                    <td>{{ ano.Data_Fim }}</td>
+                    <td><a href="{% url 'bimestre_listagem' ano.id %}">X</a></td>
+                </tr>
+                
             {% endfor %}
         </tbody>
     </table>

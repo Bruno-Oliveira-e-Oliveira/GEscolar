@@ -42,7 +42,7 @@
             <fieldset>
                 <div>
                     <label for="id_Aulas_Previstas">Aulas previstas:</label>
-                    <input type="number" name="Aulas_Previstas" min="0" required id="id_Aulas_Previstas" value='{{ leciona_dados.Aulas_Previstas }}'>
+                    <input type="number" name="Aulas_Previstas" min="0" max="65535" required id="id_Aulas_Previstas" value='{{ leciona_dados.Aulas_Previstas }}'>
                 </div>
 
                 <div>
@@ -82,7 +82,7 @@
             <fieldset>
                 <div>
                     <label for="id_Aulas_Previstas">Aulas_Previstas:</label>
-                    <input type="number" name="Aulas_Previstas" min="0" disabled id="id_Aulas_Previstas" value='{{ leciona_dados.Aulas_Previstas }}'>
+                    <input type="number" name="Aulas_Previstas" min="0" max="65535" disabled id="id_Aulas_Previstas" value='{{ leciona_dados.Aulas_Previstas }}'>
                 </div>
 
                 <div>
