@@ -9,6 +9,11 @@
     {% endif %}
 {% endblock  %}
 
+{% block cabecalho %}
+    {% if Tipo_Transacao != 'INS' %}
+        {% include "projeto/base/menu.html" %}    
+    {% endif %}
+{% endblock  %}
 
 {% block main %}
 
@@ -41,7 +46,11 @@
                 <label for="id_Sexo">Sexo:</label> 
                 <select name="Sexo" id="id_Sexo">
                     {% for tipo in Tipo_Sexo %}
-                        <option value="{{ tipo.0 }}" >{{ tipo.1 }}</option>
+                        {% if gestor_dados.Sexo == tipo.0 %}
+                            <option value="{{ tipo.0 }}" selected>{{ tipo.1 }}</option>
+                        {% else %}
+                            <option value="{{ tipo.0 }}" >{{ tipo.1 }}</option>
+                        {% endif %}
                     {% endfor %}
                 </select>
             </div>
@@ -108,10 +117,15 @@
                 <label for="id_Zona">Zona:</label>
                 <select name="Zona" id="id_Zona">
                     {% for zona in zonas %}
-                        <option value="{{ zona.0 }}" >{{ zona.1 }}</option>
+                        {% if endereco_dados.Zona == zona.0 %}
+                            <option value="{{ zona.0 }}" selected>{{ zona.1 }}</option>
+                        {% else %}
+                            <option value="{{ zona.0 }}" >{{ zona.1 }}</option>
+                        {% endif %}
                     {% endfor %}
                 </select>
             </div>
+
         </fieldset>
 
         <fieldset>
@@ -146,7 +160,14 @@
         </fieldset>
 
         <button type="submit">Salvar</button>
+        <a href="{% url 'gestao_escolar_inicio' %}"> Voltar</a>
         
     </form>
 
 {% endblock  %}
+
+{% block rodape %}
+    {% if Tipo_Transacao != 'INS' %}
+        {% include "projeto/base/rodape.html" %}    
+    {% endif %} 
+{% endblock %}

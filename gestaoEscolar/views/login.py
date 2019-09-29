@@ -49,6 +49,8 @@ def logout(request):
 def salvar_escola_pessoa_sessao(request):
     pessoa = Pessoa.obter_pessoa(request.user.username,'Pessoa')
     request.session['Pessoa'] = pessoa.id
+    request.session['Tipo_Pessoa'] = pessoa.Tipo_Pessoa
+    
     if pessoa.Escola is not None:
         request.session['Escola'] = pessoa.Escola.id
     else:

@@ -1,9 +1,11 @@
 {% extends 'projeto/base/base.html' %}
 
 {% block title %}Login de Usuário{% endblock  %}
-
+{% block cabecalho %}{% endblock  %}
 
 {% block main %}
     <h3>Fim da Sessão</h3>
     <a href="{% url 'login' %}"> Voltar</a>
 {% endblock  %}
+
+{% block rodape %}{% endblock %}
