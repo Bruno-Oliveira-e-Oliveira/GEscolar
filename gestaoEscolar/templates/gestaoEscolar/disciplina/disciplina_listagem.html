@@ -1,30 +1,32 @@
 {% extends 'projeto/base/base.html' %}
-
+{% load static %}
 {% block title %}Listagem de Disciplinas | GEscolar{% endblock  %}
 
 
 {% block main %}
 
-    <h2>Listagem de Disciplinas</h2> 
-    
-    <table>
-        <thead>
-            <tr>
-                <th>Alt</th>
-                <th>Exc</Th>
-                <th>Nome</th>
-            </tr>
-            <a href="{% url 'disciplina_novo' %}">Novo</a>
-        </thead>
-        <tbody>
-            {% for disciplina in disciplinas %}
+    <h2><b>Listagem de Disciplinas</b></h2> 
+    <br>
+
+    <div class="table-responsive-lg">
+        <table class="table table-bordered table-hover">
+            <thead>
                 <tr>
-                    <td><a href="{% url 'disciplina_alterar' disciplina.id %}">X</a></td>
-                    <td><a href="{% url 'disciplina_deletar' disciplina.id %}">X</a></td>
-                    <td><a href="{% url 'disciplina_consultar' disciplina.id %}">{{ disciplina.Nome }}</a></td>
+                    <th class="text-center"><a href="{% url 'disciplina_novo' %}"><img src="{% static 'img/new.png' %}" alt="Ícone de cadastro"></a></th>
+                    <th></th>
+                    <th>Nome</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for disciplina in disciplinas %}
+                    <tr>
+                        <td class="text-center"><a href="{% url 'disciplina_alterar' disciplina.id %}"><img src="{% static 'img/update.png' %}" alt="Ícone de alteração"></a></td>
+                        <td class="text-center"><a href="{% url 'disciplina_deletar' disciplina.id %}"><img src="{% static 'img/delete.png' %}" alt="Ícone de exclusão"></a></td>
+                        <td><a href="{% url 'disciplina_consultar' disciplina.id %}" class="text-secondary">{{ disciplina.Nome }}</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
 {% endblock  %}

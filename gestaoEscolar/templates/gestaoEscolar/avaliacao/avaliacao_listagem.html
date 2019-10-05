@@ -5,61 +5,73 @@
 
 {% block main %}
 
-    <h2>Listagem de avaliações</h2>
+    <h2><b>Listagem de avaliações</b></h2> 
+    <br>
 
+    <form class="form">
+        <fieldset class="container-fluid">
+            <div class="row">
+                <div class="mr-5 form-group">
+                    <label for="id_leciona">Disciplina / Professor:</label>
+                    <select name="leciona" id="id_leciona" class="form-control">
+                        {% for item in Filtro_Leciona %}
+                            {% if leciona == item.id %}
+                                <option value="{{ item.id }}" selected>{{ item.nome_editado }}</option>
+                            {% else %}
+                                <option value="{{ item.id }}" >{{ item.nome_editado }}</option>
+                            {% endif %}
+                        {% endfor %}    
+                    </select>
+                </div>
 
-    <form>
-        <fieldset>
-            <div>
-                <label for="id_leciona">Disciplina / Professor:</label>
-                <select name="leciona" id="id_leciona">
-                    {% for item in Filtro_Leciona %}
-                        {% if leciona == item.id %}
-                            <option value="{{ item.id }}" selected>{{ item.nome_editado }}</option>
-                        {% else %}
-                            <option value="{{ item.id }}" >{{ item.nome_editado }}</option>
-                        {% endif %}
-                    {% endfor %}    
-                </select>
+                <div class="form-group mt-auto">
+                    <button type="submit" class="btn btn-info">Pesquisar</button>
+                </div>
             </div>
-
-            <button type="submit">Pesquisar</button>
         </fieldset>
         
     </form>
     
-    <table id="Tabela">
-        <thead>
-            <tr>
-                <th>Alt</th>
-                <th>Exc</Th>
-                <th>Nome</th>
-                <th>Data</th>
-                <th>Professor</th>
-                <th>Disciplina</th>
-            </tr>
-            {% if turma.AnoLetivo.Situacao == 'A' %}
-                <a href="{% url 'avaliacao_novo' turma.id %}">Novo</a>
-            {% endif%}
-            
-        </thead>
-        <tbody id="tbody">
-            {% for avaliacao in avaliacoes %}
-                <tr>   
-                    {% if turma.AnoLetivo.Situacao == 'A' %}
-                        <td><a href="{% url 'avaliacao_alterar' turma.id avaliacao.id %}">X</a></td>
-                        <td><a href="{% url 'avaliacao_deletar' turma.id avaliacao.id %}">X</a></td>
-                    {% else %}
-                        <td>X</td>
-                        <td>X</td>
-                    {% endif %}
-                    <td><a href="{% url 'avaliacao_consultar' turma.id avaliacao.id %}">{{ avaliacao.Nome }} </a></td>
-                    <td> {{ avaliacao.Data }} </td>
-                    <td>{{ avaliacao.Leciona.Professor.Nome }}</td>
-                    <td>{{ avaliacao.Leciona.Matriz_Item.Disciplina.Nome }}</td>
+    <div class="table-responsive-lg"> 
+        <table id="Tabela" class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th class="text-center">
+                        {% if turma.AnoLetivo.Situacao == 'A' %}
+                            <a href="{% url 'avaliacao_novo' turma.id %}">
+                                <img src="{% static 'img/new.png' %}" alt="Ícone de cadastro">
+                            </a>
+                        {% endif%}
+                    </th>
+                    <th></th>
+                    <th>Nome</th>
+                    <th>Data</th>
+                    <th>Professor</th>
+                    <th>Disciplina</th>
                 </tr>
-            {% endfor %}           
-        </tbody>
-    </table>
-    <a href="{% url 'gerenciamento_turma_listagem' turma.id %}">Voltar</a>
+                
+            </thead>
+            <tbody id="tbody">
+                {% for avaliacao in avaliacoes %}
+                    <tr>   
+                        {% if turma.AnoLetivo.Situacao == 'A' %}
+                            <td class="text-center"><a href="{% url 'avaliacao_alterar' turma.id avaliacao.id %}"><img src="{% static 'img/update.png' %}" alt="Ícone de alteração"></a></td>
+                            <td class="text-center"><a href="{% url 'avaliacao_deletar' turma.id avaliacao.id %}"><img src="{% static 'img/delete.png' %}" alt="Ícone de exclusão"></a></td>
+                        {% else %}
+                            <td class="text-center" ><img src="{% static 'img/update_disabled.png' %}" alt="Ícone de alteração desabilitado"></td>
+                            <td class="text-center" ><img src="{% static 'img/delete_disabled.png' %}" alt="Ícone de exclusão desabilitado"></td>
+                        {% endif %}
+                        <td><a href="{% url 'avaliacao_consultar' turma.id avaliacao.id %}" class="text-secondary">{{ avaliacao.Nome }}</a></td>
+                        <td> {{ avaliacao.Data }} </td>
+                        <td>{{ avaliacao.Leciona.Professor.Nome }}</td>
+                        <td>{{ avaliacao.Leciona.Matriz_Item.Disciplina.Nome }}</td>
+                    </tr>
+                {% endfor %}           
+            </tbody>
+        </table>
+    </div>
+
+    <div class="text-right">
+        <a href="{% url 'gerenciamento_turma_listagem' turma.id %}" class="btn btn-secondary"> Voltar</a> 
+    </div>
 {% endblock  %}

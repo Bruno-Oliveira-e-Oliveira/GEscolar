@@ -1,46 +1,51 @@
 {% extends 'projeto/base/base.html' %}
-
+{% load static %}
 {% block title %}Listagem da tabela de Disciplina x Professor | GEscolar{% endblock  %}
 
 
 {% block main %}
 
-    <h2>Listagem da tabela de Disciplina x Professor</h2> 
-    
-    <table>
-        <thead>
-            <tr>
-                <th>Alt</th>
-                <th>Disciplina</th>
-                <th>Professor</th>
-                <th>Aulas previstas</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for disciplina in disciplinas %}
-                {% for leciona in lecionas %}
+    <h2><b>Listagem da tabela de Disciplina x Professor</b></h2> 
+    <br>
 
-                    {% if lecionas is not None and disciplina.id == leciona.Matriz_Item.Disciplina.id %}
-                        <tr>
-                            {% if turma.AnoLetivo.Situacao == 'A' %}
-                                <td><a href="{% url 'leciona_alterar' turma.id leciona.id %}">X</a></td>
-                            {% else %}
-                                <td>X</td>
-                            {% endif %}
-                            <td><a href="{% url 'leciona_consultar' turma.id leciona.id %}">{{ leciona.Matriz_Item.Disciplina.Nome }}</a></td>
-                            <td>{{ leciona.Professor.Nome }}</td>
-                            {% if leciona.Aulas_Previstas is not None %}
-                                <td>{{ leciona.Aulas_Previstas }}</td>
-                            {% else %}
-                                <td></td>
-                            {% endif %}
-                        </tr>
-                    {% endif %}
+    <div class="table-responsive-lg">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Disciplina</th>
+                    <th>Professor</th>
+                    <th>Aulas previstas</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for disciplina in disciplinas %}
+                    {% for leciona in lecionas %}
+
+                        {% if lecionas is not None and disciplina.id == leciona.Matriz_Item.Disciplina.id %}
+                            <tr>
+                                {% if turma.AnoLetivo.Situacao == 'A' %}
+                                    <td class="text-center"><a href="{% url 'leciona_alterar' turma.id leciona.id %}"><img src="{% static 'img/update.png' %}" alt="Ícone de alteração"></a></td>
+                                {% else %}
+                                    <td class="text-center" ><img src="{% static 'img/update_disabled.png' %}" alt="Ícone de alteração desabilitado"></td>
+                                {% endif %}
+                                <td><a href="{% url 'leciona_consultar' turma.id leciona.id %}" class="text-secondary">{{ leciona.Matriz_Item.Disciplina.Nome }}</a></td>
+                                <td>{{ leciona.Professor.Nome }}</td>
+                                {% if leciona.Aulas_Previstas is not None %}
+                                    <td>{{ leciona.Aulas_Previstas }}</td>
+                                {% else %}
+                                    <td></td>
+                                {% endif %}
+                            </tr>
+                        {% endif %}
+
+                    {% endfor %}
 
                 {% endfor %}
-
-            {% endfor %}
-        </tbody>
-    </table>
-    <a href="{% url 'gerenciamento_turma_listagem' turma.id %}"> Voltar</a>
+            </tbody>
+        </table>
+    </div>
+    <div class="text-right">
+        <a href="{% url 'gerenciamento_turma_listagem' turma.id %}" class="btn btn-secondary"> Voltar</a> 
+    </div>
 {% endblock  %}

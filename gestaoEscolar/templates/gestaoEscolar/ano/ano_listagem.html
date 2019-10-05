@@ -1,70 +1,76 @@
 {% extends 'projeto/base/base.html' %}
-
+{% load static %}
 {% block title %}Listagem de Anos Letivos | GEscolar{% endblock  %}
 
 
 {% block main %}
 
-    <h2>Listagem de Anos Letivos</h2> 
+    <h2><b>Listagem de Anos Letivos</b></h2> 
+    <br>
 
-    <form>
-        <fieldset>
-            <div>
-                <label for="id_situacao">Situação:</label>
-                <select name="situacao" id="id_situacao">
-                    {% for item in Filtro_Situacao %}
-                        {% if situacao == item.0 %}
-                            <option value="{{ item.0 }}" selected>{{ item.1 }}</option>
-                        {% else %}
-                            <option value="{{ item.0 }}" >{{ item.1 }}</option>
-                        {% endif %}
-                    {% endfor %}    
-                    
-                </select>
-                
+    <form class="form">
+        <fieldset class="container-fluid">
+            <div class="row">
+                <div class="mr-5 form-group">
+                    <label for="id_situacao">Situação:</label>
+                    <select name="situacao" id="id_situacao" class="form-control">
+                        {% for item in Filtro_Situacao %}
+                            {% if situacao == item.0 %}
+                                <option value="{{ item.0 }}" selected>{{ item.1 }}</option>
+                            {% else %}
+                                <option value="{{ item.0 }}" >{{ item.1 }}</option>
+                            {% endif %}
+                        {% endfor %}    
+                    </select>
+                </div>
+
+                <div class="form-group mt-auto">
+                    <button type="submit" class="btn btn-info">Pesquisar</button>
+                </div>
+
             </div>
-            <button type="submit">Pesquisar</button>
         </fieldset>
         
     </form>
-    
-    <table>
-        <thead>
-            <tr>
-                <th>Alt</th>
-                <th>Exc</Th>
-                <th>Ano</th>
-                <th>Situação</th>
-                <th>Data Inicial</th>
-                <th>Data Final</th>
-                <th>Bimestres</th>
-            </tr>
-            <a href="{% url 'ano_novo' %}">Novo</a>
-        </thead>
-        <tbody>
-            {% for ano in anos %}
-                
+
+    <div class="table-responsive-lg">    
+        <table class="table table-bordered table-hover">
+            <thead>
                 <tr>
-                    {% if ano.Situacao == 'A' %}
-                        <td><a href="{% url 'ano_alterar' ano.id %}">X</a></td>
-                        <td><a href="{% url 'ano_deletar' ano.id %}">X</a></td>
-                    {% else  %}
-                        <td>X</td>
-                        <td>X</td>
-                    {% endif  %}
-                    <td><a href="{% url 'ano_consultar' ano.id %}">{{ ano.Ano }}</a></td>
-                    {% if ano.Situacao == 'A' %}
-                        <td>Aberto</td>
-                    {% else  %}
-                        <td>Fechado</td>
-                    {% endif  %}
-                    <td>{{ ano.Data_Inicio }}</td>
-                    <td>{{ ano.Data_Fim }}</td>
-                    <td><a href="{% url 'bimestre_listagem' ano.id %}">X</a></td>
+                    <th class="text-center"><a href="{% url 'ano_novo' %}"><img src="{% static 'img/new.png' %}" alt="Ícone de cadastro"></a></th>
+                    <th></th>
+                    <th>Ano</th>
+                    <th>Situação</th>
+                    <th>Data Inicial</th>
+                    <th>Data Final</th>
+                    <th class="text-center">Bimestres</th>
                 </tr>
-                
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for ano in anos %}
+                    
+                    <tr>
+                        {% if ano.Situacao == 'A' %}
+                            <td class="text-center"><a href="{% url 'ano_alterar' ano.id %}"><img src="{% static 'img/update.png' %}" alt="Ícone de alteração"></a></td>
+                            <td class="text-center"><a href="{% url 'ano_deletar' ano.id %}"><img src="{% static 'img/delete.png' %}" alt="Ícone de exclusão"></a></td>
+                        {% else  %}
+                            <td class="text-center" ><img src="{% static 'img/update_disabled.png' %}" alt="Ícone de alteração desabilitado"></td>
+                            <td class="text-center" ><img src="{% static 'img/delete_disabled.png' %}" alt="Ícone de exclusão desabilitado"></td>
+                        {% endif  %}
+                        <td><a href="{% url 'ano_consultar' ano.id %}" class="text-secondary">{{ ano.Ano }}</a></td>
+                        {% if ano.Situacao == 'A' %}
+                            <td>Aberto</td>
+                        {% else  %}
+                            <td>Fechado</td>
+                        {% endif  %}
+                        <td>{{ ano.Data_Inicio }}</td>
+                        <td>{{ ano.Data_Fim }}</td>
+                        <td class="text-center"><a href="{% url 'bimestre_listagem' ano.id %}"><img src="{% static 'img/sheet.png' %}" alt="Ícone de folha de papel"></a></td>
+                    </tr>
+                    
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
 {% endblock  %}

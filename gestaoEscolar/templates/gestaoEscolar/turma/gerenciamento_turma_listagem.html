@@ -1,59 +1,68 @@
 {% extends 'projeto/base/base.html' %}
-
+{% load static %}
 {% block title %}Gerenciamento de turma | GEscolar{% endblock  %}
 
 
 {% block main %}
 
-    <h2>Gerenciamento de turma</h2> 
-    
-    <table>
-        <thead>
-            <tr>
-                <th>Alt</Th>
-                <th>Exc</Th>
-                <th>Nome do Aluno</th>
-                <th>Situação</th>
-                <th>Notas</th>
-            </tr>
-            {% if turma.AnoLetivo.Situacao == 'A' %}
-                <a href="{% url 'matricula_turma_novo' idT %}">Matricular um aluno</a>
-                &NonBreakingSpace;
-            {% endif%}
-            <a href="{% url 'leciona_listagem' idT %}">Disciplina x Professor</a>
-            &NonBreakingSpace;
-            <a href="{% url 'avaliacao_listagem' idT %}">Avaliações</a>
-            &NonBreakingSpace;
-            <a href="{% url 'aula_listagem' turma.id %}">Aulas</a>
-        </thead>
-        <tbody>
-            {% for matricula in matriculas %}
-                    <tr>
+    <h2><b>Gerenciamento de Turmas</b></h2> 
+    <br>
+
+    <div class="text-right">
+        <a href="{% url 'leciona_listagem' idT %}" class="btn btn-secondary">Disciplina x Professor</a>
+        <a href="{% url 'avaliacao_listagem' idT %}" class="btn btn-secondary">Avaliações</a>
+        <a href="{% url 'aula_listagem' turma.id %}" class="btn btn-secondary">Aulas</a>
+    </div>
+    <BR>
+        
+    <div class="table-responsive-lg">  
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th class="text-center">
                         {% if turma.AnoLetivo.Situacao == 'A' %}
-                            <td><a href="{% url 'matricula_turma_alterar' idT matricula.id %}">X</a></td>
-                            <td><a href="{% url 'matricula_turma_deletar' idT matricula.id %}">X</a></td>
-                        {% else %}
-                            <td>X</td>
-                            <td>X</td>
-                        {% endif %}
-                        <td><a href="{% url 'matricula_turma_consultar' idT matricula.id %}">{{ matricula.Aluno.Nome }}</a></td>
-                        {% if matricula.Situacao == 'cursando' %}
-                            <td>Cursando</td>
-                        {% elif matricula.Situacao == 'aprovado' %}
-                            <td>Aprovado</td>
-                        {% elif matricula.Situacao == 'transferido' %}
-                            <td>Transferido</td>
-                        {% elif matricula.Situacao == 'trancado' %}
-                            <td>Trancado</td>
-                        {% elif matricula.Situacao == 'reprovado' %}
-                            <td>Reprovado</td>
-                        {% endif %}
-                        <td><a href="{% url 'relatorio_notas_frequencias' matricula.Turma.id matricula.id %}">X</a></td>
-                    
-                    </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <a href="{% url 'turma_listagem' %}"> Voltar</a>
+                            <a href="{% url 'matricula_turma_novo' idT %}">
+                                <img src="{% static 'img/new.png' %}" alt="Ícone de cadastro">
+                            </a>
+                        {% endif%}
+                    </th>
+                    <th></th>
+                    <th>Nome do Aluno</th>
+                    <th>Situação</th>
+                    <th class="text-center">Notas</th>
+                </tr>
+                
+            </thead>
+            <tbody>
+                {% for matricula in matriculas %}
+                        <tr>
+                            {% if turma.AnoLetivo.Situacao == 'A' %}
+                                <td class="text-center"><a href="{% url 'matricula_turma_alterar' idT matricula.id %}"><img src="{% static 'img/update.png' %}" alt="Ícone de alteração"></a></td>
+                                <td class="text-center"><a href="{% url 'matricula_turma_deletar' idT matricula.id %}"><img src="{% static 'img/delete.png' %}" alt="Ícone de exclusão"></a></td>
+                            {% else %}
+                                <td class="text-center" ><img src="{% static 'img/update_disabled.png' %}" alt="Ícone de alteração desabilitado"></td>
+                                <td class="text-center" ><img src="{% static 'img/delete_disabled.png' %}" alt="Ícone de exclusão desabilitado"></td>
+                            {% endif %}
+                            <td><a href="{% url 'matricula_turma_consultar' idT matricula.id %}" class="text-secondary">{{ matricula.Aluno.Nome }}</a></td>
+                            {% if matricula.Situacao == 'cursando' %}
+                                <td>Cursando</td>
+                            {% elif matricula.Situacao == 'aprovado' %}
+                                <td>Aprovado</td>
+                            {% elif matricula.Situacao == 'transferido' %}
+                                <td>Transferido</td>
+                            {% elif matricula.Situacao == 'trancado' %}
+                                <td>Trancado</td>
+                            {% elif matricula.Situacao == 'reprovado' %}
+                                <td>Reprovado</td>
+                            {% endif %}
+                            <td class="text-center"><a href="{% url 'relatorio_notas_frequencias' matricula.Turma.id matricula.id %}"><img src="{% static 'img/sheet.png' %}" alt="Ícone de folha de papel"></a></td>
+                        </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="text-right">
+        <a href="{% url 'turma_listagem' %}" class="btn btn-secondary"> Voltar</a> 
+    </div>
 
 {% endblock  %}

@@ -1,42 +1,47 @@
 {% extends 'projeto/base/base.html' %}
-
+{% load static %}
 {% block title %}Listagem da Matriz curricular | GEscolar{% endblock  %}
 
 
 {% block main %}
 
     <h2>
-        Listagem da matriz curricular do {{ serie.Numero }}º Ano do 
-        {% if serie.Nivel_Escolaridade == 'F' %}
-            Ensino Fundamental
-        {% else %}
-            Ensino Médio
-        {% endif %}
-    
+        <b>
+            Listagem da matriz curricular do {{ serie.Numero }}º Ano do 
+            {% if serie.Nivel_Escolaridade == 'F' %}
+                Ensino Fundamental
+            {% else %}
+                Ensino Médio
+            {% endif %}
+        </b>
     </h2> 
-    
-    <table>
-        <thead>
-            <tr>
-                <th>Alt</th>
-                <th>Exc</th>
-                <th>Disciplina</th>
-                <th>Carga horária</th>
-            </tr>
-            <a href="{% url 'matriz_item_novo' serie.id %}">Novo</a>
-        </thead>
-        <tbody>
-            {% for matriz_item in matriz_itens %}
+    <br>
+
+    <div class="table-responsive-lg">    
+        <table class="table table-bordered table-hover">
+            <thead>
                 <tr>
-                    <td><a href="{% url 'matriz_item_alterar' idS=serie.id idM=matriz_item.id %}">X</a></td>
-                    <td><a href="{% url 'matriz_item_deletar' idS=serie.id idM=matriz_item.id %}">X</a></td>
-                    <td><a href="{% url 'matriz_item_consultar' idS=serie.id idM=matriz_item.id %}">{{ matriz_item.Disciplina.Nome }}</a></td>
-                    <td>{{ matriz_item.Carga }}</td>
+                    <th class="text-center"><a href="{% url 'matriz_item_novo' serie.id %}"><img src="{% static 'img/new.png' %}" alt="Ícone de cadastro"></a></th>
+                    <th></th>
+                    <th>Disciplina</th>
+                    <th>Carga horária</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for matriz_item in matriz_itens %}
+                    <tr>
+                        <td class="text-center"><a href="{% url 'matriz_item_alterar' idS=serie.id idM=matriz_item.id %}"><img src="{% static 'img/update.png' %}" alt="Ícone de alteração"></a></td>
+                        <td class="text-center"><a href="{% url 'matriz_item_deletar' idS=serie.id idM=matriz_item.id %}"><img src="{% static 'img/delete.png' %}" alt="Ícone de exclusão"></a></td>
+                        <td><a href="{% url 'matriz_item_consultar' idS=serie.id idM=matriz_item.id %}" class="text-secondary">{{ matriz_item.Disciplina.Nome }}</a></td>
+                        <td>{{ matriz_item.Carga }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-    <a href="{% url 'serie_listagem' %}"> Voltar</a>
-
+    <div class="text-right">
+        <a href="{% url 'serie_listagem' %}" class="btn btn-secondary"> Voltar</a> 
+    </div>
+    <br>
 {% endblock  %}

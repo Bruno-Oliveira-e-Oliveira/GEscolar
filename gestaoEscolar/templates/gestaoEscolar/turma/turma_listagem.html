@@ -1,98 +1,104 @@
 {% extends 'projeto/base/base.html' %}
-
+{% load static %}
 {% block title %}Listagem de Turmas | GEscolar{% endblock  %}
 
 
 {% block main %}
 
-    <h2>Listagem de Turmas</h2> 
+    <h2><b>Listagem de Turmas</b></h2> 
+    <br>
 
-    <form>
-        <fieldset>
-            <div>
-                <label for="id_periodo">Período:</label>
-                <select name="periodo" id="id_periodo">
-                    {% for item in Filtro_Periodo %}
-                        {% if periodo == item.0 %}
-                            <option value="{{ item.0 }}" selected>{{ item.1 }}</option>
-                        {% else %}
-                            <option value="{{ item.0 }}" >{{ item.1 }}</option>
-                        {% endif %}
-                    {% endfor %}    
-                </select>
-            </div>
-            
-            <div>
-                <label for="id_serie">Série:</label>
-                <select name="serie" id="id_serie">
-                    {% for item in Filtro_Serie %}
-                        {% if serie == item.id %}
-                            <option value="{{ item.id }}" selected>{{ item.nome_editado }}</option>
-                        {% else %}
-                            <option value="{{ item.id }}" >{{ item.nome_editado }}</option>
-                        {% endif %}
-                    {% endfor %}    
-                </select>
-            </div>
+    <form class="form">
+        <fieldset class="container-fluid">
+            <div class="row">
+                <div class="mr-5 form-group">
+                    <label for="id_periodo">Período:</label>
+                    <select name="periodo" id="id_periodo" class="form-control">
+                        {% for item in Filtro_Periodo %}
+                            {% if periodo == item.0 %}
+                                <option value="{{ item.0 }}" selected>{{ item.1 }}</option>
+                            {% else %}
+                                <option value="{{ item.0 }}" >{{ item.1 }}</option>
+                            {% endif %}
+                        {% endfor %}    
+                    </select>
+                </div>
+                
+                <div class="mr-5 form-group">
+                    <label for="id_serie">Série:</label>
+                    <select name="serie" id="id_serie" class="form-control">
+                        {% for item in Filtro_Serie %}
+                            {% if serie == item.id %}
+                                <option value="{{ item.id }}" selected>{{ item.nome_editado }}</option>
+                            {% else %}
+                                <option value="{{ item.id }}" >{{ item.nome_editado }}</option>
+                            {% endif %}
+                        {% endfor %}    
+                    </select>
+                </div>
 
-            <div>
-                <label for="id_ano">Ano:</label> 
-                <select name="ano" id="id_ano">
-                    {% for item in Filtro_Ano %}
-                        {% if ano == item.id %}
-                            <option value="{{ item.id }}" selected>{{ item.Ano }}</option>
-                        {% else %}
-                            <option value="{{ item.id }}" >{{ item.Ano }}</option>
-                        {% endif %}
-                    {% endfor %}       
-                </select>
-            </div>
+                <div class="mr-5 form-group">
+                    <label for="id_ano">Ano:</label> 
+                    <select name="ano" id="id_ano" class="form-control">
+                        {% for item in Filtro_Ano %}
+                            {% if ano == item.id %}
+                                <option value="{{ item.id }}" selected>{{ item.Ano }}</option>
+                            {% else %}
+                                <option value="{{ item.id }}" >{{ item.Ano }}</option>
+                            {% endif %}
+                        {% endfor %}       
+                    </select>
+                </div>
 
-            <button type="submit">Pesquisar</button>
+                <div class="form-group mt-auto">
+                    <button type="submit" class="btn btn-info">Pesquisar</button>
+                </div>
+            </div>
         </fieldset>
         
     </form>
-    
-    <table>
-        <thead>
-            <tr>
-                <th>Alt</th>
-                <th>Exc</Th>
-                <th>Nome</th>
-                <th>Período</th>
-                <th>Série</th>
-                <th>Ano letivo</th>
-                <th>Gestão</th>
-            </tr>
-            <a href="{% url 'turma_novo' %}">Novo</a>
-        </thead>
-        <tbody>
-            {% for turma in turmas %}
+
+    <div class="table-responsive-lg">    
+        <table class="table table-bordered table-hover">
+            <thead>
                 <tr>
-                    {% if turma.AnoLetivo.Situacao == 'A' %}
-                        <td><a href="{% url 'turma_alterar' turma.id %}">X</a></td>
-                        <td><a href="{% url 'turma_deletar' turma.id %}">X</a></td>
-                    {% else %}
-                        <td>X</td>
-                        <td>X</td>
-                    {% endif %}
-                    <td><a href="{% url 'turma_consultar' turma.id %}">{{ turma.Serie.Numero }}-{{ turma.Nome }}</a></td>
-                    {% if turma.Periodo == 'M' %}
-                        <td>Manhã</td>
-                    {% else %}
-                        <td>Tarde</td>
-                    {% endif %}
-                    {% if turma.Serie.Nivel_Escolaridade == 'F' %}
-                        <td>Ensino Fundamental</td>
-                    {% else %}
-                        <td>Ensino Médio</td>
-                    {% endif %}
-                    <td>{{ turma.AnoLetivo.Ano }}</td>
-                    <td><a href="{% url 'gerenciamento_turma_listagem' turma.id %}">X</a></td>
+                    <th class="text-center"><a href="{% url 'turma_novo' %}"><img src="{% static 'img/new.png' %}" alt="Ícone de cadastro"></a></th>
+                    <th></th>
+                    <th>Nome</th>
+                    <th>Período</th>
+                    <th>Série</th>
+                    <th>Ano letivo</th>
+                    <th class="text-center">Gestão</th>
                 </tr>
-                
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for turma in turmas %}
+                    <tr>
+                        {% if turma.AnoLetivo.Situacao == 'A' %}
+                            <td class="text-center"><a href="{% url 'turma_alterar' turma.id %}"><img src="{% static 'img/update.png' %}" alt="Ícone de alteração"></a></td>
+                            <td class="text-center"><a href="{% url 'turma_deletar' turma.id %}"><img src="{% static 'img/delete.png' %}" alt="Ícone de exclusão"></a></td>
+                        {% else %}
+                            <td class="text-center" ><img src="{% static 'img/update_disabled.png' %}" alt="Ícone de alteração desabilitado"></td>
+                            <td class="text-center" ><img src="{% static 'img/delete_disabled.png' %}" alt="Ícone de exclusão desabilitado"></td>
+                        {% endif %}
+                        <td><a href="{% url 'turma_consultar' turma.id %}" class="text-secondary">{{ turma.Serie.Numero }}-{{ turma.Nome }}</a></td>
+                        {% if turma.Periodo == 'M' %}
+                            <td>Manhã</td>
+                        {% else %}
+                            <td>Tarde</td>
+                        {% endif %}
+                        {% if turma.Serie.Nivel_Escolaridade == 'F' %}
+                            <td>Ensino Fundamental</td>
+                        {% else %}
+                            <td>Ensino Médio</td>
+                        {% endif %}
+                        <td>{{ turma.AnoLetivo.Ano }}</td>
+                        <td class="text-center"><a href="{% url 'gerenciamento_turma_listagem' turma.id %}"><img src="{% static 'img/sheet.png' %}" alt="Ícone de folha de papel"></a></td>
+                    </tr>
+                    
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
 {% endblock  %}

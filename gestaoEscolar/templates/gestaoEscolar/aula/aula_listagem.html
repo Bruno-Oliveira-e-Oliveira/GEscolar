@@ -5,85 +5,97 @@
 
 {% block main %}
 
-    <h2>Listagem de aulas</h2>
+    <h2><b>Listagem de aulas</b></h2> 
+    <br>
 
-    <form>
-        <fieldset>
-            <div>
-                <label for="id_leciona">Disciplina / Professor:</label>
-                <select name="leciona" id="id_leciona">
-                    {% for item in Filtro_Leciona %}
-                        {% if leciona == item.id %}
-                            <option value="{{ item.id }}" selected>{{ item.nome_editado }}</option>
-                        {% else %}
-                            <option value="{{ item.id }}" >{{ item.nome_editado }}</option>
-                        {% endif %}
-                    {% endfor %}    
-                </select>
+    <form class="form">
+        <fieldset class="container-fluid">
+            <div class="row">
+                <div class="mr-5 form-group">
+                    <label for="id_leciona">Disciplina / Professor:</label>
+                    <select name="leciona" id="id_leciona" class="form-control">
+                        {% for item in Filtro_Leciona %}
+                            {% if leciona == item.id %}
+                                <option value="{{ item.id }}" selected>{{ item.nome_editado }}</option>
+                            {% else %}
+                                <option value="{{ item.id }}" >{{ item.nome_editado }}</option>
+                            {% endif %}
+                        {% endfor %}    
+                    </select>
+                </div>
+
+                <div class="mr-5 form-group">
+                    <label for="id_bimestre">Bimestre:</label> 
+                    <select name="bimestre" id="id_bimestre" class="form-control">
+                        {% for item in Filtro_Bimestre %}
+                            {% if bimestre == item.id %}
+                                <option value="{{ item.id }}" selected>{{ item.Bimestre }} - {{ item.AnoLetivo }}</option>
+                            {% else %}
+                                <option value="{{ item.id }}" >{{ item.Bimestre }} - {{ item.AnoLetivo }}</option>
+                            {% endif %}
+                        {% endfor %}       
+                    </select>
+                </div>
+
+                <div class="form-group mt-auto">
+                    <button type="submit" class="btn btn-info">Pesquisar</button>
+                </div>
             </div>
-
-            <div>
-                <label for="id_bimestre">Bimestre:</label> 
-                <select name="bimestre" id="id_bimestre">
-                    {% for item in Filtro_Bimestre %}
-                        {% if bimestre == item.id %}
-                            <option value="{{ item.id }}" selected>{{ item.Bimestre }} - {{ item.AnoLetivo }}</option>
-                        {% else %}
-                            <option value="{{ item.id }}" >{{ item.Bimestre }} - {{ item.AnoLetivo }}</option>
-                        {% endif %}
-                    {% endfor %}       
-                </select>
-            </div>
-
-            <button type="submit">Pesquisar</button>
         </fieldset>
         
     </form>
     
-    
-    <table id="Tabela">
-        <thead>
-            <tr>
-                <th>Alt</th>
-                <th>Exc</Th>
-                <th>Data</th>
-                <th>Tema</th>
-                <th>Disciplina</th>
-                <th>Professor</th>
-                <th>Turma</th>
-                <th>Bimestre</th>
-                <th>Lista de chamada</th>
-            </tr>
-            {% if turma.AnoLetivo.Situacao == 'A' %}
-                <a href="{% url 'aula_novo' turma.id %}">Novo</a>
-            {% endif%}
-            
-        </thead>
-        <tbody id="tbody">
-            {% for aula in aulas %}
-                <tr>   
-                    {% if turma.AnoLetivo.Situacao == 'A' %}
-                        <td><a href="{% url 'aula_alterar' turma.id aula.id %}">X</a></td>
-                        <td><a href="{% url 'aula_deletar' turma.id aula.id %}">X</a></td>
-                    {% else %}
-                        <td>X</td>
-                        <td>X</td>
-                    {% endif %}
-                    <td><a href="{% url 'aula_consultar' turma.id aula.id %}">{{ aula.Data }}</a></td>
-                    <td>{{ aula.Tema }}</td>
-                    <td>{{ aula.Leciona.Matriz_Item.Disciplina.Nome }}</td>
-                    <td>{{ aula.Leciona.Professor.Nome }}</td>
-                    <td>{{ aula.Turma.nome_editado }}</td>
-                    <td>{{ aula.Bimestre.Bimestre }} - {{ aula.Bimestre.AnoLetivo }}</td>
-                    {% if turma.AnoLetivo.Situacao == 'A' %}
-                        <td><a href="{% url 'lista_chamada' turma.id aula.id %}">X</a></td> 
-                    {% else %}
-                        <td>X</td>
-                    {% endif %}
-                    
+    <div class="table-responsive-lg"> 
+        <table id="Tabela" class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th class="text-center">
+                        {% if turma.AnoLetivo.Situacao == 'A' %}
+                            <a href="{% url 'aula_novo' turma.id %}">
+                                <img src="{% static 'img/new.png' %}" alt="Ícone de cadastro">
+                            </a>
+                        {% endif%}
+                    </th>
+                    <th></th>
+                    <th>Data</th>
+                    <th>Tema</th>
+                    <th>Disciplina</th>
+                    <th>Professor</th>
+                    <th>Turma</th>
+                    <th>Bimestre</th>
+                    <th class="text-center">Lista de chamada</th>
                 </tr>
-            {% endfor %}           
-        </tbody>
-    </table>
-    <a href="{% url 'gerenciamento_turma_listagem' turma.id %}"> Voltar</a>
+                
+            </thead>
+            <tbody id="tbody">
+                {% for aula in aulas %}
+                    <tr>   
+                        {% if turma.AnoLetivo.Situacao == 'A' %}
+                            <td class="text-center"><a href="{% url 'aula_alterar' turma.id aula.id %}"><img src="{% static 'img/update.png' %}" alt="Ícone de alteração"></a></td>
+                            <td class="text-center"><a href="{% url 'aula_deletar' turma.id aula.id %}"><img src="{% static 'img/delete.png' %}" alt="Ícone de exclusão"></a></td>
+                        {% else %}
+                            <td class="text-center" ><img src="{% static 'img/update_disabled.png' %}" alt="Ícone de alteração desabilitado"></td>
+                            <td class="text-center" ><img src="{% static 'img/delete_disabled.png' %}" alt="Ícone de exclusão desabilitado"></td>
+                        {% endif %}
+                        <td><a href="{% url 'aula_consultar' turma.id aula.id %}" class="text-secondary">{{ aula.Data }}</a></td>
+
+                        <td>{{ aula.Tema }}</td>
+                        <td>{{ aula.Leciona.Matriz_Item.Disciplina.Nome }}</td>
+                        <td>{{ aula.Leciona.Professor.Nome }}</td>
+                        <td>{{ aula.Turma.nome_editado }}</td>
+                        <td>{{ aula.Bimestre.Bimestre }} - {{ aula.Bimestre.AnoLetivo }}</td>
+                        {% if turma.AnoLetivo.Situacao == 'A' %}
+                            <td class="text-center"><a href="{% url 'lista_chamada' turma.id aula.id %}"><img src="{% static 'img/sheet.png' %}" alt="Ícone de folha de papel"></a></td>
+                        {% else %}
+                            <td class="text-center" ><img src="{% static 'img/sheet_disabled.png' %}" alt="Ícone de folha de papel desabilitado"></td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}           
+            </tbody>
+        </table>
+    </div>
+
+    <div class="text-right">
+        <a href="{% url 'gerenciamento_turma_listagem' turma.id %}" class="btn btn-secondary"> Voltar</a> 
+    </div>
 {% endblock  %}

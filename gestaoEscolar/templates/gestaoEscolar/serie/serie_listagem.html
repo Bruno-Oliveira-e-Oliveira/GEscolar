@@ -1,33 +1,36 @@
 {% extends 'projeto/base/base.html' %}
-
+{% load static %}
 {% block title %}Listagem de Séries | GEscolar{% endblock  %}
 
 
 {% block main %}
 
-    <h2>Listagem de Séries</h2> 
-    
-    <table>
-        <thead>
-            <tr>
-                <th>Número</th>
-                <th>Nível de escolaridade</th>
-                <th>Matriz curricular</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for serie in series %}
+    <h2><b>Listagem de Séries</b></h2> 
+    <br>
+
+    <div class="table-responsive-lg">  
+        <table class="table table-bordered table-hover">
+            <thead>
                 <tr>
-                    <td>{{ serie.Numero }}</td>
-                    {% if serie.Nivel_Escolaridade == 'F' %}
-                        <td>Fundamental</td>
-                    {% elif serie.Nivel_Escolaridade == 'M' %}
-                        <td>Médio</td>
-                    {% endif  %}
-                    <td><a href="{% url 'matriz_item_listagem' serie.id %}">X</a></td>
+                    <th>Número</th>
+                    <th>Nível de escolaridade</th>
+                    <th class="text-center">Matriz curricular</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for serie in series %}
+                    <tr>
+                        <td>{{ serie.Numero }}</td>
+                        {% if serie.Nivel_Escolaridade == 'F' %}
+                            <td>Fundamental</td>
+                        {% elif serie.Nivel_Escolaridade == 'M' %}
+                            <td>Médio</td>
+                        {% endif %}
+                        <td class="text-center"><a href="{% url 'matriz_item_listagem' serie.id %}"><img src="{% static 'img/sheet.png' %}" alt="Ícone de folha de papel"></a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
 {% endblock  %}
