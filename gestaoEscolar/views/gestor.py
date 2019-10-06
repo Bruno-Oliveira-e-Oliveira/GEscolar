@@ -148,6 +148,7 @@ def diretor_alterar(request,id):
             'endereco_dados': endereco_obj,       
             'telefone_dados': telefone_obj,
             'usuario_dados': usuario_obj,
+            'nome_usuario': usuario_obj.username,
             'Tipo_Transacao': 'UPD',
             'idGestor': id
         }
@@ -221,6 +222,7 @@ def diretor_alterar(request,id):
                 'erros':erros, 
                 'gestor_dados':gestor_dados, 
                 'usuario_dados': usuario_dados,
+                'nome_usuario': usuario_obj.username,
                 'endereco_dados': endereco_dados,
                 'telefone_dados': telefone_dados,
                 'Tipo_Transacao': 'UPD',
@@ -247,10 +249,11 @@ def diretor_alterar(request,id):
                     'erros':erros, 
                     'gestor_dados':gestor_dados, 
                     'usuario_dados': usuario_dados,
+                    'nome_usuario': usuario_obj.username,
                     'endereco_dados': endereco_dados,
                     'telefone_dados': telefone_dados,
                     'Tipo_Transacao': 'UPD',
-                    'idSecretario': id
+                    'idGestor': id
                 }
             return render(request,'gestaoEscolar/gestor/diretor_form.html', context)
 

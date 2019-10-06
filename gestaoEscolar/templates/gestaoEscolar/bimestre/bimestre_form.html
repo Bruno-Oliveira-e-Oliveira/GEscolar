@@ -26,9 +26,11 @@
         <h2>Apagar Bimestre</h2>
     {% endif %}
 
+    <ul class="list-group list-group-flush mb-3 mt-3">
     {% for erro in erros %}
-        {{ erro }}
+        <li class="list-group-item text-danger text-justify">{{ erro|tira_lista }}</li>
     {% endfor %}
+    </ul>
 
     <form action="
             {% if Tipo_Transacao == 'INS' %}

@@ -10,3 +10,7 @@ def numero_decimal(valor):
 @register.filter
 def data_retorno(valor):
     return str(valor)
+
+@register.filter
+def tira_lista(valor):
+    return str(valor).replace('<ul class="errorlist"><li>', '').replace('<ul class="errorlist nonfield"><li>', '').replace('</li></ul>', '')

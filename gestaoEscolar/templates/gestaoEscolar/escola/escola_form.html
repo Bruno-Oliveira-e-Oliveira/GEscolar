@@ -1,4 +1,5 @@
 {% extends 'projeto/base/base.html' %}
+{% load filters %}
 
 {% block title %}
     {% if Tipo_Transacao == 'INS' %}
@@ -12,14 +13,16 @@
 {% block main %}
 
     {% if Tipo_Transacao == 'INS' %}
-        <h2>Cadastrar Escola</h2> 
+        <h2><b>Cadastrar Escola</b></h2>
     {% else %}
-        <h2>Atualizar dados da Escola</h2>
+        <h2><b>Atualizar dados da Escola</b></h2>
     {% endif %}
 
+    <ul class="list-group list-group-flush mb-3 mt-3">
     {% for erro in erros %}
-        {{ erro }}
+        <li class="list-group-item text-danger text-justify">{{ erro|tira_lista }}</li>
     {% endfor %}
+    </ul>
 
 
     <form action="
@@ -28,142 +31,151 @@
             {% else %}
                 {% url 'escola_alterar' idEscola %}
             {% endif %}
-        " method="POST">
+        " method="POST" class="form">
 
         {% csrf_token %}
-        <fieldset>
-            <div>
-                <label for="id_Nome">Nome:</label>
-                <input type="text" name="Nome" maxlength="50" required id="id_Nome" value='{{ escola_dados.Nome }}'>
-            </div>
-
-            <div>
-                <label for="id_Email">Email:</label>
-                <input type="email" name="Email" maxlength="254" required id="id_Email" value='{{ escola_dados.Email }}'>            
-            </div>
-            
-            {% if Tipo_Transacao == 'INS' %}
-                <div>
-                    <label for="id_Nivel_Escolaridade">Nível Escolaridade:</label>
-                    <select name="Nivel_Escolaridade" id="id_Nivel_Escolaridade" required>    
-                        {% for nivel in Niveis %}
-                            {% if escola_dados.Nivel_Escolaridade == nivel.0 %}
-                                <option value="{{ nivel.0 }}" selected>{{ nivel.1 }}</option>
-                            {% else %}
-                                <option value="{{ nivel.0 }}" >{{ nivel.1 }}</option>
-                            {% endif %}
-                        {% endfor %}                
-                    </select>
+        <fieldset class="container-fluid">
+            <div class="row">
+                <div class="form-group col-md-6" >
+                    <label for="id_Nome">Nome:</label>
+                    <input type="text" name="Nome" maxlength="50" class="form-control" required id="id_Nome" value='{{ escola_dados.Nome }}'>
                 </div>
-            {% else %}
-                <div>
-                    <label for="id_Nivel_Escolaridade">Nível Escolaridade:</label>
-                    <select name="Nivel_Escolaridade" id="id_Nivel_Escolaridade" disabled>    
-                        {% for nivel in Niveis %}
-                            {% if escola_dados.Nivel_Escolaridade == nivel.0 %}
-                                <option value="{{ nivel.0 }}" selected>{{ nivel.1 }}</option>
-                            {% else %}
-                                <option value="{{ nivel.0 }}" >{{ nivel.1 }}</option>
-                            {% endif %}
-                        {% endfor %}                
-                    </select>
+
+                <div class="form-group col-md-6" >
+                    <label for="id_Email">Email:</label>
+                    <input type="email" name="Email" maxlength="254" class="form-control" required id="id_Email" value='{{ escola_dados.Email }}'>            
                 </div>
-            {% endif %}
+            </div>
             
-            
-            <div>
-                <label for="id_Tipo_Escola">Tipo da Escola:</label>
-                <select name="Tipo_Escola" id="id_Tipo_Escola"> 
-                    {% for tipo in Tipos %}
-                        {% if escola_dados.Tipo_Escola == tipo.0 %}
-                            <option value="{{ tipo.0 }}" selected>{{ tipo.1 }}</option>
-                        {% else %}
-                            <option value="{{ tipo.0 }}" >{{ tipo.1 }}</option>
-                        {% endif %}
-                    {% endfor %}
-                </select>           
-            </div>
-
-            <div>
-                <label for="id_Nota_de_Corte">Nota de corte de aprovação:</label>
-                <input type="number" name="Nota_de_Corte" step="1" required id="id_Nota_de_Corte" maxlength="2" value='{{ escola_dados.Nota_de_Corte }}'>            
-            </div>
-
-            <div>
-                <label for="id_Numero1">Telefone 1:</label>
-                <input type="text" name="Numero1" maxlength="20" required id="id_Numero1" value='{{ telefone_dados.Numero1 }}'>
-            </div>
-
-            <div>
-                <label for="id_Numero2">Telefone 2:</label>
-                <input type="text" name="Numero2" maxlength="20" required id="id_Numero2" value='{{ telefone_dados.Numero2 }}'>
-            </div>
-
-            {% if Tipo_Transacao == 'UPD' %}
-                <div>
-                    <label for="id_ativo">Ativo:</label>
-                    <select name="Situacao" id="id_ativo">
-                        {% for item in STATUS %}
-                            {% if escola_dados.Situacao == item.0 %}
-                                <option value="{{ item.0 }}" selected>{{ item.1 }}</option>
+            <div class="row">
+                {% if Tipo_Transacao == 'INS' %}
+                    <div class="form-group col-md-4">
+                        <label for="id_Nivel_Escolaridade">Nível Escolaridade:</label>
+                        <select name="Nivel_Escolaridade" id="id_Nivel_Escolaridade" required class="form-control">    
+                            {% for nivel in Niveis %}
+                                {% if escola_dados.Nivel_Escolaridade == nivel.0 %}
+                                    <option value="{{ nivel.0 }}" selected>{{ nivel.1 }}</option>
+                                {% else %}
+                                    <option value="{{ nivel.0 }}" >{{ nivel.1 }}</option>
+                                {% endif %}
+                            {% endfor %}                
+                        </select>
+                    </div>
+                {% else %}
+                    <div class="form-group col-md-4">
+                        <label for="id_Nivel_Escolaridade">Nível Escolaridade:</label>
+                        <select name="Nivel_Escolaridade" id="id_Nivel_Escolaridade" disabled class="form-control">    
+                            {% for nivel in Niveis %}
+                                {% if escola_dados.Nivel_Escolaridade == nivel.0 %}
+                                    <option value="{{ nivel.0 }}" selected>{{ nivel.1 }}</option>
+                                {% else %}
+                                    <option value="{{ nivel.0 }}" >{{ nivel.1 }}</option>
+                                {% endif %}
+                            {% endfor %}                
+                        </select>
+                    </div>
+                {% endif %}
+                
+                <div class="form-group col-md-3">
+                    <label for="id_Tipo_Escola">Tipo da Escola:</label>
+                    <select name="Tipo_Escola" id="id_Tipo_Escola" class="form-control"> 
+                        {% for tipo in Tipos %}
+                            {% if escola_dados.Tipo_Escola == tipo.0 %}
+                                <option value="{{ tipo.0 }}" selected>{{ tipo.1 }}</option>
                             {% else %}
-                                <option value="{{ item.0 }}" >{{ item.1 }}</option>
+                                <option value="{{ tipo.0 }}" >{{ tipo.1 }}</option>
                             {% endif %}
-                        {% endfor %}       
-                    </select>
+                        {% endfor %}
+                    </select>           
                 </div>
-            {% endif %}
-        
-        </fieldset>
 
-        <fieldset>
-            <div>
-                <label for="id_Rua">Rua:</label>
-                <input type="text" name="Rua" maxlength="40" required id="id_Rua" value='{{ endereco_dados.Rua }}'>
-            </div>
-
-            <div>
-                <label for="id_Numero">Número:</label>
-                <input type="number" name="Numero" min="0" required id="id_Numero" value='{{ endereco_dados.Numero }}'>
-            </div>
-
-            <div>
-                <label for="id_Bairro">Bairro:</label>
-                <input type="text" name="Bairro" maxlength="40" required id="id_Bairro" value='{{ endereco_dados.Bairro }}'>
+                <div class="form-group col-md-3">
+                    <label for="id_Nota_de_Corte">Nota de corte:</label>
+                    <input type="number" name="Nota_de_Corte" step="1" min="0" max="10" class="form-control" required id="id_Nota_de_Corte" maxlength="2" value='{{ escola_dados.Nota_de_Corte }}'>            
+                </div>
             </div>
             
-            <div>
-                <label for="id_Cidade">Cidade:</label>
-                <input type="text" name="Cidade" maxlength="40" required id="id_Cidade" value='{{ endereco_dados.Cidade }}'>
-            </div>
-            
-            <div>
-                <label for="id_Estado">Estado:</label>
-                <input type="text" name="Estado" maxlength="2" required id="id_Estado" value='{{ endereco_dados.Estado }}'>
-            </div>
+            <div class="row">
+                <div class="form-group col-md-3">
+                    <label for="id_Numero1">Telefone 1:</label>
+                    <input type="text" name="Numero1" maxlength="20" class="form-control" required  id="id_Numero1" value='{{ telefone_dados.Numero1 }}'>
+                </div>
 
-            <div>
-                <label for="id_Complemento">Complemento:</label>
-                <input type="text" name="Complemento" maxlength="100"  id="id_Complemento" value='{{ endereco_dados.Complemento }}'>
-            </div>
-            
-            <div>
-                <label for="id_Zona">Zona:</label>
-                <select name="Zona" id="id_Zona">
-                    {% for zona in zonas %}
-                        {% if endereco_dados.Zona == zona.0 %}
-                            <option value="{{ zona.0 }}" selected>{{ zona.1 }}</option>
-                        {% else %}
-                            <option value="{{ zona.0 }}" >{{ zona.1 }}</option>
-                        {% endif %}
-                    {% endfor %}
-                </select>
+                <div class="form-group col-md-3">
+                    <label for="id_Numero2">Telefone 2:</label>
+                    <input type="text" name="Numero2" maxlength="20" class="form-control" required id="id_Numero2" value='{{ telefone_dados.Numero2 }}'>
+                </div>
+
+                {% if Tipo_Transacao == 'UPD' %}
+                    <div class="form-group col-md-3">
+                        <label for="id_ativo">Ativo:</label>
+                        <select name="Situacao" id="id_ativo" class="form-control">
+                            {% for item in STATUS %}
+                                {% if escola_dados.Situacao == item.0 %}
+                                    <option value="{{ item.0 }}" selected>{{ item.1 }}</option>
+                                {% else %}
+                                    <option value="{{ item.0 }}" >{{ item.1 }}</option>
+                                {% endif %}
+                            {% endfor %}       
+                        </select>
+                    </div>
+                {% endif %}
             </div>
         </fieldset>
 
+        <fieldset class="container-fluid">
+            <div class="row">
+                <div class="form-group col-md-5">
+                    <label for="id_Rua">Rua:</label>
+                    <input type="text" name="Rua" maxlength="40" class="form-control" required id="id_Rua" value='{{ endereco_dados.Rua }}'>
+                </div>
 
-        <button type="submit">Salvar</button>
-        <a href="{% url 'gestao_escolar_inicio' %}"> Voltar</a>
+                <div class="form-group col-md-2">
+                    <label for="id_Numero" >Número:</label>
+                    <input type="number" name="Numero" min="0" max="99999" class="form-control" required id="id_Numero" value='{{ endereco_dados.Numero }}'>
+                </div>
+
+                <div class="form-group col-md-5">
+                    <label for="id_Bairro">Bairro:</label>
+                    <input type="text" name="Bairro" maxlength="40" class="form-control" required id="id_Bairro" value='{{ endereco_dados.Bairro }}'>
+                </div>
+            </div>   
+
+            <div class="row">                 
+                <div class="form-group col-md-4">
+                    <label for="id_Cidade">Cidade:</label>
+                    <input type="text" name="Cidade" maxlength="40" class="form-control" required id="id_Cidade" value='{{ endereco_dados.Cidade }}'>
+                </div>
+                
+                <div class="form-group col-md-1">
+                    <label for="id_Estado" >Estado:</label>
+                    <input type="text" name="Estado" maxlength="2" class="form-control" required id="id_Estado" value='{{ endereco_dados.Estado }}'>
+                </div>
+
+                <div class="form-group col-md-5">
+                    <label for="id_Complemento">Complemento:</label>
+                    <input type="text" name="Complemento" maxlength="100" class="form-control" id="id_Complemento" value='{{ endereco_dados.Complemento }}'>
+                </div>
+                
+                <div class="form-group col-md-2">
+                    <label for="id_Zona">Zona:</label>
+                    <select name="Zona" id="id_Zona" class="form-control">
+                        {% for zona in zonas %}
+                            {% if endereco_dados.Zona == zona.0 %}
+                                <option value="{{ zona.0 }}" selected>{{ zona.1 }}</option>
+                            {% else %}
+                                <option value="{{ zona.0 }}" >{{ zona.1 }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </fieldset>
+
+        <br>
+        <button type="submit" class="btn btn-primary">Salvar</button>
+        <a href="{% url 'gestao_escolar_inicio' %}" class="btn btn-secondary"> Voltar</a>
+        <br>
     </form>
 
 {% endblock  %}
