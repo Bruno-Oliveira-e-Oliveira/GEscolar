@@ -1,11 +1,23 @@
 {% extends 'projeto/base/base.html' %}
 
 {% block title %}Login de Usuário{% endblock  %}
-{% block cabecalho %}{% endblock  %}
 
-{% block main %}
-    <h3>Fim da Sessão</h3>
-    <a href="{% url 'login' %}"> Voltar</a>
+{% block cabecalho %}
+    {% include "projeto/base/menu_autenticacao.html" %}
 {% endblock  %}
 
-{% block rodape %}{% endblock %}
+{% block main %}
+    <h2 class="text-center"><b>Fim da Sessão</b></h2>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="text-center">
+        <a href="{% url 'login' %}" class="btn btn-secondary col-md-4"> Voltar</a>
+    </div>
+    
+{% endblock  %}
+

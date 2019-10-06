@@ -1,4 +1,5 @@
 {% extends 'projeto/base/base.html' %}
+{% load filters %}
 
 {% block title %}
     Lista de chamada | GEscolar 
@@ -7,42 +8,47 @@
 
 {% block main %}
 
-    <h2>Lista de chamada</h2> 
+    <h2><b>Lista de chamada</b></h2>
 
+    <ul class="list-group list-group-flush mb-3 mt-3">
     {% for erro in erros %}
-        {{ erro }}
+        <li class="list-group-item text-danger text-justify">{{ erro|tira_lista }}</li>
     {% endfor %}
+    </ul>
 
-    <form action="" method="POST">
+    <form action="" method="POST" class="form">
         {% csrf_token %}
-
-        <table>
-            <thead>
-                <tr>
-                    <th>Aluno</th>
-                    <th>Presença</Th>
-                </tr>
-            </thead>
-
-            <tbody id="tbody">
-                {% for frequencia in frequencias %}
-                    <tr>   
-                        <td>{{ frequencia.Aluno.Nome }}</td>
-                        {% if frequencia.Presenca == 'Presente' %}
-                            <td><input type="checkbox" name="Presenca{{ frequencia.Aluno.id }}" value="Presente" checked></td>
-                        {% else %} 
-                            <td><input type="checkbox" name="Presenca{{ frequencia.Aluno.id }}" value="Presente" ></td>
-                        {% endif %} 
+        <div class="table-responsive-lg"> 
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Aluno</th>
+                        <th class="text-center">Presença</Th>
                     </tr>
-                {% endfor %}           
-            </tbody>
-        </table>
-        {% if turma.AnoLetivo.Situacao == 'A' %}
-            <button type="submit">Salvar</button>   
-        {% endif %}
-        
+                </thead>
 
-        <a href="{% url 'aula_listagem' turma.id %}"> Voltar</a>
+                <tbody id="tbody">
+                    {% for frequencia in frequencias %}
+                        <tr>   
+                            <td>{{ frequencia.Aluno.Nome }}</td>
+                            {% if frequencia.Presenca == 'Presente' %}
+                                <td class="form-group col-sm-1 text-center"><input type="checkbox" class="form-control" name="Presenca{{ frequencia.Aluno.id }}" value="Presente" checked></td>
+                            {% else %} 
+                                <td class="form-group col-sm-1 text-center"><input type="checkbox" class="form-control" name="Presenca{{ frequencia.Aluno.id }}" value="Presente" ></td>
+                            {% endif %} 
+                        </tr>
+                    {% endfor %}           
+                </tbody>
+            </table>
+        </div>
+
+        <br>
+        {% if turma.AnoLetivo.Situacao == 'A' %}
+            <button type="submit" class="btn btn-primary">Salvar</button>   
+        {% endif %}
+        <a href="{% url 'aula_listagem' turma.id %}" class="btn btn-secondary"> Voltar</a>
+        <br>
+
     </form>
 
 {% endblock  %}

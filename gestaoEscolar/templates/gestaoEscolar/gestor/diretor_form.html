@@ -11,7 +11,9 @@
 
 {% block cabecalho %}
     {% if Tipo_Transacao != 'INS' %}
-        {% include "projeto/base/menu.html" %}    
+        {% include "projeto/base/menu.html" %}
+    {% else %}    
+        {% include "projeto/base/menu_autenticacao.html" %}
     {% endif %}
 {% endblock  %}
 
@@ -181,9 +183,3 @@
     </form>
 
 {% endblock  %}
-
-{% block rodape %}
-    {% if Tipo_Transacao != 'INS' %}
-        {% include "projeto/base/rodape.html" %}    
-    {% endif %} 
-{% endblock %}

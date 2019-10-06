@@ -1,4 +1,5 @@
 {% extends 'projeto/base/base.html' %}
+{% load filters %}
 
 {% block title %}
     {% if Tipo_Transacao == 'INS' %}
@@ -16,18 +17,20 @@
 {% block main %}
 
     {% if Tipo_Transacao == 'INS' %}
-        <h2>Cadastrar item da tabela de Disciplina x Professor</h2> 
+        <h2><b>Cadastrar item da tabela de Disciplina x Professor</b></h2>
     {% elif Tipo_Transacao == 'UPD' %}
-        <h2>Atualizar dados do item da tabela de Disciplina x Professor</h2> 
+        <h2><b>Atualizar dados do item da tabela de Disciplina x Professor</b></h2>
     {% elif Tipo_Transacao == 'CON' %}
-        <h2>Consultar item da tabela de Disciplina x Professor</h2> 
+        <h2><b>Consultar item da tabela de Disciplina x Professor</b></h2>
     {% elif Tipo_Transacao == 'DEL' %}
-        <h2>Apagar item da tabela de Disciplina x Professor</h2>
+        <h2><b>Apagar item da tabela de Disciplina x Professor</b></h2>
     {% endif %}
 
+    <ul class="list-group list-group-flush mb-3 mt-3">
     {% for erro in erros %}
-        {{ erro }}
+        <li class="list-group-item text-danger text-justify">{{ erro|tira_lista }}</li>
     {% endfor %}
+    </ul>
 
     <form action="
             {% if Tipo_Transacao == 'UPD' %}
@@ -35,98 +38,106 @@
             {% elif Tipo_Transacao == 'CON' %}
                 {% url 'leciona_consultar' idT idL %}
             {% endif %}
-        " method="POST">
+        " method="POST" class="form">
         {% csrf_token %}
 
         {% if Tipo_Transacao == 'UPD' %}
-            <fieldset>
-                <div>
-                    <label for="id_Aulas_Previstas">Aulas previstas:</label>
-                    <input type="number" name="Aulas_Previstas" min="0" max="65535" required id="id_Aulas_Previstas" value='{{ leciona_dados.Aulas_Previstas }}'>
-                </div>
-
-                <div>
-                    <label for="id_Matriz_Item">Disciplina:</label>
-                    <input type="text" name="Matriz_Item" disabled id="id_Matriz_Item" value='{{ leciona_dados.Matriz_Item.Disciplina.Nome }}'>
-                </div>
-
-                {% if leciona_dados.Turma.Serie.Nivel_Escolaridade == 'F' %}
-                    <div>
-                        <label for="id_Turma">Turma:</label>
-                        <input type="text" name="Turma" disabled id="id_Turma" value='{{ leciona_dados.Turma.Serie.Numero }}{{ leciona_dados.Turma.Nome }} Ensino Fundamental'>
-                    </div>
-                {% else %}
-                    <div>
-                        <label for="id_Turma">Turma:</label>
-                        <input type="text" name="Turma" disabled id="id_Turma" value='{{ leciona_dados.Turma.Serie.Numero }}{{ leciona_dados.Turma.Nome }} Ensino Médio'>
+            <fieldset class="container-fluid">
+                <div class="row">
+                    <div class="form-group col-md-4">
+                        <label for="id_Aulas_Previstas">Aulas previstas:</label>
+                        <input type="number" name="Aulas_Previstas" min="0" max="65535" class="form-control" required id="id_Aulas_Previstas" value='{{ leciona_dados.Aulas_Previstas }}'>
                     </div>
 
-                {% endif %}
-
-                <div>
-                    <label for="id_Professor">Professor:</label> 
-                    <select name="Professor" id="id_Professor">
-                        {% for professor in professores %}
-                            {% if leciona_dados.Professor.id == professor.id %}
-                                <option value="{{ professor.id }}" selected>{{ professor.Nome }}</option>
-                            {% else %}
-                                <option value="{{ professor.id }}" >{{ professor.Nome }}</option>
-                            {% endif %}
-                        {% endfor %}       
-                    </select>
+                    <div class="form-group col-md-5">
+                        <label for="id_Matriz_Item">Disciplina:</label>
+                        <input type="text" name="Matriz_Item" class="form-control" disabled id="id_Matriz_Item" value='{{ leciona_dados.Matriz_Item.Disciplina.Nome }}'>
+                    </div>
                 </div>
 
+                <div class="row"> 
+                    {% if leciona_dados.Turma.Serie.Nivel_Escolaridade == 'F' %}
+                        <div class="form-group col-md-4">
+                            <label for="id_Turma">Turma:</label>
+                            <input type="text" name="Turma" class="form-control" disabled id="id_Turma" value='{{ leciona_dados.Turma.Serie.Numero }}{{ leciona_dados.Turma.Nome }} Ensino Fundamental'>
+                        </div>
+                    {% else %}
+                        <div class="form-group col-md-4">
+                            <label for="id_Turma">Turma:</label>
+                            <input type="text" name="Turma" class="form-control" disabled id="id_Turma" value='{{ leciona_dados.Turma.Serie.Numero }}{{ leciona_dados.Turma.Nome }} Ensino Médio'>
+                        </div>
+
+                    {% endif %}
+
+                    <div class="form-group col-md-5">
+                        <label for="id_Professor">Professor:</label> 
+                        <select name="Professor" id="id_Professor" class="form-control">
+                            {% for professor in professores %}
+                                {% if leciona_dados.Professor.id == professor.id %}
+                                    <option value="{{ professor.id }}" selected>{{ professor.Nome }}</option>
+                                {% else %}
+                                    <option value="{{ professor.id }}" >{{ professor.Nome }}</option>
+                                {% endif %}
+                            {% endfor %}       
+                        </select>
+                    </div>
+                </div>
             </fieldset>
 
         {% else %}
-            <fieldset>
-                <div>
-                    <label for="id_Aulas_Previstas">Aulas_Previstas:</label>
-                    <input type="number" name="Aulas_Previstas" min="0" max="65535" disabled id="id_Aulas_Previstas" value='{{ leciona_dados.Aulas_Previstas }}'>
-                </div>
-
-                <div>
-                    <label for="id_Matriz_Item">Disciplina:</label>
-                    <input type="text" name="Matriz_Item" disabled id="id_Matriz_Item" value='{{ leciona_dados.Matriz_Item.Disciplina.Nome }}'>
-                </div>
-
-                {% if leciona_dados.Turma.Serie.Nivel_Escolaridade == 'F' %}
-                    <div>
-                        <label for="id_Turma">Turma:</label>
-                        <input type="text" name="Turma" disabled id="id_Turma" value='{{ leciona_dados.Turma.Serie.Numero }}{{ leciona_dados.Turma.Nome }} Ensino Fundamental'>
-                    </div>
-                {% else %}
-                    <div>
-                        <label for="id_Turma">Turma:</label>
-                        <input type="text" name="Turma" disabled id="id_Turma" value='{{ leciona_dados.Turma.Serie.Numero }}{{ leciona_dados.Turma.Nome }} Ensino Médio'>
+            <fieldset class="container-fluid">
+                <div class="row"> 
+                    <div class="form-group col-md-4">
+                        <label for="id_Aulas_Previstas">Aulas_Previstas:</label>
+                        <input type="number" name="Aulas_Previstas" min="0" max="65535" class="form-control" disabled id="id_Aulas_Previstas" value='{{ leciona_dados.Aulas_Previstas }}'>
                     </div>
 
-                {% endif %}
-
-                <div>
-                    <label for="id_Professor">Professor:</label> 
-                    <select name="Professor" id="id_Professor" disabled>
-                        {% for professor in professores %}
-                            {% if leciona_dados.Professor.id == professor.id %}
-                                <option value="{{ professor.id }}" selected>{{ professor.Nome }}</option>
-                            {% else %}
-                                <option value="{{ professor.id }}" >{{ professor.Nome }}</option>
-                            {% endif %}
-                        {% endfor %}       
-                    </select>
+                    <div class="form-group col-md-5">
+                        <label for="id_Matriz_Item">Disciplina:</label>
+                        <input type="text" name="Matriz_Item" class="form-control" disabled id="id_Matriz_Item" value='{{ leciona_dados.Matriz_Item.Disciplina.Nome }}'>
+                    </div>
                 </div>
 
+                <div class="row"> 
+                    {% if leciona_dados.Turma.Serie.Nivel_Escolaridade == 'F' %}
+                        <div class="form-group col-md-4">
+                            <label for="id_Turma">Turma:</label>
+                            <input type="text" name="Turma" class="form-control" disabled id="id_Turma" value='{{ leciona_dados.Turma.Serie.Numero }}{{ leciona_dados.Turma.Nome }} Ensino Fundamental'>
+                        </div>
+                    {% else %}
+                        <div class="form-group col-md-4">
+                            <label for="id_Turma">Turma:</label>
+                            <input type="text" name="Turma" class="form-control" disabled id="id_Turma" value='{{ leciona_dados.Turma.Serie.Numero }}{{ leciona_dados.Turma.Nome }} Ensino Médio'>
+                        </div>
+
+                    {% endif %}
+
+                    <div class="form-group col-md-5">
+                        <label for="id_Professor">Professor:</label> 
+                        <select name="Professor" id="id_Professor" disabled class="form-control">
+                            {% for professor in professores %}
+                                {% if leciona_dados.Professor.id == professor.id %}
+                                    <option value="{{ professor.id }}" selected>{{ professor.Nome }}</option>
+                                {% else %}
+                                    <option value="{{ professor.id }}" >{{ professor.Nome }}</option>
+                                {% endif %}
+                            {% endfor %}       
+                        </select>
+                    </div>
+                </div>    
             </fieldset>
 
         {% endif %}
 
+        <br>
         {% if Tipo_Transacao == 'INS' or Tipo_Transacao == 'UPD' %}
-            <button type="submit">Salvar</button>
+            <button type="submit" class="btn btn-primary">Salvar</button>
         {% elif Tipo_Transacao == 'DEL' %}
-            <button type="submit">Deletar</button>
+            <button type="submit" class="btn btn-danger">Deletar</button>
         {% endif %}
+        <a href="{% url 'leciona_listagem' idT %}" class="btn btn-secondary"> Voltar</a>
+        <br>
 
-        <a href="{% url 'leciona_listagem' idT %}"> Voltar</a>
     </form>
 
 {% endblock  %}

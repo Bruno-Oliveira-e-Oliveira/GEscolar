@@ -1,5 +1,5 @@
 {% extends 'projeto/base/base.html' %}
-
+{% load filters %}
 {% block title %}
     {% if Tipo_Transacao == 'INS' %}
         Cadastrar novo Disciplina | GEscolar 
@@ -16,18 +16,20 @@
 {% block main %}
 
     {% if Tipo_Transacao == 'INS' %}
-        <h2>Cadastrar Disciplina</h2> 
+        <h2><b>Cadastrar Disciplina</b></h2>
     {% elif Tipo_Transacao == 'UPD' %}
-        <h2>Atualizar dados do Disciplina</h2> 
+        <h2><b>Atualizar dados do Disciplina</b></h2>
     {% elif Tipo_Transacao == 'CON' %}
-        <h2>Consultar Disciplina</h2> 
+        <h2><b>Consultar Disciplina</b></h2>
     {% elif Tipo_Transacao == 'DEL' %}
-        <h2>Apagar Disciplina</h2>
+        <h2><b>Apagar Disciplina</b></h2>
     {% endif %}
 
+    <ul class="list-group list-group-flush mb-3 mt-3">
     {% for erro in erros %}
-        {{ erro }}
+        <li class="list-group-item text-danger text-justify">{{ erro|tira_lista }}</li>
     {% endfor %}
+    </ul>
 
     <form action="
             {% if Tipo_Transacao == 'INS' %}
@@ -39,34 +41,40 @@
             {% elif Tipo_Transacao == 'DEL' %}
                 {% url 'disciplina_deletar' idDisciplina %}
             {% endif %}
-        " method="POST">
+        " method="POST" class="form">
         {% csrf_token %}
 
         {% if Tipo_Transacao == 'INS' or Tipo_Transacao == 'UPD' %}
-            <fieldset>
-                <div>
-                    <label for="id_Nome">Nome:</label>
-                    <input type="text" name="Nome" maxlength="20" required id="id_Nome" value='{{ disciplina_dados.Nome }}'>
-                </div>
+            <fieldset class="container-fluid">
+                <div class="row">
+                    <div class="form-group col-md-5">
+                        <label for="id_Nome">Nome:</label>
+                        <input type="text" name="Nome" maxlength="20" class="form-control" required id="id_Nome" value='{{ disciplina_dados.Nome }}'>
+                    </div>
+                </div>  
             </fieldset>
 
         {% else %}
 
-            <fieldset>
-                <div>
-                    <label for="id_Nome">Nome:</label>
-                    <input type="text" name="Nome" maxlength="20" disabled id="id_Nome" value='{{ disciplina_dados.Nome }}'>
-                </div>
+            <fieldset class="container-fluid">
+                <div class="row">
+                    <div class="form-group col-md-5">
+                        <label for="id_Nome">Nome:</label>
+                        <input type="text" name="Nome" maxlength="20" class="form-control" disabled id="id_Nome" value='{{ disciplina_dados.Nome }}'>
+                    </div>
+                </div>  
             </fieldset>
         {% endif %}
 
+        <br>
         {% if Tipo_Transacao == 'INS' or Tipo_Transacao == 'UPD' %}
-            <button type="submit">Salvar</button>
+            <button type="submit" class="btn btn-primary">Salvar</button>
         {% elif Tipo_Transacao == 'DEL' and bloqueio ==  False %}
-            <button type="submit">Deletar</button>
+            <button type="submit" class="btn btn-danger">Deletar</button>
         {% endif %}
+        <a href="{% url 'disciplina_listagem' %}" class="btn btn-secondary"> Voltar</a>
+        <br>
 
-        <a href="{% url 'disciplina_listagem' %}"> Voltar</a>
     </form>
 
 {% endblock  %}

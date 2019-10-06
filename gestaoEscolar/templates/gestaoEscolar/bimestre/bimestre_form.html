@@ -17,13 +17,13 @@
 {% block main %}
 
     {% if Tipo_Transacao == 'INS' %}
-        <h2>Cadastrar Bimestre</h2> 
+        <h2><b>Cadastrar Bimestre</b></h2>
     {% elif Tipo_Transacao == 'UPD' %}
-        <h2>Atualizar dados do Bimestre</h2> 
+        <h2><b>Atualizar dados do Bimestre</b></h2>
     {% elif Tipo_Transacao == 'CON' %}
-        <h2>Consultar Bimestre</h2> 
+        <h2><b>Consultar Bimestre</b></h2>
     {% elif Tipo_Transacao == 'DEL' %}
-        <h2>Apagar Bimestre</h2>
+        <h2><b>Apagar Bimestre</b></h2>
     {% endif %}
 
     <ul class="list-group list-group-flush mb-3 mt-3">
@@ -42,26 +42,27 @@
             {% elif Tipo_Transacao == 'DEL' %}
                 {% url 'bimestre_deletar' idA idBimestre %}
             {% endif %}
-        " method="POST">
+        " method="POST" class="form">
         {% csrf_token %}
 
         {% if Tipo_Transacao == 'INS' or Tipo_Transacao == 'UPD' %}
 
-            <fieldset>
+            <fieldset class="container-fluid">
+                <div class="row">
                 {% if Tipo_Transacao == 'INS' %}
-                    <div>
+                    <div class="form-group col-md-2">
                         <label for="id_AnoLetivo">Ano:</label> 
-                        <input type="number" name="AnoLetivo" min="0" max="4" disabled id="id_AnoLetivo" value='{{ ano.Ano }}'>
+                        <input type="number" name="AnoLetivo" min="0" max="4" class="form-control" disabled id="id_AnoLetivo" value='{{ ano.Ano }}'>
                     </div>
 
-                    <div>
+                    <div class="form-group col-md-2">
                         <label for="id_Bimestre">Bimestre:</label>
-                        <input type="number" name="Bimestre" min="0" max="4" disabled id="id_Bimestre" value='{{ numero_bimestre }}'>
+                        <input type="number" name="Bimestre" min="0" max="4" class="form-control" disabled id="id_Bimestre" value='{{ numero_bimestre }}'>
                     </div>
 
-                    <div>
+                    <div class="form-group col-md-3">
                         <label for="id_Situacao">Situação:</label> 
-                        <select name="Situacao" id="id_Situacao" disabled>
+                        <select name="Situacao" id="id_Situacao" disabled class="form-control">
                             {% for situacao in Tipos_Situacao %}
                                 {% if bimestre_dados.Situacao == situacao.0 %}
                                     <option value="{{ situacao.0 }}" selected>{{ situacao.1 }}</option>
@@ -72,19 +73,19 @@
                         </select>
                     </div>
                 {% else %}
-                    <div>
+                    <div class="form-group col-md-2">
                         <label for="id_AnoLetivo">Ano:</label> 
-                        <input type="number" name="AnoLetivo" min="0" max="4" disabled id="id_AnoLetivo" value='{{ bimestre_dados.AnoLetivo }}'>
+                        <input type="number" name="AnoLetivo" min="0" max="4" class="form-control" disabled id="id_AnoLetivo" value='{{ bimestre_dados.AnoLetivo }}'>
                     </div>
 
-                    <div>
+                    <div class="form-group col-md-2">
                         <label for="id_Bimestre">Bimestre:</label>
-                        <input type="number" name="Bimestre" min="0" max="4" disabled id="id_Bimestre" value='{{ bimestre_dados.Bimestre }}'>
+                        <input type="number" name="Bimestre" min="0" max="4" class="form-control" disabled id="id_Bimestre" value='{{ bimestre_dados.Bimestre }}'>
                     </div>
 
-                    <div>
+                    <div class="form-group col-md-3">
                         <label for="id_Situacao">Situação:</label> 
-                        <select name="Situacao" id="id_Situacao">
+                        <select name="Situacao" id="id_Situacao" class="form-control">
                             {% for situacao in Tipos_Situacao %}
                                 {% if bimestre_dados.Situacao == situacao.0 %}
                                     <option value="{{ situacao.0 }}" selected>{{ situacao.1 }}</option>
@@ -95,75 +96,84 @@
                         </select>
                     </div>
                 {% endif %}
-
-                <div>
-                    <label for="id_Data_Inicio">Data Inicial:</label> 
-                    <input type="date" name="Data_Inicio" required id="id_Data_Inicio" value='{{ bimestre_dados.Data_Inicio|data_retorno }}'>
                 </div>
 
-                <div>
-                    <label for="id_Data_Limite_Notas">Data limite da entrega das notas:</label> 
-                    <input type="date" name="Data_Limite_Notas" required id="id_Data_Limite_Notas" value='{{ bimestre_dados.Data_Limite_Notas|data_retorno }}'>
-                </div>
+                <div class="row">  
+                    <div class="form-group col-md-3">
+                        <label for="id_Data_Inicio">Data Inicial:</label> 
+                        <input type="date" name="Data_Inicio" class="form-control" required id="id_Data_Inicio" value='{{ bimestre_dados.Data_Inicio|data_retorno }}'>
+                    </div>
 
-                <div>
-                    <label for="id_Data_Fim">Data Final:</label> 
-                    <input type="date" name="Data_Fim" required id="id_Data_Fim" value='{{ bimestre_dados.Data_Fim|data_retorno }}'>
+                    <div class="form-group col-md-5">
+                        <label for="id_Data_Limite_Notas">Data de entrega das notas:</label> 
+                        <input type="date" name="Data_Limite_Notas" class="form-control" required id="id_Data_Limite_Notas" value='{{ bimestre_dados.Data_Limite_Notas|data_retorno }}'>
+                    </div>
+
+                    <div class="form-group col-md-3">
+                        <label for="id_Data_Fim">Data Final:</label> 
+                        <input type="date" name="Data_Fim" class="form-control" required id="id_Data_Fim" value='{{ bimestre_dados.Data_Fim|data_retorno }}'>
+                    </div>
                 </div>
             </fieldset>
 
         {% else %}
         
-            <fieldset>
-                <div>
-                    <label for="id_AnoLetivo">Ano:</label> 
-                    <input type="number" name="AnoLetivo" min="0" max="4" disabled id="id_AnoLetivo" value='{{ bimestre_dados.AnoLetivo }}'>
-                </div>
+            <fieldset class="container-fluid">
+                <div class="row"> 
+                    <div class="form-group col-md-2">
+                        <label for="id_AnoLetivo">Ano:</label> 
+                        <input type="number" name="AnoLetivo" min="0" max="4" class="form-control" disabled id="id_AnoLetivo" value='{{ bimestre_dados.AnoLetivo }}'>
+                    </div>
 
-                <div>
-                    <label for="id_Bimestre">Bimestre:</label>
-                    <input type="number" name="Bimestre" min="0" max="4" disabled id="id_Bimestre" value='{{ bimestre_dados.Bimestre }}'>
-                </div>
+                    <div class="form-group col-md-2">
+                        <label for="id_Bimestre">Bimestre:</label>
+                        <input type="number" name="Bimestre" min="0" max="4" class="form-control" disabled id="id_Bimestre" value='{{ bimestre_dados.Bimestre }}'>
+                    </div>
 
-                <div>
-                    <label for="id_Situacao">Situação:</label> 
-                    <select name="Situacao" id="id_Situacao" disabled>
-                        {% for situacao in Tipos_Situacao %}
-                            {% if bimestre_dados.Situacao == situacao.0 %}
-                                <option value="{{ situacao.0 }}" selected>{{ situacao.1 }}</option>
-                            {% else %}
-                                <option value="{{ situacao.0 }}" >{{ situacao.1 }}</option>
-                            {% endif %}
-                        {% endfor %}       
-                    </select>
-                </div>
+                    <div class="form-group col-md-3">
+                        <label for="id_Situacao">Situação:</label> 
+                        <select name="Situacao" id="id_Situacao" disabled class="form-control">
+                            {% for situacao in Tipos_Situacao %}
+                                {% if bimestre_dados.Situacao == situacao.0 %}
+                                    <option value="{{ situacao.0 }}" selected>{{ situacao.1 }}</option>
+                                {% else %}
+                                    <option value="{{ situacao.0 }}" >{{ situacao.1 }}</option>
+                                {% endif %}
+                            {% endfor %}       
+                        </select>
+                    </div>
+                </div>   
 
-                <div>
-                    <label for="id_Data_Inicio">Data Inicial:</label> 
-                    <input type="date" name="Data_Inicio" disabled id="id_Data_Inicio" value='{{ bimestre_dados.Data_Inicio|data_retorno }}'>
-                </div>
+                <div class="row">                   
+                    <div class="form-group col-md-3">
+                        <label for="id_Data_Inicio">Data Inicial:</label> 
+                        <input type="date" name="Data_Inicio" class="form-control" disabled id="id_Data_Inicio" value='{{ bimestre_dados.Data_Inicio|data_retorno }}'>
+                    </div>
 
-                <div>
-                    <label for="id_Data_Limite_Notas">Data limite da entrega das notas:</label> 
-                    <input type="date" name="Data_Limite_Notas" disabled id="id_Data_Limite_Notas" value='{{ bimestre_dados.Data_Limite_Notas|data_retorno }}'>
-                </div>
+                    <div class="form-group col-md-5">
+                        <label for="id_Data_Limite_Notas">Data de entrega das notas:</label> 
+                        <input type="date" name="Data_Limite_Notas" class="form-control" disabled id="id_Data_Limite_Notas" value='{{ bimestre_dados.Data_Limite_Notas|data_retorno }}'>
+                    </div>
 
-                <div>
-                    <label for="id_Data_Fim">Data Final:</label> 
-                    <input type="date" name="Data_Fim" disabled id="id_Data_Fim" value='{{ bimestre_dados.Data_Fim|data_retorno }}'>
+                    <div class="form-group col-md-3">
+                        <label for="id_Data_Fim">Data Final:</label> 
+                        <input type="date" name="Data_Fim" class="form-control" disabled id="id_Data_Fim" value='{{ bimestre_dados.Data_Fim|data_retorno }}'>
+                    </div>
                 </div>
             </fieldset>
 
 
         {% endif %}
 
+        <br>
         {% if Tipo_Transacao == 'INS' or Tipo_Transacao == 'UPD' %}
-            <button type="submit">Salvar</button>
+            <button type="submit" class="btn btn-primary">Salvar</button>
         {% elif Tipo_Transacao == 'DEL' and bloqueio ==  False %}
-            <button type="submit">Deletar</button>
+            <button type="submit" class="btn btn-danger">Deletar</button>
         {% endif %}
+        <a href="{% url 'bimestre_listagem' ano.id %}" class="btn btn-secondary"> Voltar</a>
+        <br>
 
-        <a href="{% url 'bimestre_listagem' ano.id %}"> Voltar</a>
     </form>
 
 {% endblock  %}

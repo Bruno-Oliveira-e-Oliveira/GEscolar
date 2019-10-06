@@ -1,31 +1,45 @@
 {% extends 'projeto/base/base.html' %}
-
+{% load filters %}
 {% block title %}Login de Usuário{% endblock  %}
 
-{% block cabecalho %}{% endblock  %}
-
-{% block main %}
-    <span>{{ erro }}<span>
-    
-    <form action="{% url 'login' %}" method='POST'>
-        {% csrf_token %}
-        <fieldset>
-            <div>
-                <label for="id_username">Usuário:</label> 
-                <input type="text" name="username" maxlength="20" required id="id_username"> 
-            </div>
-            <div>
-                <label for="id_password">Senha:</label> 
-                <input type="password" name="password" maxlength="16" required id="id_password">
-            </div>
-        </fieldset>
-
-        <button type="submit">Entrar</button>
-        <a href="{% url 'diretor_novo' %}"> Cadastrar-se</a>
-        <a href="{% url 'esqueceu' %}"> Esqueceu a senha</a>
-        <a href="#"> Voltar</a>
-    </form>
-    
+{% block cabecalho %}
+    {% include "projeto/base/menu_autenticacao.html" %}
 {% endblock  %}
 
-{% block rodape %}{% endblock %}
+{% block main %}
+    <div class="d-flex justify-content-center">
+        <div class="p-2">
+            <h2 class="text-center"><b>Fazer login na conta</b></h2>
+            <span class="text-danger text-justify ml-3 mb-5 mt-5">{{ erro|tira_lista }}</span>
+            
+            <form action="{% url 'login' %}" method='POST' class="form">
+                {% csrf_token %}
+
+                <fieldset class="container-fluid">
+                    <div class="row">
+                        <div class="form-group col-md-12">
+                            <label for="id_username">Usuário:</label> 
+                            <input type="text" name="username" class="form-control" maxlength="20" required id="id_username"> 
+                        </div>
+                    </div>
+
+                    <div class="row">                            
+                        <div class="form-group col-md-12">
+                            <label for="id_password" >Senha:</label> 
+                            <input type="password" name="password" class="form-control" maxlength="16" required id="id_password">
+                        </div>
+                    </div>
+                </fieldset>
+
+                
+                <button type="submit" class="btn btn-primary col-md-12 mb-1 mt-1">Entrar</button>
+                <a href="{% url 'diretor_novo' %}" class="btn btn-primary col-md-12 mb-1"> Cadastrar-se</a>
+                <a href="{% url 'esqueceu' %}" class="btn btn-primary col-md-12 mb-1"> Esqueceu a senha</a>
+                <a href="#" class="btn btn-secondary col-md-12"> Voltar</a>
+                <br>
+
+            </form>
+        </div>
+    </div>
+    
+{% endblock  %}

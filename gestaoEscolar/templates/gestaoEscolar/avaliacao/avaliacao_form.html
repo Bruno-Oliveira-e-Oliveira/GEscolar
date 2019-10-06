@@ -17,18 +17,20 @@
 {% block main %}
 
     {% if Tipo_Transacao == 'INS' %}
-        <h2>Cadastrar avaliação</h2> 
+        <h2><b>Cadastrar avaliação</b></h2>
     {% elif Tipo_Transacao == 'UPD' %}
-        <h2>Atualizar dados da avaliação</h2> 
+        <h2><b>Atualizar dados da avaliação</b></h2>
     {% elif Tipo_Transacao == 'CON' %}
-        <h2>Consultar avaliação</h2> 
+        <h2><b>Consultar avaliação</b></h2>
     {% elif Tipo_Transacao == 'DEL' %}
-        <h2>Apagar avaliação</h2>
+        <h2><b>Apagar avaliação</b></h2>
     {% endif %}
 
+    <ul class="list-group list-group-flush mb-3 mt-3">
     {% for erro in erros %}
-        {{ erro }}
+        <li class="list-group-item text-danger text-justify">{{ erro|tira_lista }}</li>
     {% endfor %}
+    </ul>
 
     <form action="
             {% if Tipo_Transacao == 'INS' %}
@@ -40,140 +42,150 @@
             {% elif Tipo_Transacao == 'DEL' %}
                 {% url 'avaliacao_deletar' turma.id idAv %}
             {% endif %}
-        " method="POST">
+        " method="POST" class="form">
         {% csrf_token %}
 
         {% if Tipo_Transacao == 'INS' or Tipo_Transacao == 'UPD' %}
-            <fieldset>
-                <div>
-                    <label for="id_Nome">Nome:</label>
-                    <input type="text" name="Nome" maxlength="20"  required id="id_Nome" value='{{ avaliacao_dados.Nome }}'>
-                </div>
-
-                <div>
-                    <label for="id_Data">Data:</label> 
-                    <input type="date" name="Data" required id="id_Data" value='{{ avaliacao_dados.Data|data_retorno }}'>
-                </div>
-
-                <div>
-                    <label for="id_Peso">Peso:</label>
-                    <input type="number" name="Peso" id="id_Peso" required max="9" min="1" step=".1" value='{{ Peso }}'>
-                </div>
-
-                {% if Tipo_Transacao == 'INS' %}
-                    <div>
-                        <label for="id_Leciona">Disciplina / Professor:</label> 
-                        <select name="Leciona" id="id_Leciona" required>
-                            {% for leciona in lecionas %}
-                                {% if avaliacao_dados.Leciona.id == leciona.id %}
-                                    <option value="{{ leciona.id }}" selected>{{ leciona.nome_editado }}</option>
-                                {% else %}
-                                    <option value="{{ leciona.id }}" >{{ leciona.nome_editado }}</option>
-                                {% endif %}
-                            {% empty %}
-                                <option value="" ></option>
-                            {% endfor %}       
-                        </select>
-                    </div>
-                
-                {% else %}
-                    <div>
-                        <label for="id_Leciona">Disciplina / Professor:</label> 
-                        <select name="Leciona" id="id_Leciona" disabled>
-                            {% for leciona in lecionas %}
-                                {% if avaliacao_dados.Leciona.id == leciona.id %}
-                                    <option value="{{ leciona.id }}" selected>{{ leciona.nome_editado }}</option>
-                                {% else %}
-                                    <option value="{{ leciona.id }}" >{{ leciona.nome_editado }}</option>
-                                {% endif %}
-                            {% empty %}
-                                <option value="" ></option>
-                            {% endfor %}       
-                        </select>
+            <fieldset class="container-fluid">
+                <div class="row">
+                    <div class="form-group col-md-4">
+                        <label for="id_Nome">Nome:</label>
+                        <input type="text" name="Nome" maxlength="20" class="form-control" required id="id_Nome" value='{{ avaliacao_dados.Nome }}'>
                     </div>
 
-                {% endif %}
+                    <div class="form-group col-md-3">
+                        <label for="id_Data">Data:</label> 
+                        <input type="date" name="Data" class="form-control" required id="id_Data" value='{{ avaliacao_dados.Data|data_retorno }}'>
+                    </div>
 
-                <div>
-                    <label for="id_Turma">Turma:</label>
-                    <input type="text" name="Turma" maxlength="20"  disabled id="id_Turma" value='{{ turma.nome_editado }}'>
+                    <div class="form-group col-md-2">
+                        <label for="id_Peso">Peso:</label>
+                        <input type="number" name="Peso" id="id_Peso" class="form-control" required max="9" min="1" step=".1" value='{{ Peso }}'>
+                    </div>
                 </div>
 
+                <div class="row">  
+                    {% if Tipo_Transacao == 'INS' %}
+                        <div class="form-group col-md-6">
+                            <label for="id_Leciona">Disciplina / Professor:</label> 
+                            <select name="Leciona" id="id_Leciona" required class="form-control">
+                                {% for leciona in lecionas %}
+                                    {% if avaliacao_dados.Leciona.id == leciona.id %}
+                                        <option value="{{ leciona.id }}" selected>{{ leciona.nome_editado }}</option>
+                                    {% else %}
+                                        <option value="{{ leciona.id }}" >{{ leciona.nome_editado }}</option>
+                                    {% endif %}
+                                {% empty %}
+                                    <option value="" ></option>
+                                {% endfor %}       
+                            </select>
+                        </div>
+                    
+                    {% else %}
+                        <div class="form-group col-md-6">
+                            <label for="id_Leciona">Disciplina / Professor:</label> 
+                            <select name="Leciona" id="id_Leciona" disabled class="form-control">
+                                {% for leciona in lecionas %}
+                                    {% if avaliacao_dados.Leciona.id == leciona.id %}
+                                        <option value="{{ leciona.id }}" selected>{{ leciona.nome_editado }}</option>
+                                    {% else %}
+                                        <option value="{{ leciona.id }}" >{{ leciona.nome_editado }}</option>
+                                    {% endif %}
+                                {% empty %}
+                                    <option value="" ></option>
+                                {% endfor %}       
+                            </select>
+                        </div>
+
+                    {% endif %}
+
+                    <div class="form-group col-md-4">
+                        <label for="id_Turma">Turma:</label>
+                        <input type="text" name="Turma" maxlength="20" class="form-control" disabled id="id_Turma" value='{{ turma.nome_editado }}'>
+                    </div>
+                </div>
             </fieldset>
 
         {% else %}
-            <fieldset>
-                <div>
-                    <label for="id_Nome">Nome:</label>
-                    <input type="text" name="Nome" maxlength="20"  disabled id="id_Nome" value='{{ avaliacao_dados.Nome }}'>
+            <fieldset class="container-fluid">
+                <div class="row"> 
+                    <div class="form-group col-md-4">
+                        <label for="id_Nome">Nome:</label>
+                        <input type="text" name="Nome" maxlength="20" class="form-control" disabled id="id_Nome" value='{{ avaliacao_dados.Nome }}'>
+                    </div>
+
+                    <div class="form-group col-md-3">
+                        <label for="id_Data">Data:</label> 
+                        <input type="date" name="Data" class="form-control" disabled id="id_Data" value='{{ avaliacao_dados.Data|data_retorno }}'>
+                    </div>
+
+                    <div class="form-group col-md-2">
+                        <label for="id_Peso">Peso:</label>
+                        <input type="number" name="Peso" id="id_Peso" class="form-control" disabled max="10" min="1" value='{{ Peso }}'>
+                    </div>
                 </div>
 
-                <div>
-                    <label for="id_Data">Data:</label> 
-                    <input type="date" name="Data" disabled id="id_Data" value='{{ avaliacao_dados.Data|data_retorno }}'>
-                </div>
+                <div class="row"> 
+                    <div class="form-group col-md-6">
+                        <label for="id_Leciona">Disciplina / Professor:</label> 
+                        <select name="Leciona" id="id_Leciona" disabled class="form-control">
+                            {% for leciona in lecionas %}
+                                {% if avaliacao_dados.Leciona.id == leciona.id %}
+                                    <option value="{{ leciona.id }}" selected>{{ leciona.nome_editado }}</option>
+                                {% else %}
+                                    <option value="{{ leciona.id }}" >{{ leciona.nome_editado }}</option>
+                                {% endif %}
+                            {% empty %}
+                                <option value="" ></option>
+                            {% endfor %}       
+                        </select>
+                    </div>
 
-                <div>
-                    <label for="id_Peso">Peso:</label>
-                    <input type="number" name="Peso" id="id_Peso" disabled max="10" min="1" value='{{ Peso }}'>
+                    <div class="form-group col-md-4">
+                        <label for="id_Turma">Turma:</label>
+                        <input type="text" name="Turma" maxlength="20" class="form-control" disabled id="id_Turma" value='{{ turma.nome_editado }}'>
+                    </div>
                 </div>
-
-                <div>
-                    <label for="id_Leciona">Disciplina / Professor:</label> 
-                    <select name="Leciona" id="id_Leciona" disabled>
-                        {% for leciona in lecionas %}
-                            {% if avaliacao_dados.Leciona.id == leciona.id %}
-                                <option value="{{ leciona.id }}" selected>{{ leciona.nome_editado }}</option>
-                            {% else %}
-                                <option value="{{ leciona.id }}" >{{ leciona.nome_editado }}</option>
-                            {% endif %}
-                        {% empty %}
-                            <option value="" ></option>
-                        {% endfor %}       
-                    </select>
-                </div>
-
-                <div>
-                    <label for="id_Turma">Turma:</label>
-                    <input type="text" name="Turma" maxlength="20"  disabled id="id_Turma" value='{{ turma.nome_editado }}'>
-                </div>
-
             </fieldset>
         {% endif %}
 
         {% if Tipo_Transacao != 'INS' %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>Aluno</th>
-                        <th>Nota</Th>
-                    </tr>
-                </thead>
-
-                <tbody id="tbody">
-                    {% for item in notas_alunos %}
-                        <tr>   
-                            <td>{{ item.Aluno.Nome }}</td>
-                            {% if Tipo_Transacao == 'UPD' %}
-                                <td><input type="number" name="Nota-{{ item.Aluno.id }}" required max="10" min="0" step="0.1" value="{{ item.Nota.Valor|numero_decimal }}"></td>
-                            {% else %}
-                                <td><input type="number" name="Nota-{{ item.Aluno.id }}" disabled max="10" min="0" step="0.1" value="{{ item.Nota.Valor|numero_decimal }}"></td>
-                            {% endif %}
+            <div class="table-responsive-lg"> 
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Aluno</th>
+                            <th>Nota</Th>
                         </tr>
-                    {% endfor %}           
-                </tbody>
-            </table>
+                    </thead>
+
+                    <tbody id="tbody">
+                        {% for item in notas_alunos %}
+                            <tr>   
+                                <td>{{ item.Aluno.Nome }}</td>
+                                {% if Tipo_Transacao == 'UPD' %}
+                                    <td class="form-group col-md-2"><input type="number" name="Nota-{{ item.Aluno.id }}" class="form-control" required max="10" min="0" step="0.1" value="{{ item.Nota.Valor|numero_decimal }}"></td>
+                                {% else %}
+                                    <td class="form-group col-md-2"><input type="number" name="Nota-{{ item.Aluno.id }}" class="form-control" disabled max="10" min="0" step="0.1" value="{{ item.Nota.Valor|numero_decimal }}"></td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}           
+                    </tbody>
+                </table>
+            </div>
         {% endif %}
 
+        <br>
         {% if bloqueio == False %}
             {% if Tipo_Transacao == 'INS' or Tipo_Transacao == 'UPD' %}
-                <button type="submit">Salvar</button>
+                <button type="submit" class="btn btn-primary">Salvar</button>
             {% elif Tipo_Transacao == 'DEL' %}
-                <button type="submit">Deletar</button>
+                <button type="submit" class="btn btn-danger">Deletar</button>
             {% endif %}
         {% endif %}
+        <a href="{% url 'avaliacao_listagem' turma.id %}" class="btn btn-secondary"> Voltar</a>
+        <br>
 
-        <a href="{% url 'avaliacao_listagem' turma.id %}"> Voltar</a>
     </form>
 
 {% endblock  %}

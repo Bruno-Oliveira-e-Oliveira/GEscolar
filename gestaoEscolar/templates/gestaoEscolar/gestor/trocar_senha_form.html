@@ -1,34 +1,41 @@
 {% extends 'projeto/base/base.html' %}
-
+{% load filters %}
 {% block title %}Trocar a senha | GEscolar{% endblock  %}
 
 
 {% block main %}
 
-    <h2>Trocar a senha</h2> 
+    <h2><b>Trocar a senha</b></h2>
     
+    <ul class="list-group list-group-flush mb-3 mt-3">
     {% for erro in erros %}
-        {{ erro }}
+        <li class="list-group-item text-danger text-justify">{{ erro|tira_lista }}</li>
     {% endfor %}
+    </ul>
 
 
     <form action="{% url 'trocar_senha' idGestor %}" method="POST">
         {% csrf_token %}
 
-        <fieldset>
-            <div>
-                <label for="id_password">Senha:</label> 
-                <input type="password" name="password" maxlength="16" required id="id_password" value='{{ usuario_dados.password }}'>              
-            </div>
+        <fieldset class="container-fluid">
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label for="id_password">Nova Senha:</label> 
+                    <input type="password" name="password" maxlength="16" class="form-control" required id="id_password" value='{{ usuario_dados.password }}'>              
+                </div>
 
-            <div>
-                <label for="id_password2">Confirme sua Senha:</label> 
-                <input type="password" name="password2" maxlength="16" required id="id_password2" value='{{ usuario_dados.password2 }}'>              
+                <div class="form-group col-md-6">
+                    <label for="id_password2">Confirme sua Senha:</label> 
+                    <input type="password" name="password2" maxlength="16" class="form-control" required id="id_password2" value='{{ usuario_dados.password2 }}'>              
+                </div>
             </div>
         </fieldset>
+        
+        <br>
+        <button type="submit" class="btn btn-primary">Salvar</button>
+        <a href="{% url 'gestao_escolar_inicio' %}" class="btn btn-secondary"> Voltar</a>
+        <br>
 
-        <button type="submit">Salvar</button>
-        <a href="{% url 'gestao_escolar_inicio' %}"> Voltar</a>
     </form>
 
 {% endblock  %}

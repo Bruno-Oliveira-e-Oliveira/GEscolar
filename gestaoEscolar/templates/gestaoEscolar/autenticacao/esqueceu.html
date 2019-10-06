@@ -1,26 +1,32 @@
 {% extends 'projeto/base/base.html' %}
-
+{% load filters %}
 {% block title %}Esqueceu a senha{% endblock  %}
 
-{% block cabecalho %}{% endblock  %}
-
-{% block main %}
-    <h3>Digite seu email:</h3>
-    <span>{{ msg }}<span>
-    
-    <form action="{% url 'esqueceu' %}" method='POST'>
-        {% csrf_token %}
-        <fieldset>
-            <div>
-                <label for="id_email">E-mail:</label> 
-                <input type="text" name="email" maxlength="100" required id="id_email"> 
-            </div>
-        </fieldset>
-
-        <button type="submit">Enviar e-mail</button>
-        <a href="{% url 'login' %}"> Voltar</a>
-    </form>
-    
+{% block cabecalho %}
+    {% include "projeto/base/menu_autenticacao.html" %}
 {% endblock  %}
 
-{% block rodape %}{% endblock %}
+{% block main %}
+    <div class="d-flex justify-content-center">
+        <div class="p-2">
+            <h2 class="text-center "><b>Recuperação de senha</b></h2>
+            <span class="text-danger text-justify ml-3 mb-5 mt-5">{{ msg|tira_lista }}</span>
+            
+            <form action="{% url 'esqueceu' %}" method='POST' class="form mt-3">
+                {% csrf_token %}
+                <fieldset class="container-fluid">
+                    <div class="row">
+                        <div class="form-group col-md-12">
+                            <label for="id_email">E-mail:</label> 
+                            <input type="text" name="email" class="form-control" maxlength="100" required id="id_email"> 
+                        </div>
+                    </div>
+                </fieldset>
+
+                <button type="submit" class="btn btn-primary col-md-12 mb-1 mt-5">Enviar e-mail</button>
+                <a href="{% url 'login' %}" class="btn btn-secondary col-md-12"> Voltar</a>
+            </form>
+        </div>
+    </div>    
+{% endblock  %}
+
