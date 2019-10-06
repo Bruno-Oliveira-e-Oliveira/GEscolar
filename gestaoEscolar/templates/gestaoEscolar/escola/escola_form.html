@@ -154,7 +154,7 @@
 
                 <div class="form-group col-md-5">
                     <label for="id_Complemento">Complemento:</label>
-                    <input type="text" name="Complemento" maxlength="100" class="form-control" id="id_Complemento" value='{{ endereco_dados.Complemento }}'>
+                    <input type="text" name="Complemento" maxlength="100" class="form-control" id="id_Complemento" value='{{ endereco_dados.Complemento|corrige_none }}'>
                 </div>
                 
                 <div class="form-group col-md-2">

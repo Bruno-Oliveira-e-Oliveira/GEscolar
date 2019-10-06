@@ -54,12 +54,10 @@
                     <th></Th>
                     <th>Nome</th>
                     <th>Sexo</th>
-                    <th>CPF</th>
                     <th>RA</th>
                     <th>RM</th>
                     <th>Status da Matrícula</th>
                     <th>Status da Conta</th>
-                    <th>Email</th>
                 </tr>
             </thead>
             <tbody>
@@ -69,7 +67,6 @@
                         <td class="text-center"><a href="{% url 'aluno_deletar' aluno.id %}"><img src="{% static 'img/delete.png' %}" alt="Ícone de exclusão"></a></td>
                         <td><a href="{% url 'aluno_consultar' aluno.id %}" class="text-secondary">{{ aluno.Nome }}</a></td>
                         <td>{{ aluno.Sexo }}</td>
-                        <td>{{ aluno.Cpf }}</td>
                         <td>{{ aluno.Ra }}</td>
                         {% for matricula in matriculas %}
                             {% if matricula.Aluno.id == aluno.id %}
@@ -90,7 +87,6 @@
                         {% else %}
                             <td>Inativo</td>
                         {% endif %}
-                        <td>{{ aluno.Usuario.email }}</td>
                         
                     </tr>
                     
