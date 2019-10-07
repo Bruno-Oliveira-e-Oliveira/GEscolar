@@ -1,0 +1,47 @@
+{% extends 'projeto/base/base.html' %}
+{% load static %}
+{% block title %}Histórico do Aluno | GEscolar{% endblock  %}
+
+
+{% block main %}
+
+    <h2><b>Histórico Escolar</b></h2> 
+    <br>
+
+    <form class="form">
+        <fieldset class="container-fluid">
+            <div class="row">
+                <div class="mr-5 form-group">
+                    <label for="id_Aluno">Aluno:</label>
+                    <input type="text" name="Aluno" class="form-control" disabled maxlength="40"  id="id_Aluno" value=''>
+                </div>
+            </div>
+        </fieldset>
+        
+    </form>
+    
+    <div class="table-responsive-lg">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Turma</th>
+                    <th>Ano</th>
+                    <th>Status</th>
+                    <th class="text-center">Boletim</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for aluno in alunos %}
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td class="text-center"><a href="#"><img src="{% static 'img/sheet.png' %}" alt="Ícone de folha de papel"></a></td>
+                    </tr>
+                    
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock  %}

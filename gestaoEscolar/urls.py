@@ -53,6 +53,8 @@ urlpatterns = [
     path('aluno/alterar/<int:id>', aluno.aluno_alterar, name='aluno_alterar'),
     path('aluno/<int:id>', aluno.aluno_consultar, name='aluno_consultar'),
     path('aluno/deletar/<int:id>', aluno.aluno_deletar, name='aluno_deletar'),
+    path('aluno/<int:id>/historico', aluno.historico, name='historico_aluno'),
+    path('historico/', aluno.historico, name='historico_menu'),
 
     path('anos/', ano.ano_listagem, name='ano_listagem'),
     path('ano/novo/', ano.ano_novo, name='ano_novo'),

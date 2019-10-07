@@ -58,6 +58,7 @@
                     <th>RM</th>
                     <th>Status da Matrícula</th>
                     <th>Status da Conta</th>
+                    <th class="text-center">Histórico</th>
                 </tr>
             </thead>
             <tbody>
@@ -87,7 +88,7 @@
                         {% else %}
                             <td>Inativo</td>
                         {% endif %}
-                        
+                        <td class="text-center"><a href="#"><img src="{% static 'img/sheet.png' %}" alt="Ícone de folha de papel"></a></td>
                     </tr>
                     
                 {% endfor %}

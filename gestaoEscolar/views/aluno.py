@@ -510,3 +510,12 @@ def aluno_deletar(request,id):
                 'idAluno': id
             }
             return render(request,'gestaoEscolar/aluno/aluno_form.html', context)
+
+
+@login_required
+def historico(request, id):
+    aluno = get_object_or_404(Aluno, id=id)
+    idEscola = request.session['Escola']
+    matriculas = Matricula_Turma.objects.filter(Aluno=aluno.id, Escola=idEscola)
+    context = {'aluno':aluno, 'matriculas':matriculas}
+    return render(request,'gestaoEscolar/aluno/historico.html', context)
