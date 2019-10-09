@@ -13,7 +13,7 @@
             <div class="row">
                 <div class="mr-5 form-group">
                     <label for="id_Aluno">Aluno:</label>
-                    <input type="text" name="Aluno" class="form-control" disabled maxlength="40"  id="id_Aluno" value=''>
+                    <input type="text" name="Aluno" class="form-control-plaintext text-dark" disabled maxlength="40"  id="id_Aluno" value='{{ aluno.Nome }}'>
                 </div>
             </div>
         </fieldset>
@@ -31,11 +31,21 @@
                 </tr>
             </thead>
             <tbody>
-                {% for aluno in alunos %}
+                {% for matricula in matriculas %}
                     <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td>{{ matricula.Turma.nome_editado }}</td>
+                        <td>{{ matricula.Turma.AnoLetivo.Ano }}</td>
+                        {% if matricula.Situacao == 'cursando' %}
+                            <td>Cursando</td>
+                        {% elif matricula.Situacao == 'aprovado' %}
+                            <td>Aprovado</td>
+                        {% elif matricula.Situacao == 'transferido' %}
+                            <td>Transferido</td>
+                        {% elif matricula.Situacao == 'trancado' %}
+                            <td>Trancado</td>
+                        {% elif matricula.Situacao == 'reprovado' %}
+                            <td>Reprovado</td>
+                        {% endif %}
                         <td class="text-center"><a href="#"><img src="{% static 'img/sheet.png' %}" alt="Ícone de folha de papel"></a></td>
                     </tr>
                     
@@ -43,5 +53,15 @@
             </tbody>
         </table>
     </div>
+
+    {% if tipo == 'L' %}
+        <div class="text-right">
+            <a href="{% url 'aluno_listagem' %}" class="btn btn-secondary"> Voltar</a> 
+        </div>
+    {% elif tipo == 'M' %}
+        <div class="text-right">
+            <a href="{% url 'gestao_escolar_inicio' %}" class="btn btn-secondary"> Voltar</a> 
+        </div>
+    {% endif %}
 
 {% endblock  %}

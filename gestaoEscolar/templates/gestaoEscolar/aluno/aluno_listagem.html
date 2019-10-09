@@ -88,7 +88,7 @@
                         {% else %}
                             <td>Inativo</td>
                         {% endif %}
-                        <td class="text-center"><a href="#"><img src="{% static 'img/sheet.png' %}" alt="Ícone de folha de papel"></a></td>
+                        <td class="text-center"><a href="{% url 'historico_aluno' aluno.id 'L' %}"><img src="{% static 'img/sheet.png' %}" alt="Ícone de folha de papel"></a></td>
                     </tr>
                     
                 {% endfor %}

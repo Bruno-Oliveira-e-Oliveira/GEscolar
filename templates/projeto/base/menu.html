@@ -38,30 +38,26 @@
             <!-- Aluno -->
             {% if request.session.Tipo_Pessoa == 'A' %}
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Histórico Escolar</a>
+                    <a class="nav-link" href="{% url 'historico_aluno' request.session.Pessoa 'M' %}">Histórico Escolar</a>
                 </li>       
             {% endif %}
             <!--  -->
 
             <!-- Dropdown -->
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
-                    Usuários
-                </a>
-                <div class="dropdown-menu bg-dark">
-                    {% if request.session.Tipo_Pessoa == 'D' %}
-                        <a class="dropdown-item text-muted" href="{% url 'secretario_listagem' %}">Secretários</a>
-                    {% endif %}
-        
-                    {% if request.session.Tipo_Pessoa == 'D' or request.session.Tipo_Pessoa == 'S' %}
+            {% if request.session.Tipo_Pessoa == 'D' or request.session.Tipo_Pessoa == 'S' %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                        Usuários
+                    </a>
+                    <div class="dropdown-menu bg-dark">
+                        {% if request.session.Tipo_Pessoa == 'D' %}
+                            <a class="dropdown-item text-muted" href="{% url 'secretario_listagem' %}">Secretários</a>
+                        {% endif %}
                         <a class="dropdown-item text-muted" href="{% url 'professor_listagem' %}">Professores</a> 
-                    {% endif %}
-        
-                    {% if request.session.Tipo_Pessoa == 'D' or request.session.Tipo_Pessoa == 'S' %}
                         <a class="dropdown-item text-muted" href="{% url 'aluno_listagem' %}">Alunos</a> 
-                    {% endif %}
-                </div>
-            </li>
+                    </div>
+                </li>
+            {% endif %}
 
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">

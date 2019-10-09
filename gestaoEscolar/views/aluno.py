@@ -513,9 +513,11 @@ def aluno_deletar(request,id):
 
 
 @login_required
-def historico(request, id):
+def historico(request, id, tipo):
     aluno = get_object_or_404(Aluno, id=id)
+    if tipo != 'L' and tipo != 'M':
+        raise Http404
     idEscola = request.session['Escola']
     matriculas = Matricula_Turma.objects.filter(Aluno=aluno.id, Escola=idEscola)
-    context = {'aluno':aluno, 'matriculas':matriculas}
+    context = {'aluno':aluno, 'matriculas':matriculas, 'tipo': tipo}
     return render(request,'gestaoEscolar/aluno/historico.html', context)
