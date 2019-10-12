@@ -5,58 +5,60 @@
     </button>
     <div class="collapse navbar-collapse" id="collapsibleNavbar">
         <ul class="navbar-nav">
-            {% if request.session.Escola and request.session.Tipo_Pessoa == 'D' %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'escola_alterar' request.session.Escola %}">Escola</a>
-                </li>
-            {% endif %}
+            {% if request.session.Escola != '' %}
+                {% if request.session.Tipo_Pessoa == 'D' or request.session.Tipo_Pessoa == 'S' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'ano_listagem' %}">Anos</a>
+                    </li>  
+                {% endif %}
 
-            {% if request.session.Tipo_Pessoa == 'D' or request.session.Tipo_Pessoa == 'S' %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'disciplina_listagem' %}">Disciplinas</a>
-                </li>  
-            {% endif %}
+                {% if request.session.Tipo_Pessoa == 'D' or request.session.Tipo_Pessoa == 'S' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'disciplina_listagem' %}">Disciplinas</a>
+                    </li>  
+                {% endif %}
 
-            {% if request.session.Tipo_Pessoa == 'D' or request.session.Tipo_Pessoa == 'S' %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'ano_listagem' %}">Anos</a>
-                </li>  
-            {% endif %}
+                {% if request.session.Escola and request.session.Tipo_Pessoa == 'D' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'escola_alterar' request.session.Escola %}">Escola</a>
+                    </li>
+                {% endif %}
 
-            {% if request.session.Tipo_Pessoa == 'D' or request.session.Tipo_Pessoa == 'S' %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'serie_listagem' %}">Séries</a>
-                </li> 
-            {% endif %}
-            
-            {% if request.session.Tipo_Pessoa != 'A' %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'turma_listagem' %}">Turmas</a>
-                </li>       
-            {% endif %}
+                {% if request.session.Tipo_Pessoa == 'D' or request.session.Tipo_Pessoa == 'S' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'serie_listagem' %}">Séries</a>
+                    </li> 
+                {% endif %}
+                
+                {% if request.session.Tipo_Pessoa != 'A' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'turma_listagem' %}">Turmas</a>
+                    </li>       
+                {% endif %}
 
-            <!-- Aluno -->
-            {% if request.session.Tipo_Pessoa == 'A' %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'historico_aluno' request.session.Pessoa 'M' %}">Histórico Escolar</a>
-                </li>       
-            {% endif %}
-            <!--  -->
+                <!-- Aluno -->
+                {% if request.session.Tipo_Pessoa == 'A' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'historico_aluno' request.session.Pessoa 'M' %}">Histórico Escolar</a>
+                    </li>       
+                {% endif %}
+                <!--  -->
 
-            <!-- Dropdown -->
-            {% if request.session.Tipo_Pessoa == 'D' or request.session.Tipo_Pessoa == 'S' %}
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
-                        Usuários
-                    </a>
-                    <div class="dropdown-menu bg-dark">
-                        {% if request.session.Tipo_Pessoa == 'D' %}
-                            <a class="dropdown-item text-muted" href="{% url 'secretario_listagem' %}">Secretários</a>
-                        {% endif %}
-                        <a class="dropdown-item text-muted" href="{% url 'professor_listagem' %}">Professores</a> 
-                        <a class="dropdown-item text-muted" href="{% url 'aluno_listagem' %}">Alunos</a> 
-                    </div>
-                </li>
+                {% if request.session.Tipo_Pessoa == 'D' or request.session.Tipo_Pessoa == 'S' %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                            Pessoas
+                        </a>
+                        <div class="dropdown-menu bg-dark">
+                            <a class="dropdown-item text-muted" href="{% url 'aluno_listagem' %}">Alunos</a> 
+                            <a class="dropdown-item text-muted" href="{% url 'professor_listagem' %}">Professores</a> 
+                            {% if request.session.Tipo_Pessoa == 'D' %}
+                                <a class="dropdown-item text-muted" href="{% url 'secretario_listagem' %}">Secretários</a>
+                            {% endif %}
+                        </div>
+                    </li>
+                {% endif %}
+
             {% endif %}
 
             <li class="nav-item dropdown">
@@ -64,9 +66,11 @@
                     Conta
                 </a>
                 <div class="dropdown-menu bg-dark">
-                    {% if request.session.Tipo_Pessoa == 'D' %}
-                        <a class="dropdown-item text-muted" href="{% url 'diretor_alterar' request.session.Pessoa %}">Alterar Cadastro</a>
-                        <a class="dropdown-item text-muted" href="{% url 'trocar_senha' request.session.Pessoa %}">Alterar Senha</a>
+                    {% if request.session.Escola != '' %}
+                        {% if request.session.Tipo_Pessoa == 'D' %}
+                            <a class="dropdown-item text-muted" href="{% url 'diretor_alterar' request.session.Pessoa %}">Alterar Cadastro</a>
+                            <a class="dropdown-item text-muted" href="{% url 'trocar_senha' request.session.Pessoa %}">Alterar Senha</a>
+                        {% endif %}
                     {% endif %}
                     <a class="dropdown-item text-muted" href="{% url 'logout' %}">Sair</a>
                 </div>

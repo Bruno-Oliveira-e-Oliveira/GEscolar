@@ -5,6 +5,16 @@
 
 {% block main %}
 
-    <h1 class="text-center"><b>Seja Bem Vindo ao GESCOLAR</b></h1>   
-    
+    <h1 class="text-center"><b>Seja Bem Vindo ao GESCOLAR</b></h1> 
+    <br>
+    <br>
+    <br>
+
+    {% if request.session.Escola == '' %}
+        <h4 class="text-center">Cadastre sua Escola para obter acesso as outras funcionalidades do sistema.</h4>
+        <div class="text-center">
+            <a href="{% url 'escola_novo' %}" class="btn btn-primary"> Cadastrar Escola</a>
+        </div>
+    {% endif %}
+
 {% endblock  %}

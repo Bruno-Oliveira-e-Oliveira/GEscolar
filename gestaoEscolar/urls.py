@@ -23,7 +23,6 @@ from .views import (
 )
 
 urlpatterns = [
-    path('', inicio.gestao_escolar_inicio , name='gestao_escolar_inicio'),
     path('login/', login.login , name='login'),
     path('logout/', login.logout , name='logout'),
     path('esqueceu/', login.esqueceu , name='esqueceu'),
