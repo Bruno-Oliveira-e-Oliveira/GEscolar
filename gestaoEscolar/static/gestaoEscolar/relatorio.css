@@ -1,0 +1,19 @@
+.borda_cab {
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 10px;
+}
+
+.borda_linha{
+    border-bottom-style: solid;
+    border-bottom-width: 2px;
+}
+
+.borda_direita{
+    border-right-style: solid;
+    border-right-width: 2px;
+}
+
+span{
+    font-family: Arial, Helvetica, sans-serif;
+}

@@ -54,6 +54,7 @@ urlpatterns = [
     path('aluno/<int:id>', aluno.aluno_consultar, name='aluno_consultar'),
     path('aluno/deletar/<int:id>', aluno.aluno_deletar, name='aluno_deletar'),
     path('aluno/<int:id>/historico/<str:tipo>', aluno.historico, name='historico_aluno'),
+    path('aluno/<int:id>/historico/<str:tipo>/boletim/<int:idM>',relatorios.boletim_aluno,name='boletim_aluno'),
 
     path('anos/', ano.ano_listagem, name='ano_listagem'),
     path('ano/novo/', ano.ano_novo, name='ano_novo'),
@@ -102,6 +103,7 @@ urlpatterns = [
     path('turma/<int:idT>/gestao/aula/<int:idA>', aula.aula_consultar, name='aula_consultar'),
     path('turma/<int:idT>/gestao/aula/deletar/<int:idA>', aula.aula_deletar, name='aula_deletar'),
     path('turma/<int:idT>/gestao/aula/<int:idA>/chamada', aula.lista_chamada, name='lista_chamada'),
+    path('turma/<int:idT>/gestao/matricula/<int:idM>/boletim',relatorios.boletim_matricula,name='boletim_matricula'),
 
     path('series/', serie.serie_listagem, name='serie_listagem'),
     path('serie/<int:id>/matriz/', matriz.matriz_item_listagem, name='matriz_item_listagem'),
@@ -109,9 +111,6 @@ urlpatterns = [
     path('serie/<int:idS>/matriz/alterar/<int:idM>', matriz.matriz_item_alterar, name='matriz_item_alterar'),
     path('serie/<int:idS>/matriz/<int:idM>', matriz.matriz_item_consultar, name='matriz_item_consultar'),
     path('serie/<int:idS>/matriz/deletar/<int:idM>', matriz.matriz_item_deletar, name='matriz_item_deletar'),
-
-    path('turma/<int:idT>/gestao/matricula/<int:idM>/relatorio/',relatorios.relatorio_notas_frequencias,name='relatorio_notas_frequencias'),
-    
 
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

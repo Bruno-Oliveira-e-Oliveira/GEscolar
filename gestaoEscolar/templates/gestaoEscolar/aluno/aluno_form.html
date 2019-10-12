@@ -481,7 +481,7 @@
 
                 <div class="row"> 
                     <div class="form-group col-md-3">
-                        <label for="id_Superdotacao">Superdotacao:</label>
+                        <label for="id_Superdotacao">Superdotação:</label>
                         <select name="Superdotacao" id="id_Superdotacao" disabled class="form-control">
                             {% for op in Sim_Nao %}
                                 {% if aluno_dados.Superdotacao == op.0 %}
@@ -494,7 +494,7 @@
                     </div>
 
                     <div class="form-group col-md-4">
-                        <label for="id_Deficiencia">Deficiencia:</label>
+                        <label for="id_Deficiencia">Deficiência:</label>
                         <select name="Deficiencia" id="id_Deficiencia" disabled class="form-control">
                             {% for deficiencia in Tipos_Deficiencia %}
                                 {% if aluno_dados.Deficiencia == deficiencia.0 %}

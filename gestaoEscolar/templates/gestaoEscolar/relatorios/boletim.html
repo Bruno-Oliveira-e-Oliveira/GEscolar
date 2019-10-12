@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ptbr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Boletim | GEscolar</title>
+
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'gestaoEscolar/relatorio.css' %}">
+
+</head>
+<body>
+    
+    <div >
+        <!-- Escola e Turma -->
+        <div class="borda_cab col-lg-12">
+            <div class="row borda_linha">
+                <div class="col-lg-12">
+                    <h2 class="text-center"><b>Boletim Escolar</b></h2>
+                </div>
+            </div>
+
+            <div class="row ">
+                <div class="col-5 borda_direita">
+                    <span><b>Escola:</b>&nbsp;</span> 
+                </div>
+                
+                <div class="col-2 borda_direita">
+                    <span ><b>Ano:</b>&nbsp;</span>
+                </div>
+
+                <div class="col-4 borda_direita">
+                    <span ><b>Série:</b>&nbsp;teste</span>
+                </div>
+
+                <div class="col-1">
+                    <span><b>Turma:</b>&nbsp;teste</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!--Aluno -->
+        <div class="borda_cab col-lg-12 mt-1">
+            <div class="row ">
+                <div class="col-5 borda_direita">
+                    <span><b>Aluno:</b>&nbsp;{{ aluno.Nome }}</span>
+                </div>
+                
+                <div class="col-5 borda_direita">
+                    <span ><b>RA:</b>&nbsp{{ aluno.Ra }}</span>
+                </div>
+
+                <div class="col-2 ">
+                    <span><b>RM:</b>&nbsp;</span>
+                </div>
+
+            </div>
+
+        </div>
+
+         
+
+        <fieldset>
+            <div>
+                <span>Disciplinas</span>
+            </div>
+
+            <div>
+                <span>1º Bimestre</span>
+
+                <div>
+                    <span>Notas</span>
+                    <span>Faltas</span>
+                </div>
+            </div>
+
+            <div>
+                <span>2º Bimestre</span>
+                <div>
+                    <span>Notas</span>
+                    <span>Faltas</span>
+                </div>
+            </div>
+
+            <div>
+                <span>3º Bimestre</span>
+                <div>
+                    <span>Notas</span>
+                    <span>Faltas</span>
+                </div>
+            </div>
+
+            <div>
+                <span>4º Bimestre</span>
+                <div>
+                    <span>Notas</span>
+                    <span>Faltas</span>
+                </div>
+            </div>
+
+            <div>
+                <span>Disciplinas</span>
+            </div>
+
+        </fieldset> 
+
+    </div>
+
+    <script src="{% static 'bootstrap/js/jquery.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>
+
+
+

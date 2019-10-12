@@ -55,7 +55,7 @@
                             {% elif matricula.Situacao == 'reprovado' %}
                                 <td>Reprovado</td>
                             {% endif %}
-                            <td class="text-center"><a href="{% url 'relatorio_notas_frequencias' matricula.Turma.id matricula.id %}"><img src="{% static 'img/sheet.png' %}" alt="Ícone de folha de papel"></a></td>
+                            <td class="text-center"><a href="{% url 'boletim_matricula' matricula.Turma.id matricula.id %}"><img src="{% static 'img/sheet.png' %}" alt="Ícone de folha de papel"></a></td>
                         </tr>
                 {% endfor %}
             </tbody>
