@@ -24,19 +24,19 @@
 
             <div class="row ">
                 <div class="col-5 borda_direita">
-                    <span><b>Escola:</b>&nbsp;</span> 
+                    <span><b>Escola:</b>&nbsp;{{ matricula_turma.Escola.Nome }}</span> 
                 </div>
                 
                 <div class="col-2 borda_direita">
-                    <span ><b>Ano:</b>&nbsp;</span>
+                    <span ><b>Ano:</b>&nbsp;{{ matricula_turma.Turma.AnoLetivo.Ano }}</span>
                 </div>
 
                 <div class="col-4 borda_direita">
-                    <span ><b>Série:</b>&nbsp;teste</span>
+                    <span ><b>Série:</b>&nbsp;{{ matricula_turma.Turma.Serie.nome_editado }}</span>
                 </div>
 
                 <div class="col-1">
-                    <span><b>Turma:</b>&nbsp;teste</span>
+                    <span><b>Turma:</b>&nbsp;{{ matricula_turma.Turma.Nome }}</span>
                 </div>
             </div>
 
@@ -46,69 +46,104 @@
         <div class="borda_cab col-lg-12 mt-1">
             <div class="row ">
                 <div class="col-5 borda_direita">
-                    <span><b>Aluno:</b>&nbsp;{{ aluno.Nome }}</span>
+                    <span><b>Aluno:</b>&nbsp;{{ matricula_turma.Aluno.Nome }}</span>
                 </div>
                 
                 <div class="col-5 borda_direita">
-                    <span ><b>RA:</b>&nbsp{{ aluno.Ra }}</span>
+                    <span ><b>RA:</b>&nbsp;{{ matricula_turma.Aluno.Ra }}</span>
                 </div>
 
                 <div class="col-2 ">
-                    <span><b>RM:</b>&nbsp;</span>
+                    <span><b>RM:</b>&nbsp;{{ matricula_aluno.Rm }}</span>
                 </div>
-
             </div>
-
         </div>
 
-         
+        <!-- Notas -->
+        <div class="borda_tab col-lg-12 mt-1">
 
-        <fieldset>
-            <div>
-                <span>Disciplinas</span>
-            </div>
-
-            <div>
-                <span>1º Bimestre</span>
-
-                <div>
-                    <span>Notas</span>
-                    <span>Faltas</span>
+            <div class="row borda_linha">
+                <div class="col-lg-12">
+                    <h4 class="text-center"><b>Notas</b></h4>
                 </div>
             </div>
 
-            <div>
-                <span>2º Bimestre</span>
-                <div>
-                    <span>Notas</span>
-                    <span>Faltas</span>
+            <div class="row borda_linha">
+                <div class="col-4 borda_direita text-center">
+                    <span><b>Disciplinas</b></span>
+                </div>
+
+                <div class="col-2 borda_direita text-center">
+                    <span><b>1º Bimestre</b></span>
+                </div>
+
+                <div class="col-2 borda_direita text-center">
+                    <span><b>2º Bimestre</b></span>
+                </div>
+
+                <div class="col-2 borda_direita text-center">
+                    <span><b>3º Bimestre</b></span>
+                </div>
+
+                <div class="col-2 borda_direita text-center">
+                    <span><b>4º Bimestre</b></span>
+                </div>
+
+                <div class="col-2 text-right">
+                    <span>
+                        <b>Média</b>
+                        &nbsp;&nbsp;
+                    </span>
                 </div>
             </div>
 
-            <div>
-                <span>3º Bimestre</span>
-                <div>
-                    <span>Notas</span>
-                    <span>Faltas</span>
+            {% for linha in matriz_dados %}
+                <div class="row borda_linha">
+                    <div class="col-4 borda_direita text-center">
+                        <span>{{ linha.Disciplina }}</span>
+                    </div>
+    
+                    <div class="col-2 borda_direita text-center">
+                        <span>{{ linha.Medias.0 }}</span>
+                    </div>
+    
+                    <div class="col-2 borda_direita text-center">
+                        <span> {{ linha.Medias.1 }}</span>
+                    </div>
+    
+                    <div class="col-2 borda_direita text-center">
+                        <span> {{ linha.Medias.2 }}</span>
+                    </div>
+    
+                    <div class="col-2 borda_direita text-center">
+                        <span>{{ linha.Medias.3 }}</span>
+                    </div>
+    
+                    <div class="col-2 text-center">
+                        <span>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            {{ linha.Final }}
+                        </span>
+                    </div>
                 </div>
-            </div>
 
-            <div>
-                <span>4º Bimestre</span>
-                <div>
-                    <span>Notas</span>
-                    <span>Faltas</span>
-                </div>
-            </div>
+            {% empty %}
 
-            <div>
-                <span>Disciplinas</span>
-            </div>
+            {% endfor %}    
 
-        </fieldset> 
-
+        </div> 
     </div>
 
+    <br>
+    <br>
+    <div class="text-right">
+        Data: {{ now }}
+    </div>
+    {% if obs is not None %}
+        <div class="text-right">
+            OBS: {{ obs }}
+        </div>
+    {% endif %}
     <script src="{% static 'bootstrap/js/jquery.min.js' %}"></script>
     <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 </body>

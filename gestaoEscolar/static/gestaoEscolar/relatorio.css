@@ -2,18 +2,42 @@
     border-style: solid;
     border-width: 2px;
     border-radius: 10px;
+    border-color: black;
+}
+
+.borda_tab {
+    border-style: solid;
+    border-width: 2px 2px 0px 2px;
+    border-color: black;
 }
 
 .borda_linha{
     border-bottom-style: solid;
     border-bottom-width: 2px;
+    border-bottom-color: black;
 }
 
 .borda_direita{
     border-right-style: solid;
     border-right-width: 2px;
+    border-right-color: black;
 }
 
-span{
+.borda_topo{
+    border-top-style: solid;
+    border-top-width: 2px;
+    border-top-color: black;
+}
+
+span, div{
     font-family: Arial, Helvetica, sans-serif;
+}
+
+@page {
+    size: "A4";
+    margin: 0.5cm;
+    @bottom-center {
+        text-align: center;
+        vertical-align: top;
+    }
 }
